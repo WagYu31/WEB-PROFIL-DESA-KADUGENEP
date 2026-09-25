@@ -408,131 +408,244 @@ export default function AdminPage() {
   // Admin Login Gateway
   if (!isAdminLoggedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-[#061412] to-slate-900 text-white flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
-        {/* Atmospheric ambient backdrop glows */}
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-emerald-500/15 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-sky-500/10 blur-[130px] pointer-events-none" />
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden selection:bg-emerald-500 selection:text-white">
+        {/* Background Image with Cinematic Dark Gradient Overlay */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/hero-kadugenep.jpg"
+            alt="Desa Kadugenep Backdrop"
+            fill
+            priority
+            className="object-cover object-center opacity-25 scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-950/90 to-emerald-950/80 backdrop-blur-xs" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(16,185,129,0.2),rgba(255,255,255,0))]" />
+          {/* Subtle Grid overlay */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+        </div>
+
+        {/* Ambient Glowing Orbs */}
+        <div className="absolute top-1/4 -left-20 w-96 h-96 rounded-full bg-emerald-500/20 blur-[140px] pointer-events-none animate-pulse" />
+        <div className="absolute bottom-1/4 -right-20 w-96 h-96 rounded-full bg-teal-500/15 blur-[150px] pointer-events-none" />
 
         {/* Toast Notification */}
         {toastMessage && (
-          <div className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-[#064e3b] text-white shadow-2xl flex items-center gap-3 border border-emerald-500/30">
+          <div className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-[#064e3b] text-white shadow-2xl flex items-center gap-3 border border-emerald-500/40 animate-fade-in">
             <CheckCircle size={22} weight="fill" className="text-emerald-300" />
             <span className="text-xs font-semibold">{toastMessage}</span>
           </div>
         )}
 
-        <div className="w-full max-w-md relative z-10 space-y-6">
-          {/* Header & Emblem */}
-          <div className="text-center space-y-3">
-            <div className="inline-flex p-3 rounded-3xl bg-slate-900/90 border border-slate-700/80 shadow-2xl backdrop-blur-md">
-              <div className="relative w-12 h-14">
-                <Image
-                  src="/images/logo-serang.png"
-                  alt="Lambang Kabupaten Serang"
-                  fill
-                  priority
-                  className="object-contain"
-                />
+        <div className="w-full max-w-4xl relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          
+          {/* Left Column: Civic Identity & Feature Badges (Visible on Large Screens) */}
+          <div className="hidden lg:flex lg:col-span-6 flex-col justify-between space-y-7 p-8 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold tracking-wide">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>Sistem Informasi Desa Terintegrasi · v2.6</span>
+              </div>
+
+              <div className="flex items-center gap-4 pt-1">
+                <div className="relative w-14 h-16 shrink-0 p-1.5 rounded-2xl bg-white/10 border border-white/20 shadow-inner backdrop-blur-md">
+                  <Image
+                    src="/images/logo-serang.png"
+                    alt="Lambang Kabupaten Serang"
+                    fill
+                    priority
+                    className="object-contain p-1"
+                  />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black tracking-tight text-white">
+                    Pemerintah Desa Kadugenep
+                  </h2>
+                  <p className="text-xs font-semibold text-emerald-400/90">
+                    Kecamatan Petir · Kabupaten Serang · Banten
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-300 leading-relaxed pt-1">
+                Pusat kendali operasional administrasi desa: publikasi warta terkini, transparansi realisasi APBDes, serta tindak lanjut surat mandiri warga secara cepat & terpadu.
+              </p>
+            </div>
+
+            {/* Feature Highlights */}
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-950/60 border border-slate-800/80 hover:border-emerald-500/30 transition-all">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
+                  <ShieldCheck size={18} weight="bold" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-slate-200">Enkripsi Akses Administrator</p>
+                  <p className="text-[10px] text-slate-400">Proteksi sesi aman dan terisolasi</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-950/60 border border-slate-800/80 hover:border-emerald-500/30 transition-all">
+                <div className="w-8 h-8 rounded-xl bg-sky-500/15 text-sky-400 flex items-center justify-center shrink-0">
+                  <FileText size={18} weight="bold" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-slate-200">Integrasi Layanan Surat Warga</p>
+                  <p className="text-[10px] text-slate-400">Verifikasi NIK dan respon langsung via WhatsApp</p>
+                </div>
               </div>
             </div>
 
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-950 text-emerald-400 border border-emerald-500/30 mb-2">
-                <LockKey size={13} weight="fill" />
-                <span>Gerbang Masuk Terproteksi</span>
-              </div>
-              <h1 className="text-2xl font-black tracking-tight text-white">
-                Dashboard Administrator
-              </h1>
-              <p className="text-xs text-slate-400 mt-1">
-                Pemerintah Desa Kadugenep · Kecamatan Petir
-              </p>
+            {/* Footer Signature */}
+            <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+              <span>© 2026 Desa Kadugenep</span>
+              <span className="text-emerald-400 font-bold">Sentra Kerajinan Tas Nasional</span>
             </div>
           </div>
 
-          {/* Login Card */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/85 border border-slate-800 shadow-2xl backdrop-blur-xl space-y-5">
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5">
-                  Kata Sandi Akses Admin
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                    <Key size={18} />
-                  </div>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={passwordInput}
-                    onChange={(e) => {
-                      setPasswordInput(e.target.value);
-                      if (loginError) setLoginError(false);
-                    }}
-                    placeholder="Masukkan sandi administrator..."
-                    className="w-full pl-10 pr-11 py-3 rounded-2xl bg-slate-950 border border-slate-700 text-sm font-semibold text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+          {/* Right Column: Interactive Login Box */}
+          <div className="lg:col-span-6 w-full max-w-md mx-auto space-y-5">
+            
+            {/* Mobile Header Brand */}
+            <div className="lg:hidden text-center space-y-3">
+              <div className="inline-flex p-3 rounded-3xl bg-slate-900/90 border border-slate-700/80 shadow-2xl backdrop-blur-md">
+                <div className="relative w-12 h-14">
+                  <Image
+                    src="/images/logo-serang.png"
+                    alt="Lambang Kabupaten Serang"
+                    fill
+                    priority
+                    className="object-contain"
                   />
+                </div>
+              </div>
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-950 text-emerald-400 border border-emerald-500/30 mb-2">
+                  <LockKey size={13} weight="fill" />
+                  <span>Gerbang Masuk Terproteksi</span>
+                </div>
+                <h1 className="text-2xl font-black tracking-tight text-white">
+                  Dashboard Administrator
+                </h1>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Desa Kadugenep · Kecamatan Petir
+                </p>
+              </div>
+            </div>
+
+            {/* Main Login Card */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/90 border border-slate-700/70 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] backdrop-blur-2xl space-y-6 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+
+              <div className="space-y-1">
+                <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                  <Key size={20} className="text-emerald-400" />
+                  <span>Otentikasi Administrator</span>
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Masukkan kata sandi resmi untuk membuka dashboard kontrol desa.
+                </p>
+              </div>
+
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-2">
+                    Kata Sandi Akses
+                  </label>
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-400 transition-colors">
+                      <LockKey size={18} weight="bold" />
+                    </div>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={passwordInput}
+                      onChange={(e) => {
+                        setPasswordInput(e.target.value);
+                        if (loginError) setLoginError(false);
+                      }}
+                      placeholder="Ketik kata sandi admin..."
+                      className="w-full pl-10 pr-11 py-3.5 rounded-2xl bg-slate-950/80 border border-slate-700 text-sm font-semibold text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 transition-all shadow-inner"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-white transition-colors cursor-pointer"
+                      title={showPassword ? "Sembunyikan sandi" : "Lihat sandi"}
+                    >
+                      {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+
+                  {loginError && (
+                    <div className="mt-2.5 p-2.5 rounded-xl bg-rose-950/60 border border-rose-500/30 text-xs text-rose-300 flex items-center justify-between">
+                      <span className="font-semibold">⚠️ Sandi tidak cocok.</span>
+                      <button
+                        type="button"
+                        onClick={handleQuickLogin}
+                        className="underline font-bold text-white hover:text-rose-200 cursor-pointer text-[11px]"
+                      >
+                        Gunakan sandi default (admin123) →
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Quick Access Helper Bar */}
+                <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-slate-400 text-[11px]">
+                      Sandi Bawaan: <strong className="text-emerald-400 font-mono font-bold">admin123</strong>
+                    </span>
+                  </div>
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-white cursor-pointer"
+                    onClick={handleQuickLogin}
+                    className="px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-[11px] font-bold text-emerald-300 transition-all cursor-pointer active:scale-95"
                   >
-                    {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
+                    Masuk Cepat ⚡
                   </button>
                 </div>
 
-                {loginError && (
-                  <p className="text-xs text-rose-400 font-semibold mt-2 flex items-center gap-1.5">
-                    <span>⚠️ Kata sandi salah. Gunakan sandi bawaan</span>
-                    <button
-                      type="button"
-                      onClick={handleQuickLogin}
-                      className="underline font-bold hover:text-white cursor-pointer"
-                    >
-                      admin123
-                    </button>
-                  </p>
-                )}
-              </div>
-
-              {/* Quick Login Helper Pill */}
-              <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between text-xs">
-                <span className="text-slate-400 text-[11px]">Sandi Default: <strong className="text-emerald-400 font-mono">admin123</strong></span>
+                {/* Submit Action Button */}
                 <button
-                  type="button"
-                  onClick={handleQuickLogin}
-                  className="text-[11px] font-bold text-sky-400 hover:text-sky-300 underline cursor-pointer"
+                  type="submit"
+                  disabled={isLoggingIn}
+                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-emerald-900/50 hover:shadow-emerald-900/70 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
                 >
-                  Isi & Masuk Cepat →
+                  {isLoggingIn ? (
+                    <>
+                      <Spinner size={18} className="animate-spin text-white" />
+                      <span>Memverifikasi Akses...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck size={18} weight="bold" />
+                      <span>Masuk ke Dashboard Admin</span>
+                    </>
+                  )}
                 </button>
+              </form>
+
+              {/* Navigation Back */}
+              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                <Link
+                  href="/"
+                  className="font-semibold text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group"
+                >
+                  <House size={15} className="group-hover:-translate-x-0.5 transition-transform" />
+                  <span>Kembali ke Beranda</span>
+                </Link>
+                <span className="text-[11px] text-slate-500 font-medium">
+                  Kecamatan Petir · Serang
+                </span>
               </div>
-
-              <button
-                type="submit"
-                disabled={isLoggingIn}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-900/40 transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
-              >
-                {isLoggingIn ? (
-                  <span>Memverifikasi...</span>
-                ) : (
-                  <>
-                    <LockKey size={16} weight="bold" />
-                    <span>Masuk Dashboard Admin</span>
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="pt-2 border-t border-slate-800/80 flex items-center justify-center">
-              <Link
-                href="/"
-                className="text-xs font-semibold text-slate-400 hover:text-white transition-colors flex items-center gap-1.5"
-              >
-                <House size={15} />
-                <span>Kembali ke Halaman Beranda Web</span>
-              </Link>
             </div>
+
           </div>
+
         </div>
       </div>
     );
