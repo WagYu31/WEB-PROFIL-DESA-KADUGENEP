@@ -650,34 +650,16 @@ export default function AdminPage() {
                   </div>
 
                   {loginError && (
-                    <div className="mt-2.5 p-2.5 rounded-xl bg-rose-950/80 border border-rose-500/40 text-xs text-rose-200 flex items-center justify-between">
-                      <span className="font-semibold">⚠️ Nami pamaké / sandi lepat.</span>
-                      <button
-                        type="button"
-                        onClick={handleQuickLogin}
-                        className="underline font-bold text-amber-300 hover:text-white cursor-pointer text-[11px]"
-                      >
-                        Paké Akun Default (admin / admin123) →
-                      </button>
+                    <div className="mt-2.5 p-3 rounded-xl bg-rose-950/80 border border-rose-500/40 text-xs text-rose-200 flex items-center gap-2">
+                      <span className="font-semibold">⚠️ Nami pamaké atanapi kecap sandi lepat. Punten parios deui aksés anjeun.</span>
                     </div>
                   )}
                 </div>
 
-                {/* Quick Access Helper Bar - Sunda Style */}
-                <div className="p-3.5 rounded-2xl bg-[#06120e]/90 border border-amber-500/20 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                    <span className="text-slate-300 text-[11px]">
-                      Akun Bawaan: <strong className="text-amber-400 font-mono font-bold">admin</strong> / <strong className="text-amber-400 font-mono font-bold">admin123</strong>
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleQuickLogin}
-                    className="px-3 py-1 rounded-xl bg-gradient-to-r from-amber-500/20 to-emerald-500/20 hover:from-amber-500/30 hover:to-emerald-500/30 border border-amber-400/40 text-[11px] font-bold text-amber-300 transition-all cursor-pointer active:scale-95 shadow-sm"
-                  >
-                    Lebet Enggal ⚡
-                  </button>
+                {/* Security Advisory Badge */}
+                <div className="p-3 rounded-2xl bg-[#06120e]/80 border border-amber-500/15 flex items-center gap-2.5 text-[11px] text-slate-400">
+                  <ShieldCheck size={16} className="text-amber-400 shrink-0" weight="fill" />
+                  <span>Sesi login ieu dipangaping ku sistem kaamanan terenkripsi désa.</span>
                 </div>
 
                 {/* Submit Action Button - Royal Sunda Amber/Emerald Gradient */}
