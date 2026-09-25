@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice & Kuitansi Resmi - Pengadaan Website Desa Kadugenep (Wahyu Utomo)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      line-height: 1.4;
+      padding: 24px 15px;
+    }
+
+    .no-print-bar {
+      max-width: 820px;
+      margin: 0 auto 16px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn-action {
+      background: linear-gradient(135deg, #0284c7 0%, #1d4ed8 100%);
+      color: #ffffff;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 800;
+      background-color: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .dot-pulse {
+      width: 7px;
+      height: 7px;
+      background-color: #10b981;
+      border-radius: 50%;
+    }
+
+    .invoice-card {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 15px 30px -5px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .top-accent {
+      height: 6px;
+      background: linear-gradient(90deg, #0284c7, #2563eb, #10b981);
+    }
+
+    .invoice-content {
+      padding: 28px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .header-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .vendor-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .vendor-role {
+      font-size: 11px;
+      font-weight: 800;
+      color: #0369a1;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-top: 2px;
+    }
+
+    .vendor-desc {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 4px;
+      max-width: 380px;
+      line-height: 1.35;
+    }
+
+    .meta-box {
+      text-align: right;
+    }
+
+    .meta-label {
+      font-size: 10px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .meta-val {
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f172a;
+      font-family: monospace;
+    }
+
+    .client-bank-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 11.5px;
+    }
+
+    .box-title {
+      font-size: 9.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: #64748b;
+      margin-bottom: 2px;
+    }
+
+    .highlight-name {
+      font-size: 13.5px;
+      font-weight: 900;
+      color: #0f172a;
+    }
+
+    .tech-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      background-color: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 11px;
+    }
+
+    .tech-item-title {
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: #0369a1;
+    }
+
+    .tech-item-val {
+      font-size: 12.5px;
+      font-weight: 900;
+      color: #0c4a6e;
+      font-family: monospace;
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .items-table th {
+      background-color: #f8fafc;
+      color: #475569;
+      font-size: 9.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      padding: 8px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+    }
+
+    .items-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: top;
+    }
+
+    .item-title {
+      font-weight: 800;
+      font-size: 12px;
+      color: #0f172a;
+    }
+
+    .item-specs {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 7fr 5fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .terbilang-box {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 11px;
+    }
+
+    .total-box {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #ffffff;
+      border-radius: 12px;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      font-weight: 800;
+    }
+
+    .total-amount {
+      font-size: 15px;
+      color: #fcd34d;
+      font-family: monospace;
+      font-weight: 900;
+    }
+
+    .bank-proof-box {
+      background-color: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 10px;
+    }
+
+    .bank-proof-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .bank-proof-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding-top: 4px;
+      border-top: 1px solid #dcfce7;
+    }
+
+    .signatures-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+      text-align: center;
+      font-size: 11px;
+    }
+
+    .sig-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 105px;
+    }
+
+    .sig-img {
+      max-height: 48px;
+      margin: 2px auto;
+      mix-blend-mode: multiply;
+      display: block;
+    }
+
+    .sig-name {
+      font-weight: 900;
+      font-size: 12.5px;
+      text-decoration: underline;
+      color: #0f172a;
+    }
+
+    .footer-doc {
+      padding-top: 8px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      color: #94a3b8;
+    }
+
+    /* Strict A4 1-Page Print Profile */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 6mm 8mm;
+      }
+      html, body {
+        background-color: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: 100% !important;
+        overflow: visible !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      .no-print-bar {
+        display: none !important;
+      }
+      .invoice-card {
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+      }
+      table, thead, tbody, tr, td, th {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .invoice-content {
+        padding: 6mm 8mm 4mm 8mm !important;
+        gap: 8px !important;
+      }
+      .sig-col {
+        height: 75px !important;
+      }
+      .sig-img {
+        max-height: 34px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Action Bar (Screen Only) -->
+  <div class="no-print-bar">
+    <div style="font-size: 12px; color: #64748b;">
+      Dokumen Faktur & Bukti Pembayaran Proyek Website Desa Kadugenep
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <span class="badge-status">
+        <span class="dot-pulse"></span>
+        LUNAS / VERIFIED BANK BJB
+      </span>
+      <button class="btn-action" onclick="window.print()">
+        🖨️ Cetak / Unduh PDF (1 Halaman Pas A4)
+      </button>
+    </div>
+  </div>
+
+  <!-- Printable Invoice Document -->
+  <div class="invoice-card">
+    <div class="top-accent"></div>
+
+    <div class="invoice-content">
+      
+      <!-- 1. Header -->
+      <div class="header-grid">
+        <div>
+          <div class="vendor-title">WAHYU UTOMO</div>
+          <div class="vendor-role">Web Developer & Digital IT Solutions</div>
+          <div class="vendor-desc">
+            Penyedia Jasa Pembuatan Website Resmi Pemerintahan Desa, Cloud Hosting, Integrasi Layanan Publik, & Domain.
+          </div>
+        </div>
+
+        <div class="meta-box">
+          <div class="badge-status" style="margin-bottom: 4px;">
+            <span class="dot-pulse"></span>
+            INVOICE LUNAS
+          </div>
+          <div class="meta-label">Nomor Faktur:</div>
+          <div class="meta-val">INV/2026/09/DESA-KDG/001</div>
+          <div class="meta-label" style="margin-top: 2px;">Tanggal Pelunasan:</div>
+          <div style="font-size: 11px; font-weight: 700; color: #1e293b;">24 September 2026</div>
+        </div>
+      </div>
+
+      <!-- 2. Client & Vendor Account -->
+      <div class="client-bank-grid">
+        <div>
+          <div class="box-title">Tagihan Ditujukan Kepada (Klien):</div>
+          <div class="highlight-name">Pemerintah Desa Kadugenep</div>
+          <div style="color: #475569; margin-top: 1px;">Kecamatan Petir, Kabupaten Serang, Banten 42172</div>
+          <div style="margin-top: 4px; color: #64748b; font-size: 10.5px;">
+            <strong>Sumber Rekening:</strong> KAS DESA KADUGENEP (Bank BJB: 0064670786001)
+          </div>
+        </div>
+
+        <div style="border-left: 1px solid #e2e8f0; padding-left: 16px;">
+          <div class="box-title">Rekening Tujuan Pembayaran Vendor:</div>
+          <div class="highlight-name">PT. BANK CENTRAL ASIA Tbk. (BCA)</div>
+          <div style="color: #475569; margin-top: 1px;">KCU Pusat Operasional · <strong>Rek: 7015429429</strong></div>
+          <div style="margin-top: 4px; color: #047857; font-size: 10px; font-weight: 700;">
+            a.n. WAHYU UTOMO (SKN Bank BJB Ref: C202609242093402566)
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Infrastructure Banner -->
+      <div class="tech-banner">
+        <div>
+          <span class="tech-item-title">Domain Resmi Desa: </span>
+          <span class="tech-item-val">DesaKadugenep.my.id</span>
+        </div>
+        <div>
+          <span class="tech-item-title">Server Hosting: </span>
+          <strong style="color: #0f172a;">Cloud Hosting DomaiNesia (Tier-3 Jakarta)</strong>
+        </div>
+      </div>
+
+      <!-- 4. Deliverables Table -->
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th style="width: 35px; text-align: center;">No</th>
+            <th>Deskripsi Layanan & Rincian Spesifikasi Teknis</th>
+            <th style="width: 95px; text-align: center;">Durasi</th>
+            <th style="width: 125px; text-align: right;">Jumlah (IDR)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align: center; font-weight: 700; color: #94a3b8;">1</td>
+            <td>
+              <div class="item-title">Pengembangan & Desain Website Resmi Desa Kadugenep</div>
+              <div class="item-specs">
+                • Antarmuka UI/UX modern responsif, portal berita desa, agenda warga & dokumentasi video liputan.<br>
+                • Layanan Surat Mandiri Digital (SKU, SKCK, Domisili, SKTM) nomor resi otomatis & integrasi WhatsApp.<br>
+                • Transparansi APBDes 2026 interaktif, Dokumen Baliho Resmi, panel admin desa & SEO optimized.
+              </div>
+            </td>
+            <td style="text-align: center; font-weight: 600; color: #475569;">Selesai Aktif</td>
+            <td style="text-align: right; font-family: monospace; font-weight: 800; color: #0f172a;">Rp 4.850.000</td>
+          </tr>
+          <tr>
+            <td style="text-align: center; font-weight: 700; color: #94a3b8;">2</td>
+            <td>
+              <div class="item-title">Paket Cloud Hosting DomaiNesia (High-Performance Dedicated NVMe)</div>
+              <div class="item-specs">
+                • Cloud Server Storage NVMe SSD, Tier-3 Datacenter Jakarta latensi rendah.<br>
+                • Unlimited Bandwidth, Auto SSL HTTPS 256-bit, Automated Daily Cloud Backup & Email Resmi Desa.
+              </div>
+            </td>
+            <td style="text-align: center; font-weight: 600; color: #475569;">1 Tahun</td>
+            <td style="text-align: right; font-family: monospace; font-weight: 800; color: #0f172a;">Rp 1.850.000</td>
+          </tr>
+          <tr>
+            <td style="text-align: center; font-weight: 700; color: #94a3b8;">3</td>
+            <td>
+              <div class="item-title">Registrasi & Pengelolaan Nama Domain DesaKadugenep.my.id</div>
+              <div class="item-specs">
+                • Pendaftaran nama domain resmi desa, DNS Management, Cloudflare Protection & routing hosting.
+              </div>
+            </td>
+            <td style="text-align: center; font-weight: 600; color: #475569;">1 Tahun</td>
+            <td style="text-align: right; font-family: monospace; font-weight: 800; color: #0f172a;">Rp 300.000</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 5. Calculations & Terbilang -->
+      <div class="summary-grid">
+        <div class="terbilang-box">
+          <div class="box-title">Jumlah Terbilang:</div>
+          <div style="font-size: 13px; font-weight: 800; color: #0f172a; font-style: italic;">
+            &ldquo;Tujuh Juta Rupiah&rdquo;
+          </div>
+          <div style="color: #64748b; font-size: 10px; margin-top: 2px;">
+            Faktur ini merupakan bukti sah transaksi dan pelunasan pengadaan website resmi desa tahun anggaran 2026.
+          </div>
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 11px; color: #475569; padding: 2px 0;">
+            <span>Subtotal Layanan:</span>
+            <span style="font-family: monospace; font-weight: 700;">Rp 7.000.000</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 11px; color: #475569; padding: 2px 0; border-bottom: 1px solid #e2e8f0;">
+            <span>Pajak / Potongan:</span>
+            <span style="font-family: monospace; font-weight: 700;">Rp 0</span>
+          </div>
+          <div class="total-box" style="margin-top: 4px;">
+            <span>TOTAL DIBAYAR:</span>
+            <span class="total-amount">Rp 7.000.000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Bank BJB Transfer Verification Proof -->
+      <div class="bank-proof-box">
+        <div class="bank-proof-header">
+          <strong style="color: #065f46; font-size: 9.5px;">VERIFIKASI TRANSAKSI RESMI (BANK BJB - DOMESTIC TRANSFER)</strong>
+          <span style="background-color: #d1fae5; color: #065f46; padding: 1px 6px; border-radius: 4px; font-weight: 800; font-family: monospace; font-size: 8.5px;">EXECUTED SUCCESSFULLY</span>
+        </div>
+        <div class="bank-proof-grid">
+          <div>
+            <div style="color: #64748b; font-size: 9px;">Waktu:</div>
+            <div style="font-weight: 700; color: #0f172a;">24 Sep 2026, 11:35</div>
+          </div>
+          <div>
+            <div style="color: #64748b; font-size: 9px;">Layanan:</div>
+            <div style="font-weight: 700; color: #0f172a;">SKN Bank BJB</div>
+          </div>
+          <div>
+            <div style="color: #64748b; font-size: 9px;">No. Referensi:</div>
+            <div style="font-weight: 800; font-family: monospace; color: #0369a1;">C202609242093402566</div>
+          </div>
+          <div>
+            <div style="color: #64748b; font-size: 9px;">Keterangan:</div>
+            <div style="font-weight: 700; color: #0f172a;">PEMBAYARAN WEB DESA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Signatures -->
+      <div class="signatures-grid">
+        <!-- Client -->
+        <div class="sig-col">
+          <div>
+            <div style="color: #64748b; font-size: 10px;">Menyetujui & Menerima Pekerjaan:</div>
+            <div style="font-weight: 800; color: #0f172a; margin-top: 1px;">Pemerintah Desa Kadugenep</div>
+          </div>
+          <div>
+            <div class="sig-name">H. M. AOPIDI</div>
+            <div style="color: #475569; font-size: 10px;">Kepala Desa Kadugenep</div>
+            <div style="color: #94a3b8; font-size: 9px;">Periode 2019 – 2025</div>
+          </div>
+        </div>
+
+        <!-- Vendor -->
+        <div class="sig-col">
+          <div>
+            <div style="color: #64748b; font-size: 10px;">Serang, 24 September 2026</div>
+            <div style="font-weight: 800; color: #0f172a; margin-top: 1px;">Vendor Pelaksana / Penerima:</div>
+          </div>
+          
+          <!-- Authentic Signature Render (Embedded Base64) -->
+          <div>
+            <img class="sig-img" src="data:image/jpeg;base64,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" alt="Tanda Tangan Wahyu Utomo">
+            <div class="sig-name">WAHYU UTOMO</div>
+            <div style="color: #475569; font-size: 10px;">Web Developer & IT Solutions</div>
+            <div style="color: #94a3b8; font-size: 9px;">Rek. BCA 7015429429</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Footer Note -->
+      <div class="footer-doc">
+        <div>DesaKadugenep.my.id · Dokumen Sah Administrasi & Pertanggungjawaban APBDes 2026</div>
+        <div>Dicetak secara elektronik melalui Sistem Desa Kadugenep</div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
