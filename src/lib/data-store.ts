@@ -176,6 +176,90 @@ export const INITIAL_OFFICIALS: VillageOfficial[] = [
 export const INITIAL_ARTICLES: Article[] = [
   {
     id: "art-1",
+    slug: "kades-kadugenep-raih-penghargaan-tokoh-inovatif-radar-banten-awards-2026",
+    title: "Kepala Desa Kadugenep Raih Penghargaan Bergengsi Tokoh Inovatif Radar Banten Awards 2026",
+    category: "Pemerintahan",
+    summary:
+      "Apresiasi atas keberhasilan memajukan desa mandiri melalui penguatan sentra kerajinan tas dan transformasi digital pelayanan publik yang berdampak nyata bagi ribuan warga.",
+    content: `
+      Prestasi membanggakan kembali diraih Pemerintah Desa Kadugenep, Kecamatan Petir, Kabupaten Serang. Kepala Desa Kadugenep secara resmi dinobatkan sebagai penerima penghargaan 'Tokoh Inovatif' pada ajang bergengsi Radar Banten Awards 2026.
+
+      Penghargaan ini diberikan atas dedikasi dan terobosan kepemimpinan dalam menggerakkan perekonomian masyarakat melalui ekosistem 'Desa Kecil Seribu Mesin', penguatan legalitas UMKM pengrajin tas, serta implementasi pelayanan publik desa berbasis digital yang transparan dan akuntabel.
+
+      "Penghargaan ini saya persembahkan seutuhnya untuk seluruh warga masyarakat Desa Kadugenep, para perajin tas konveksi mandiri, BPD, perangkat desa, serta seluruh kader yang tak kenal lelah bergotong royong membangun desa tercinta," ujar Kepala Desa Kadugenep usai menerima piagam dan trofi penghargaan.
+    `,
+    author: "Humas Pemdes Kadugenep",
+    date: "2026-09-24",
+    image: "/images/radar-banten-awards-2026.jpg",
+    views: 1850,
+    featured: true,
+  },
+  {
+    id: "art-2",
+    slug: "liputan-khusus-banten-tv-sentra-tas-dan-kearifan-desa-kadugenep",
+    title: "Liputan Khusus Banten TV: Mengupas Tuntas Kisah Sentra Kerajinan Tas & Potensi Alam Kadugenep",
+    category: "Ekonomi & UMKM",
+    summary:
+      "Tim jurnalis Banten TV melakukan peliputan eksklusif dan wawancara lapangan bersama Kepala Desa mengenai geliat 340+ bengkel mesin tas konveksi dan keasrian alam pedesaan.",
+    content: `
+      Keunikan dan ketangguhan ekonomi Desa Kadugenep menarik perhatian media regional Banten TV. Bertempat di tengah keteduhan rumpun bambu alam desa, kru redaksi Banten TV menggelar sesi wawancara khusus bersama Kepala Desa Kadugenep dan perwakilan pelaku usaha konveksi tas lokal.
+
+      Liputan ini menyoroti bagaimana warga Desa Kadugenep secara mandiri mentransformasikan desa kecil di Kecamatan Petir menjadi salah satu sentra produksi tas terbesar di Banten yang menyuplai produk ke pasar grosir nasional.
+
+      Selain sektor kerajinan, program dokumenter ini juga mengeksplorasi potensi pertanian berkelanjutan, kekayaan kearifan lokal 'Soméah Hadé ka Sémah', serta keramahan warga pedesaan Kadugenep.
+    `,
+    author: "Redaksi Warta Banten",
+    date: "2026-09-22",
+    image: "/images/liputan-banten-tv.jpg",
+    views: 1540,
+    featured: true,
+    videoUrl: "https://www.youtube.com/watch?v=T-M4QR6n6Jc",
+    videoTitle: "Liputan Khusus Banten TV: Geliat Sentra Tas Kadugenep & Kearifan Warga",
+  },
+  {
+    id: "art-3",
+    slug: "kades-kadugenep-hadiri-layanan-posyandu-kutilang-2-cegah-stunting",
+    title: "Kades Kadugenep Tinjau Langsung Pelayanan Posyandu Kutilang 2: Pastikan Generasi Sehat & Bebas Stunting",
+    category: "Kegiatan Warga",
+    summary:
+      "Kepala Desa bersama bidan desa dan kader Posyandu Kutilang 2 memantau penimbangan balita, pemberian gizi tambahan, serta edukasi kesehatan keluarga bagi warga desa.",
+    content: `
+      Komitmen Pemerintah Desa Kadugenep dalam meningkatkan derajat kesehatan masyarakat diwujudkan melalui kunjungan langsung Kepala Desa ke Gedung Pelayanan Posyandu Kutilang 2 Desa Kadugenep.
+
+      Dalam kegiatan rutin ini, puluhan ibu dan balita mendapatkan layanan penimbangan berat badan, pengukuran tinggi badan, imunisasi dasar, serta pembagian makanan tambahan (PMT) bergizi tinggi berbahan pangan lokal.
+
+      Kepala Desa mengapresiasi keaktifan para kader Posyandu dan mengajak seluruh orang tua di Kadugenep untuk terus rutin memantau tumbuh kembang putra-putrinya demi mencetak generasi emas Kadugenep yang cerdas, sehat, dan berdaya saing.
+    `,
+    author: "Kader Posyandu Kutilang 2",
+    date: "2026-09-19",
+    image: "/images/kegiatan-posyandu.jpg",
+    views: 1120,
+    featured: false,
+  },
+  {
+    id: "art-4",
+    slug: "musrenbangdes-kadugenep-susun-du-rkp-2028-dan-rkp-2027",
+    title: "Musrenbangdes Kadugenep Sukses Digelar: Rancang DU-RKP 2028 & Tetapkan RKP Desa TA 2027",
+    category: "Pembangunan",
+    summary:
+      "Musyawarah mufakat dihadiri BPD, LPM, tokoh agama, ketua RT/RW, dan pemuda menyepakati fokus anggaran pada infrastruktur jalan sentra, drainase, dan permodalan UMKM.",
+    content: `
+      Bertempat di Gedung Olahraga / Balai Desa Kadugenep, agenda tahunan Musyawarah Perencanaan Pembangunan Desa (Musrenbangdes) dalam rangka Penyusunan DU-RKP TA 2028 dan Penetapan RKP Desa TA 2027 berlangsung dengan penuh semangat kebersamaan.
+
+      Forum menyepakati sejumlah skala prioritas pembangunan, di antaranya:
+      1. Pemeliharaan dan rabat beton jalur akses utama sentra pengrajin tas.
+      2. Normalisasi saluran drainase permukiman dan irigasi persawahan lumbung pangan.
+      3. Penguatan sarana prasarana pos pelayanan kesehatan terpadu di setiap kedusunan.
+      4. Pelatihan digitalisasi pemasaran produk UMKM konveksi bagi pemuda karang taruna.
+    `,
+    author: "Tim Perencanaan Pembangunan Desa",
+    date: "2026-09-15",
+    image: "/images/musrenbangdes-kadugenep.jpg",
+    views: 980,
+    featured: false,
+  },
+  {
+    id: "art-5",
     slug: "kadugenep-seribu-mesin-tembus-pasar-nasional",
     title: "Geliat Pengrajin Tas Kadugenep: Dari Bengkel Desa Menembus Pasar Ritel Nasional",
     category: "Ekonomi & UMKM",
@@ -184,76 +268,12 @@ export const INITIAL_ARTICLES: Article[] = [
     content: `
       Desa Kadugenep di Kecamatan Petir, Kabupaten Serang, kian mengukuhkan posisinya sebagai sentra konveksi tas terkemuka di Provinsi Banten. Dijuluki sebagai 'Desa Kecil Seribu Mesin', puluhan rumah warga sehari-hari berdengung suara mesin jahit yang merajut beragam produk tas berkualitas.
 
-      Kepala Desa Kadugenep menyampaikan bahwa produk tas karya perajin lokal kini tidak hanya dipasarkan ke pasar tradisional Serang dan Tanah Abang Jakarta, namun telah merambah e-commerce dan distributor resmi di berbagai provinsi di Sumatra dan Jawa.
-
-      Pemerintah Desa Kadugenep bersama Dinas Koperasi dan UMKM Kabupaten Serang terus memberikan pendampingan legalitas NIB (Nomor Induk Berusaha), standarisasi mutu jahitan, serta fasilitasi pelatihan pemasaran digital agar produk kerajinan tas Kadugenep berdaya saing tinggi.
+      Pemerintah Desa Kadugenep bersama Dinas Koperasi dan UMKM terus memberikan pendampingan legalitas NIB, standarisasi mutu jahitan, serta fasilitasi pelatihan pemasaran digital.
     `,
     author: "Redaksi Warta Kadugenep",
-    date: "2026-09-18",
+    date: "2026-09-10",
     image: "/images/kerajinan-tas.jpg",
     views: 1420,
-    featured: true,
-    videoUrl: "https://www.youtube.com/watch?v=T-M4QR6n6Jc",
-    videoTitle: "Liputan RRI Banten: Perjalanan & Geliat Pengrajin Tas Lokal Sentra Mandiri",
-  },
-  {
-    id: "art-2",
-    slug: "musrenbangdes-kadugenep-prioritas-jalan-usaha-tani-dan-pelatihan",
-    title: "Musrenbangdes 2026 Kadugenep Sepakati 4 Prioritas Pembangunan & Digitalisasi Desa",
-    category: "Pemerintahan",
-    summary:
-      "Musyawarah Perencanaan Pembangunan Desa Kadugenep dihadiri perwakilan RT, BPD, tokoh masyarakat, dan pemuda menyepakati fokus pada perbaikan infrastruktur jalan sentra dan penguatan UMKM.",
-    content: `
-      Bertempat di Aula Kantor Balai Desa Kadugenep, Musyawarah Perencanaan Pembangunan Desa (Musrenbangdes) tahun anggaran 2026 berlangsung khidmat dan partisipatif. Agenda ini membahas usulan rencana kerja pembangunan desa dengan melibatkan seluruh elemen masyarakat.
-
-      Empat pilar utama yang disepakati meliputi:
-      1. Peningkatan drainase dan betonisasi jalan poros desa lingkar Kadugenep - Petir.
-      2. Pembangunan Pojok Literasi & Inkubator Kreatif Mesin Tas bagi pemuda karang taruna.
-      3. Digitalisasi sistem pelayanan administrasi persuratan warga (Layanan Mandiri Cepat).
-      4. Bantuan permodalan stimulan melalui BUMDes 'Maju Bersama Kadugenep'.
-    `,
-    author: "Tim Humas Desa",
-    date: "2026-09-14",
-    image: "/images/warga-komunitas.jpg",
-    views: 980,
-    featured: true,
-  },
-  {
-    id: "art-3",
-    slug: "posyandu-balita-dan-lansia-terpadu-kadugenep",
-    title: "Layanan Terpadu Posyandu Kasih Ibu Kadugenep Sukses Layani 180 Balita dan Lansia",
-    category: "Kegiatan Warga",
-    summary:
-      "Kader Posyandu bersama bidan desa melaksanakan pemeriksaan kesehatan rutin, pemberian vitamin tambahan, dan edukasi pencegahan stunting secara door-to-door.",
-    content: `
-      Kesehatan warga menjadi pondasi kesejahteraan Desa Kadugenep. Posyandu Kasih Ibu yang tersebar di 4 kedusunan serentak mengadakan penimbangan balita, imunisasi dasar lengkap, serta pemantauan tekanan darah dan gula darah bagi warga lanjut usia.
-
-      Program ini didukung penuh oleh alokasi Dana Desa bidang kesehatan kemasyarakatan guna memastikan tidak ada anak yang terindikasi stunting dan warga lansia mendapatkan pendampingan medis berkala.
-    `,
-    author: "Kader Kesehatan Desa",
-    date: "2026-09-10",
-    image: "/images/balai-desa.jpg",
-    views: 650,
-    featured: false,
-    videoUrl: "/uploads/video-1790038029125-118-sample_village_video.mp4",
-    videoTitle: "Dokumentasi Liputan Kegiatan Posyandu Kasih Ibu Kadugenep",
-  },
-  {
-    id: "art-4",
-    slug: "gotong-royong-normalisasi-saluran-irigasi-sawah",
-    title: "Warga Dusun 2 Gelar Gotong Royong Normalisasi Saluran Irigasi Sambut Musim Tanam",
-    category: "Pembangunan",
-    summary:
-      "Kekompakan warga petani dan pengrajin tampak nyata saat bahu membahu membersihkan saluran irigasi primer sepanjang 1,2 kilometer demi kelancaran pasokan air sawah.",
-    content: `
-      Semangat kebersamaan tradisional Banten terus lestari di Desa Kadugenep. Puluhan warga dari RT 05 dan RT 06 turun langsung ke saluran air persawahan untuk membersihkan sedimen lumpur dan gulma.
-
-      Dengan irigasi yang lancar, diharapkan produktivitas panen padi sawah seluas 120 hektare di areal barat desa dapat meningkat secara signifikan pada siklus tanam musim hujan mendatang.
-    `,
-    author: "Bhabinkamtibmas & Babinsa Kadugenep",
-    date: "2026-09-05",
-    image: "/images/hero-kadugenep.jpg",
-    views: 820,
     featured: false,
   },
 ];
