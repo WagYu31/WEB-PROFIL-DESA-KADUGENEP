@@ -40,6 +40,7 @@ import {
   Scroll,
   ShieldStar,
   TreeEvergreen,
+  User,
 } from "@phosphor-icons/react";
 
 export default function AdminPage() {
@@ -71,6 +72,7 @@ export default function AdminPage() {
   };
 
   // Admin Authentication State
+  const [usernameInput, setUsernameInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
@@ -82,10 +84,15 @@ export default function AdminPage() {
     setLoginError(false);
 
     setTimeout(() => {
-      const trimmed = passwordInput.trim();
-      if (trimmed === "admin123" || trimmed === "kadugenep2026" || trimmed === "admin") {
+      const user = usernameInput.trim().toLowerCase();
+      const pass = passwordInput.trim();
+
+      const isValidUser = user === "admin" || user === "perangkatdesa" || user === "kadugenep" || user.length >= 3;
+      const isValidPass = pass === "admin123" || pass === "kadugenep2026" || pass === "admin";
+
+      if (isValidUser && isValidPass) {
         loginAdmin();
-        showToast("Berhasil masuk ke Dashboard Administrator!");
+        showToast("Sampurasun! Berhasil masuk ke Dashboard Administrator.");
       } else {
         setLoginError(true);
       }
@@ -94,16 +101,18 @@ export default function AdminPage() {
   };
 
   const handleQuickLogin = () => {
+    setUsernameInput("admin");
     setPasswordInput("admin123");
     loginAdmin();
-    showToast("Berhasil masuk ke Dashboard Administrator!");
+    showToast("Sampurasun! Berhasil masuk ke Dashboard Administrator.");
   };
 
   const handleLogout = () => {
-    if (confirm("Apakah Anda yakin ingin keluar (Log Out) dari Sesi Administrator?")) {
+    if (confirm("Naha anjeun yakin badé kaluar (Log Out) ti Sesi Administrator?")) {
       logoutAdmin();
+      setUsernameInput("");
       setPasswordInput("");
-      showToast("Anda telah keluar dari sesi Administrator.");
+      showToast("Anjeun parantos kaluar ti sesi Administrator.");
     }
   };
 
@@ -582,16 +591,41 @@ export default function AdminPage() {
               </div>
 
               <form onSubmit={handleLogin} className="space-y-4">
+                {/* Username Input Field */}
                 <div>
-                  <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-bold text-amber-100 mb-1.5 flex items-center gap-1.5">
+                    <span>Nami Pamaké Aksés</span>
+                    <span className="text-[10px] font-normal text-slate-400">(Username)</span>
+                  </label>
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-amber-400/70 group-focus-within:text-amber-400 transition-colors">
+                      <User size={18} weight="bold" />
+                    </div>
+                    <input
+                      type="text"
+                      required
+                      value={usernameInput}
+                      onChange={(e) => {
+                        setUsernameInput(e.target.value);
+                        if (loginError) setLoginError(false);
+                      }}
+                      placeholder="Ketik username (contona: admin)..."
+                      className="w-full pl-10 pr-4 py-3.5 rounded-2xl bg-[#06120e] border border-amber-500/30 text-sm font-semibold text-amber-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 transition-all shadow-inner"
+                    />
+                  </div>
+                </div>
+
+                {/* Password Input Field */}
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
                     <label className="text-xs font-bold text-amber-100 flex items-center gap-1.5">
                       <span>Kecap Sandi Aksés</span>
-                      <span className="text-[10px] font-normal text-slate-400">(Kata Sandi)</span>
+                      <span className="text-[10px] font-normal text-slate-400">(Password)</span>
                     </label>
                   </div>
 
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-amber-400/60 group-focus-within:text-amber-400 transition-colors">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-amber-400/70 group-focus-within:text-amber-400 transition-colors">
                       <LockKey size={18} weight="bold" />
                     </div>
                     <input
@@ -617,13 +651,13 @@ export default function AdminPage() {
 
                   {loginError && (
                     <div className="mt-2.5 p-2.5 rounded-xl bg-rose-950/80 border border-rose-500/40 text-xs text-rose-200 flex items-center justify-between">
-                      <span className="font-semibold">⚠️ Sandi lepat (Sandi salah).</span>
+                      <span className="font-semibold">⚠️ Nami pamaké / sandi lepat.</span>
                       <button
                         type="button"
                         onClick={handleQuickLogin}
                         className="underline font-bold text-amber-300 hover:text-white cursor-pointer text-[11px]"
                       >
-                        Paké Sandi Bawaan (admin123) →
+                        Paké Akun Default (admin / admin123) →
                       </button>
                     </div>
                   )}
@@ -634,7 +668,7 @@ export default function AdminPage() {
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
                     <span className="text-slate-300 text-[11px]">
-                      Sandi Bawaan: <strong className="text-amber-400 font-mono font-bold">admin123</strong>
+                      Akun Bawaan: <strong className="text-amber-400 font-mono font-bold">admin</strong> / <strong className="text-amber-400 font-mono font-bold">admin123</strong>
                     </span>
                   </div>
                   <button
