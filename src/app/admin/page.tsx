@@ -36,6 +36,10 @@ import {
   ImageSquare,
   FilmStrip,
   Spinner,
+  Sparkle,
+  Scroll,
+  ShieldStar,
+  TreeEvergreen,
 } from "@phosphor-icons/react";
 
 export default function AdminPage() {
@@ -405,52 +409,61 @@ export default function AdminPage() {
     );
   }
 
-  // Admin Login Gateway
+  // Admin Login Gateway - Tema Luhur Sunda & Banten Wiwitan (Taste-Skill Standard)
   if (!isAdminLoggedIn) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden selection:bg-emerald-500 selection:text-white">
-        {/* Background Image with Cinematic Dark Gradient Overlay */}
+      <div className="min-h-screen bg-[#07130e] text-amber-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden selection:bg-amber-500 selection:text-slate-950 font-sans">
+        {/* Atmospheric Cultural Backdrop with Banten Heritage Overlay */}
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/hero-kadugenep.jpg"
-            alt="Desa Kadugenep Backdrop"
+            alt="Alam Desa Kadugenep Petir"
             fill
             priority
-            className="object-cover object-center opacity-25 scale-105"
+            className="object-cover object-center opacity-20 scale-105 filter brightness-75"
           />
-          <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-950/90 to-emerald-950/80 backdrop-blur-xs" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(16,185,129,0.2),rgba(255,255,255,0))]" />
-          {/* Subtle Grid overlay */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+          {/* Deep Forest Jade & Obsidian Radial Gradients */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-[#050e0a] via-[#071711]/95 to-[#0b241b]/80" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_50%_-10%,rgba(217,119,6,0.18),rgba(6,78,59,0.3)_60%,transparent)]" />
+          
+          {/* Subtle Traditional Sundanese Anyaman & Batik Banten Weave Pattern */}
+          <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_75%_65%_at_50%_50%,#000_60%,transparent_100%)]" />
         </div>
 
-        {/* Ambient Glowing Orbs */}
-        <div className="absolute top-1/4 -left-20 w-96 h-96 rounded-full bg-emerald-500/20 blur-[140px] pointer-events-none animate-pulse" />
-        <div className="absolute bottom-1/4 -right-20 w-96 h-96 rounded-full bg-teal-500/15 blur-[150px] pointer-events-none" />
+        {/* Ambient Warm Golden & Emerald Orbs */}
+        <div className="absolute top-1/6 -left-28 w-[450px] h-[450px] rounded-full bg-amber-500/10 blur-[150px] pointer-events-none" />
+        <div className="absolute bottom-1/6 -right-28 w-[450px] h-[450px] rounded-full bg-emerald-500/15 blur-[150px] pointer-events-none" />
 
         {/* Toast Notification */}
         {toastMessage && (
-          <div className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-[#064e3b] text-white shadow-2xl flex items-center gap-3 border border-emerald-500/40 animate-fade-in">
-            <CheckCircle size={22} weight="fill" className="text-emerald-300" />
+          <div className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-[#064e3b] text-amber-100 shadow-2xl flex items-center gap-3 border border-amber-400/40 animate-fade-in backdrop-blur-md">
+            <CheckCircle size={22} weight="fill" className="text-amber-400" />
             <span className="text-xs font-semibold">{toastMessage}</span>
           </div>
         )}
 
-        <div className="w-full max-w-4xl relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div className="w-full max-w-4xl relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           
-          {/* Left Column: Civic Identity & Feature Badges (Visible on Large Screens) */}
-          <div className="hidden lg:flex lg:col-span-6 flex-col justify-between space-y-7 p-8 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+          {/* Left Column: Sunda Cultural Heritage & Civic Identity (Large Screens) */}
+          <div className="hidden lg:flex lg:col-span-6 flex-col justify-between space-y-6 p-8 rounded-3xl bg-[#0a1c15]/80 border border-amber-500/20 backdrop-blur-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] relative overflow-hidden">
+            {/* Top Ornamental Ribbon */}
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
+
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold tracking-wide">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              {/* Civic Tag & Aksara Sunda */}
+              <div className="flex items-center justify-between">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-bold tracking-wide">
+                  <Sparkle size={13} weight="fill" className="text-amber-400" />
+                  <span>Tatapraja Karahayuan · ᮓᮦᮞ ᮊᮓᮥᮌᮨᮔᮨᮕ᮪</span>
+                </div>
+                <span className="text-[10px] font-mono tracking-widest text-amber-400/70 uppercase">
+                  v2.6 Digital
                 </span>
-                <span>Sistem Informasi Desa Terintegrasi · v2.6</span>
               </div>
 
+              {/* Official Seal & Title */}
               <div className="flex items-center gap-4 pt-1">
-                <div className="relative w-14 h-16 shrink-0 p-1.5 rounded-2xl bg-white/10 border border-white/20 shadow-inner backdrop-blur-md">
+                <div className="relative w-14 h-16 shrink-0 p-1.5 rounded-2xl bg-amber-950/40 border border-amber-400/30 shadow-lg backdrop-blur-md">
                   <Image
                     src="/images/logo-serang.png"
                     alt="Lambang Kabupaten Serang"
@@ -460,56 +473,65 @@ export default function AdminPage() {
                   />
                 </div>
                 <div>
-                  <h2 className="text-xl font-black tracking-tight text-white">
-                    Pemerintah Desa Kadugenep
+                  <p className="text-[11px] uppercase tracking-widest text-amber-400/80 font-bold">
+                    Pamaréntah Désa
+                  </p>
+                  <h2 className="text-2xl font-serif font-black tracking-tight text-white drop-shadow-sm">
+                    Kadugenep Petir
                   </h2>
-                  <p className="text-xs font-semibold text-emerald-400/90">
-                    Kecamatan Petir · Kabupaten Serang · Banten
+                  <p className="text-xs font-medium text-emerald-300/90">
+                    Kabupatén Sérang · Propinsi Banten
                   </p>
                 </div>
               </div>
 
-              <p className="text-xs text-slate-300 leading-relaxed pt-1">
-                Pusat kendali operasional administrasi desa: publikasi warta terkini, transparansi realisasi APBDes, serta tindak lanjut surat mandiri warga secara cepat & terpadu.
-              </p>
+              {/* Falsafah Sunda Card */}
+              <div className="p-3.5 rounded-2xl bg-[#06140f]/90 border border-amber-500/20 space-y-1.5">
+                <p className="text-[11px] font-serif italic text-amber-200/90">
+                  &ldquo;Silih Asih, Silih Asah, Silih Asuh — Gemah Ripah Loh Jinawi.&rdquo;
+                </p>
+                <p className="text-[10px] text-slate-400 leading-relaxed">
+                  Pusat tatakelola administrasi mandiri warga, warta publikasi kabuyutan desa, transparansi anggaran, sarta kamajuan sentra industri tas.
+                </p>
+              </div>
             </div>
 
-            {/* Feature Highlights */}
-            <div className="space-y-2.5">
-              <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-950/60 border border-slate-800/80 hover:border-emerald-500/30 transition-all">
+            {/* Cultural Pillars List */}
+            <div className="space-y-2 pt-1">
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#071812]/70 border border-emerald-900/60 hover:border-amber-500/30 transition-all">
+                <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0">
+                  <ShieldStar size={18} weight="fill" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-amber-100">Pangaping Kaamanan Digital</p>
+                  <p className="text-[10px] text-slate-400">Aksés administrator terenkripsi terisolasi</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#071812]/70 border border-emerald-900/60 hover:border-amber-500/30 transition-all">
                 <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
-                  <ShieldCheck size={18} weight="bold" />
+                  <Scroll size={18} weight="fill" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-slate-200">Enkripsi Akses Administrator</p>
-                  <p className="text-[10px] text-slate-400">Proteksi sesi aman dan terisolasi</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-950/60 border border-slate-800/80 hover:border-emerald-500/30 transition-all">
-                <div className="w-8 h-8 rounded-xl bg-sky-500/15 text-sky-400 flex items-center justify-center shrink-0">
-                  <FileText size={18} weight="bold" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs font-bold text-slate-200">Integrasi Layanan Surat Warga</p>
-                  <p className="text-[10px] text-slate-400">Verifikasi NIK dan respon langsung via WhatsApp</p>
+                  <p className="text-xs font-bold text-amber-100">Palayanan Mandiri Warga</p>
+                  <p className="text-[10px] text-slate-400">Tindak lanjut permohonan surat & warta kampung</p>
                 </div>
               </div>
             </div>
 
-            {/* Footer Signature */}
-            <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-              <span>© 2026 Desa Kadugenep</span>
-              <span className="text-emerald-400 font-bold">Sentra Kerajinan Tas Nasional</span>
+            {/* Footer Traditional Wisdom */}
+            <div className="pt-3 border-t border-amber-500/15 flex items-center justify-between text-[11px] text-amber-300/70">
+              <span>ᮊᮎᮙᮒᮔ᮪ ᮕᮨᮒᮤᮁ · Sérang</span>
+              <span className="text-amber-400 font-serif italic">Soméah Hadé ka Sémah</span>
             </div>
           </div>
 
-          {/* Right Column: Interactive Login Box */}
+          {/* Right Column: Sundanese Gateway Card (Form) */}
           <div className="lg:col-span-6 w-full max-w-md mx-auto space-y-5">
             
-            {/* Mobile Header Brand */}
-            <div className="lg:hidden text-center space-y-3">
-              <div className="inline-flex p-3 rounded-3xl bg-slate-900/90 border border-slate-700/80 shadow-2xl backdrop-blur-md">
+            {/* Mobile Header (Sunda Theme) */}
+            <div className="lg:hidden text-center space-y-2.5">
+              <div className="inline-flex p-3 rounded-3xl bg-[#0a1c15] border border-amber-500/30 shadow-2xl backdrop-blur-md">
                 <div className="relative w-12 h-14">
                   <Image
                     src="/images/logo-serang.png"
@@ -521,40 +543,55 @@ export default function AdminPage() {
                 </div>
               </div>
               <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-950 text-emerald-400 border border-emerald-500/30 mb-2">
-                  <LockKey size={13} weight="fill" />
-                  <span>Gerbang Masuk Terproteksi</span>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-950/60 text-amber-300 border border-amber-500/30 mb-1.5">
+                  <Sparkle size={12} weight="fill" className="text-amber-400" />
+                  <span>Lawang Pangaping Administrator</span>
                 </div>
-                <h1 className="text-2xl font-black tracking-tight text-white">
-                  Dashboard Administrator
+                <h1 className="text-2xl font-serif font-black tracking-tight text-white">
+                  Désa Kadugenep
                 </h1>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Desa Kadugenep · Kecamatan Petir
+                <p className="text-xs text-amber-200/70 font-medium">
+                  Kacamatan Petir · Kabupatén Sérang
                 </p>
               </div>
             </div>
 
-            {/* Main Login Card */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/90 border border-slate-700/70 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] backdrop-blur-2xl space-y-6 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+            {/* Main Login Card - Sunda Royal Jade & Gold Style */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-[#0a1c15]/95 border border-amber-500/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] backdrop-blur-2xl space-y-6 relative overflow-hidden">
+              {/* Golden Top Accent */}
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-amber-400/70 to-transparent" />
+              <div className="absolute top-0 right-0 w-36 h-36 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
               <div className="space-y-1">
-                <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                  <Key size={20} className="text-emerald-400" />
-                  <span>Otentikasi Administrator</span>
-                </h2>
-                <p className="text-xs text-slate-400">
-                  Masukkan kata sandi resmi untuk membuka dashboard kontrol desa.
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
+                    <Key size={18} weight="fill" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-serif font-bold text-white tracking-tight">
+                      Lawang Asup Admin
+                    </h2>
+                    <p className="text-[10px] text-amber-300/80 font-mono">
+                      ᮕᮧᮁᮒᮜ᮪ ᮃᮓ᮪ᮙᮤᮔᮤᮞ᮪ᮒᮢᮞᮤ · Otentikasi Resmi
+                    </p>
+                  </div>
+                </div>
+                <p className="text-xs text-slate-300 pt-1">
+                  Lebetkeun kecap sandi resmi pikeun muka sistem pangleler & administrasi désa.
                 </p>
               </div>
 
               <form onSubmit={handleLogin} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-2">
-                    Kata Sandi Akses
-                  </label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-bold text-amber-100 flex items-center gap-1.5">
+                      <span>Kecap Sandi Aksés</span>
+                      <span className="text-[10px] font-normal text-slate-400">(Kata Sandi)</span>
+                    </label>
+                  </div>
+
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-400 transition-colors">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-amber-400/60 group-focus-within:text-amber-400 transition-colors">
                       <LockKey size={18} weight="bold" />
                     </div>
                     <input
@@ -565,13 +602,13 @@ export default function AdminPage() {
                         setPasswordInput(e.target.value);
                         if (loginError) setLoginError(false);
                       }}
-                      placeholder="Ketik kata sandi admin..."
-                      className="w-full pl-10 pr-11 py-3.5 rounded-2xl bg-slate-950/80 border border-slate-700 text-sm font-semibold text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 transition-all shadow-inner"
+                      placeholder="Lebetkeun kecap sandi..."
+                      className="w-full pl-10 pr-11 py-3.5 rounded-2xl bg-[#06120e] border border-amber-500/30 text-sm font-semibold text-amber-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 transition-all shadow-inner"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-white transition-colors cursor-pointer"
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-amber-300 transition-colors cursor-pointer"
                       title={showPassword ? "Sembunyikan sandi" : "Lihat sandi"}
                     >
                       {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
@@ -579,67 +616,67 @@ export default function AdminPage() {
                   </div>
 
                   {loginError && (
-                    <div className="mt-2.5 p-2.5 rounded-xl bg-rose-950/60 border border-rose-500/30 text-xs text-rose-300 flex items-center justify-between">
-                      <span className="font-semibold">⚠️ Sandi tidak cocok.</span>
+                    <div className="mt-2.5 p-2.5 rounded-xl bg-rose-950/80 border border-rose-500/40 text-xs text-rose-200 flex items-center justify-between">
+                      <span className="font-semibold">⚠️ Sandi lepat (Sandi salah).</span>
                       <button
                         type="button"
                         onClick={handleQuickLogin}
-                        className="underline font-bold text-white hover:text-rose-200 cursor-pointer text-[11px]"
+                        className="underline font-bold text-amber-300 hover:text-white cursor-pointer text-[11px]"
                       >
-                        Gunakan sandi default (admin123) →
+                        Paké Sandi Bawaan (admin123) →
                       </button>
                     </div>
                   )}
                 </div>
 
-                {/* Quick Access Helper Bar */}
-                <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 flex items-center justify-between text-xs">
+                {/* Quick Access Helper Bar - Sunda Style */}
+                <div className="p-3.5 rounded-2xl bg-[#06120e]/90 border border-amber-500/20 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-slate-400 text-[11px]">
-                      Sandi Bawaan: <strong className="text-emerald-400 font-mono font-bold">admin123</strong>
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                    <span className="text-slate-300 text-[11px]">
+                      Sandi Bawaan: <strong className="text-amber-400 font-mono font-bold">admin123</strong>
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={handleQuickLogin}
-                    className="px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-[11px] font-bold text-emerald-300 transition-all cursor-pointer active:scale-95"
+                    className="px-3 py-1 rounded-xl bg-gradient-to-r from-amber-500/20 to-emerald-500/20 hover:from-amber-500/30 hover:to-emerald-500/30 border border-amber-400/40 text-[11px] font-bold text-amber-300 transition-all cursor-pointer active:scale-95 shadow-sm"
                   >
-                    Masuk Cepat ⚡
+                    Lebet Enggal ⚡
                   </button>
                 </div>
 
-                {/* Submit Action Button */}
+                {/* Submit Action Button - Royal Sunda Amber/Emerald Gradient */}
                 <button
                   type="submit"
                   disabled={isLoggingIn}
-                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-emerald-900/50 hover:shadow-emerald-900/70 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#064e3b] via-[#047857] to-amber-600 hover:from-[#047857] hover:to-amber-500 text-amber-100 hover:text-white font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-emerald-950/80 hover:shadow-amber-900/40 border border-amber-400/30 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
                 >
                   {isLoggingIn ? (
                     <>
-                      <Spinner size={18} className="animate-spin text-white" />
-                      <span>Memverifikasi Akses...</span>
+                      <Spinner size={18} className="animate-spin text-amber-300" />
+                      <span>Mariksa Aksés Tatapraja...</span>
                     </>
                   ) : (
                     <>
-                      <ShieldCheck size={18} weight="bold" />
-                      <span>Masuk ke Dashboard Admin</span>
+                      <ShieldCheck size={18} weight="fill" className="text-amber-300" />
+                      <span>Lebet ka Dashboard Admin</span>
                     </>
                   )}
                 </button>
               </form>
 
               {/* Navigation Back */}
-              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
+              <div className="pt-3 border-t border-amber-500/15 flex items-center justify-between text-xs">
                 <Link
                   href="/"
-                  className="font-semibold text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group"
+                  className="font-semibold text-amber-300/80 hover:text-amber-200 transition-colors flex items-center gap-1.5 group"
                 >
-                  <House size={15} className="group-hover:-translate-x-0.5 transition-transform" />
-                  <span>Kembali ke Beranda</span>
+                  <House size={15} className="group-hover:-translate-x-0.5 transition-transform text-amber-400" />
+                  <span>Wangsul ka Beranda Web</span>
                 </Link>
-                <span className="text-[11px] text-slate-500 font-medium">
-                  Kecamatan Petir · Serang
+                <span className="text-[11px] text-slate-400 font-serif italic">
+                  Kec. Petir · Banten
                 </span>
               </div>
             </div>
