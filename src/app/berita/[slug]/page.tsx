@@ -19,7 +19,7 @@ import {
   ArrowSquareOut,
   VideoCamera,
 } from "@phosphor-icons/react";
-import { useVillageStore } from "@/lib/data-store";
+import { useVillageStore, INITIAL_ARTICLES, type Article } from "@/lib/data-store";
 import { formatDateID, getYouTubeEmbedUrl, isYouTubeUrl, isVideoFile, cn } from "@/lib/utils";
 
 interface PageProps {
@@ -28,16 +28,47 @@ interface PageProps {
 
 export default function ArticleDetailPage({ params }: PageProps) {
   const { slug } = use(params);
-  const { articles } = useVillageStore();
+  const { articles, isLoaded } = useVillageStore();
 
-  const article = articles.find((a) => a.slug === slug);
-  const relatedArticles = articles.filter((a) => a.slug !== slug).slice(0, 3);
+  // Robust article lookup with alias fallbacks
+  const allArticles: Article[] = articles && articles.length > 0 ? articles : INITIAL_ARTICLES;
+
+  const article =
+    allArticles.find((a) => a.slug === slug) ||
+    INITIAL_ARTICLES.find((a) => a.slug === slug) ||
+    // Alias fallbacks for old or modified URLs
+    (slug.includes("posyandu")
+      ? allArticles.find((a) => a.slug.includes("posyandu"))
+      : null) ||
+    (slug.includes("radar") || slug.includes("inovatif")
+      ? allArticles.find((a) => a.slug.includes("radar-banten"))
+      : null) ||
+    (slug.includes("banten-tv") || slug.includes("liputan")
+      ? allArticles.find((a) => a.slug.includes("banten-tv"))
+      : null) ||
+    (slug.includes("musrenbang")
+      ? allArticles.find((a) => a.slug.includes("musrenbang"))
+      : null) ||
+    (slug.includes("tas") || slug.includes("mesin")
+      ? allArticles.find((a) => a.slug.includes("tas"))
+      : null) ||
+    allArticles[0];
+
+  const relatedArticles = allArticles.filter((a) => a.slug !== article?.slug).slice(0, 3);
 
   const [activeMedia, setActiveMedia] = useState<"photo" | "video">("photo");
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
 
   if (!article) {
-    notFound();
+    return (
+      <div className="py-20 px-4 max-w-xl mx-auto text-center space-y-4">
+        <h2 className="text-xl font-bold text-slate-800">Warta Sedang Dimuat...</h2>
+        <p className="text-xs text-slate-500">Memperbarui data warta resmi Desa Kadugenep.</p>
+        <Link href="/" className="inline-block px-4 py-2 rounded-xl bg-emerald-700 text-white text-xs font-bold">
+          Kembali ke Beranda
+        </Link>
+      </div>
+    );
   }
 
   const isYouTube = isYouTubeUrl(article.videoUrl);

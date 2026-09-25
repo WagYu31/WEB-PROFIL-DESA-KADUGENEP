@@ -528,15 +528,10 @@ export function useVillageStore() {
       });
       setOfficialsState(mergedOfficials);
 
-      const storedArticles = getStoredData(STORAGE_KEYS.ARTICLES, INITIAL_ARTICLES);
-      const mergedArticles = storedArticles.map((a: Article) => {
-        const init = INITIAL_ARTICLES.find((ia) => ia.id === a.id);
-        if (init?.videoUrl && (!a.videoUrl || a.videoUrl.includes("gT8vWl_YVCg"))) {
-          return { ...a, videoUrl: init.videoUrl, videoTitle: init.videoTitle };
-        }
-        return a;
-      });
-      setArticlesState(mergedArticles);
+      const storedArticles = getStoredData<Article[]>(STORAGE_KEYS.ARTICLES, INITIAL_ARTICLES);
+      const hasNewArticles = storedArticles.some((a) => a.id === "art-1" && a.slug.includes("radar-banten-awards"));
+      const validArticles = !hasNewArticles ? INITIAL_ARTICLES : storedArticles;
+      setArticlesState(validArticles);
 
       const storedApbdes = getStoredData(STORAGE_KEYS.APBDES, INITIAL_APBDES);
       const isOldApbdes = storedApbdes.some((item: APBDesItem) => item.budget === 985000000 || (item.id === "apb-1" && item.budget !== 373619400));
@@ -567,15 +562,9 @@ export function useVillageStore() {
       });
       setOfficialsState(mOfficials);
 
-      const sArticles = getStoredData(STORAGE_KEYS.ARTICLES, INITIAL_ARTICLES);
-      const mArticles = sArticles.map((a: Article) => {
-        const init = INITIAL_ARTICLES.find((ia) => ia.id === a.id);
-        if (init?.videoUrl && (!a.videoUrl || a.videoUrl.includes("gT8vWl_YVCg"))) {
-          return { ...a, videoUrl: init.videoUrl, videoTitle: init.videoTitle };
-        }
-        return a;
-      });
-      setArticlesState(mArticles);
+      const sArticles = getStoredData<Article[]>(STORAGE_KEYS.ARTICLES, INITIAL_ARTICLES);
+      const hasNew = sArticles.some((a) => a.id === "art-1" && a.slug.includes("radar-banten-awards"));
+      setArticlesState(!hasNew ? INITIAL_ARTICLES : sArticles);
 
       const sApbdes = getStoredData(STORAGE_KEYS.APBDES, INITIAL_APBDES);
       const isOld = sApbdes.some((item: APBDesItem) => item.budget === 985000000 || (item.id === "apb-1" && item.budget !== 373619400));
