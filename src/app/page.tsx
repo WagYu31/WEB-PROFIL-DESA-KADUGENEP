@@ -26,6 +26,9 @@ import {
   Receipt,
   X,
   ArrowsOut,
+  TreeStructure,
+  SquaresFour,
+  Crown,
 } from "@phosphor-icons/react";
 import { CivicNoticeBar } from "@/components/civic-notice-bar";
 import { Counter } from "@/components/ui/counter";
@@ -40,6 +43,7 @@ export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("Semua");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showBalihoModal, setShowBalihoModal] = useState<boolean>(false);
+  const [sotkView, setSotkView] = useState<"bagan" | "grid">("bagan");
 
   // Aspirasi form state
   const [aspForm, setAspForm] = useState({ name: "", contact: "", subject: "", message: "" });
@@ -1355,65 +1359,429 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 8. APARATUR PEMERINTAH DESA */}
+      {/* 8. BAGAN STRUKTUR APARATUR PEMERINTAH DESA (SOTK) */}
       <section id="profil" className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-100 text-sky-800 border border-sky-200 mb-2">
-            <Users size={15} />
-            <span>Pemerintahan Desa</span>
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-100 text-sky-900 border border-sky-200/80 mb-3 shadow-xs">
+              <TreeStructure size={16} className="text-sky-700" />
+              <span>Bagan SOTK Pemerintah Desa</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+              Struktur Aparatur Pemerintah Desa
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600 mt-2 leading-relaxed">
+              Bagan susunan resmi aparatur Pemerintah Desa Kadugenep sesuai Permendagri No. 84 Tahun 2015. Garis komando eksekutif dan kemitraan strategis BPD.
+            </p>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            Struktur Aparatur Pemerintah Desa
-          </h2>
-          <p className="text-sm text-slate-600 mt-2">
-            Perangkat Desa Kadugenep yang siap melayani kebutuhan administratif dan pembinaan kemasyarakatan.
-          </p>
+
+          {/* View Switcher: Bagan Hierarki vs Grid Kartu */}
+          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-100/90 border border-slate-200 shadow-xs self-start md:self-end">
+            <button
+              type="button"
+              onClick={() => setSotkView("bagan")}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                sotkView === "bagan"
+                  ? "bg-white text-sky-900 shadow-sm border border-slate-200"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+              }`}
+            >
+              <TreeStructure size={16} className={sotkView === "bagan" ? "text-sky-600" : ""} />
+              <span>Bagan Hierarki (SOTK)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setSotkView("grid")}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                sotkView === "grid"
+                  ? "bg-white text-sky-900 shadow-sm border border-slate-200"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+              }`}
+            >
+              <SquaresFour size={16} className={sotkView === "grid" ? "text-sky-600" : ""} />
+              <span>Tampilan Grid</span>
+            </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {officials.map((off) => {
-            const isKades = off.id === "off-1";
-            return (
-              <div
-                key={off.id}
-                className={`p-6 rounded-3xl bg-white border transition-all flex items-center gap-4 ${
-                  isKades
-                    ? "border-sky-300 shadow-md ring-2 ring-sky-500/20 bg-gradient-to-br from-white via-sky-50/20 to-white hover:shadow-lg"
-                    : "border-slate-200/90 shadow-sm hover:shadow-md hover:border-sky-300"
-                }`}
-              >
-                {off.photo ? (
-                  <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-sky-600 shadow-md shrink-0 bg-slate-100">
-                    <Image
-                      src={off.photo}
-                      alt={off.name}
-                      fill
-                      className="object-cover object-top"
-                      sizes="80px"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-600 to-blue-800 text-white flex items-center justify-center font-bold text-xl shrink-0 shadow-md">
-                    {off.name.charAt(0)}
-                  </div>
-                )}
-                <div className="space-y-0.5 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-xs font-bold uppercase tracking-wider text-sky-800">{off.role}</p>
-                    {off.period && (
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                        {off.period}
-                      </span>
-                    )}
-                  </div>
-                  <h4 className="text-base font-bold text-slate-900 leading-snug truncate">{off.name}</h4>
-                  {off.nip && <p className="text-[11px] text-slate-400 font-mono">NIP: {off.nip}</p>}
-                  {off.phone && <p className="text-[11px] text-slate-500 font-mono">Kontak: {off.phone}</p>}
-                </div>
+        {sotkView === "bagan" ? (
+          /* BAGAN ORGANISASI PREMIUM */
+          <div className="relative rounded-3xl bg-slate-50/70 border border-slate-200/90 p-5 sm:p-8 md:p-12 shadow-sm overflow-hidden bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px]">
+            
+            {/* Top Legend Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-6 sm:pb-8 border-b border-slate-200/80 text-[11px] font-bold text-slate-500">
+              <span className="uppercase tracking-wider text-slate-400">
+                Pemerintah Desa Kadugenep • Kec. Petir, Kab. Serang
+              </span>
+              <div className="flex items-center gap-4">
+                <span className="flex items-center gap-1.5 text-slate-600">
+                  <span className="w-4 h-0.5 bg-sky-500 rounded-full inline-block" />
+                  <span>Garis Komando</span>
+                </span>
+                <span className="flex items-center gap-1.5 text-slate-600">
+                  <span className="w-4 h-0.5 border-t-2 border-dashed border-amber-500 inline-block" />
+                  <span>Garis Koordinasi (BPD)</span>
+                </span>
               </div>
-            );
-          })}
-        </div>
+            </div>
+
+            <div className="pt-6 sm:pt-10 max-w-5xl mx-auto">
+              
+              {/* LEVEL 1: PUCUK PIMPINAN (KADES & BPD) */}
+              {(() => {
+                const kades = officials.find(
+                  (o) => o.role.toLowerCase().includes("kepala desa") || o.id === "off-1"
+                );
+                const bpd = officials.find(
+                  (o) => o.role.toLowerCase().includes("bpd") || o.role.toLowerCase().includes("permusyawaratan")
+                );
+                const sekdes = officials.find(
+                  (o) =>
+                    o.role.toLowerCase().includes("sekretaris") &&
+                    !o.role.toLowerCase().includes("bpd") &&
+                    o !== kades
+                );
+                const staff = officials.filter(
+                  (o) => o !== kades && o !== bpd && o !== sekdes
+                );
+
+                return (
+                  <div className="space-y-0">
+                    {/* Top Row: KADES and BPD (Sejajar dengan Garis Koordinasi) */}
+                    <div className="relative flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
+                      {/* Node 1A: KEPALA DESA (Center Dominant) */}
+                      {kades && (
+                        <div className="w-full max-w-md relative z-10">
+                          <div className="p-6 rounded-3xl bg-white border-2 border-sky-600 shadow-xl ring-4 ring-sky-500/10 transition-all hover:shadow-2xl hover:-translate-y-1 relative overflow-hidden">
+                            {/* Gold header bar */}
+                            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-400 via-sky-600 to-amber-500" />
+                            
+                            <div className="flex items-start justify-between gap-2 mb-4">
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-xs">
+                                <Crown size={13} weight="fill" />
+                                <span>Pucuk Pimpinan Eksekutif</span>
+                              </span>
+                              {kades.period && (
+                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-900 border border-amber-200">
+                                  {kades.period}
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                              {kades.photo ? (
+                                <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-sky-600 ring-4 ring-sky-100 shadow-md shrink-0 bg-slate-100">
+                                  <Image
+                                    src={kades.photo}
+                                    alt={kades.name}
+                                    fill
+                                    className="object-cover object-top"
+                                    sizes="96px"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-sky-600 to-blue-800 text-white flex items-center justify-center font-bold text-3xl shadow-md shrink-0">
+                                  {kades.name.charAt(0)}
+                                </div>
+                              )}
+
+                              <div className="space-y-1 min-w-0 flex-1">
+                                <p className="text-xs font-black uppercase tracking-wider text-sky-800">
+                                  {kades.role}
+                                </p>
+                                <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-snug">
+                                  {kades.name}
+                                </h3>
+                                <p className="text-[11px] text-slate-500 leading-relaxed">
+                                  Pemegang Kekuasaan Pengelolaan Keuangan & Pembangunan Desa
+                                </p>
+                                {kades.phone && (
+                                  <div className="pt-1">
+                                    <a
+                                      href={`https://wa.me/62${kades.phone.replace(/\D/g, "").replace(/^0/, "")}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition-colors"
+                                    >
+                                      <WhatsappLogo size={14} weight="fill" className="text-emerald-600" />
+                                      <span>Kontak: {kades.phone}</span>
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Bridge: Garis Koordinasi (Dashed line on desktop between Kades & BPD) */}
+                      {bpd && (
+                        <div className="hidden lg:flex flex-col items-center justify-center shrink-0 w-32 relative">
+                          <span className="text-[9px] font-black uppercase tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-300 shadow-2xs whitespace-nowrap mb-1">
+                            Garis Koordinasi
+                          </span>
+                          <div className="w-full border-t-2 border-dashed border-amber-400" />
+                        </div>
+                      )}
+
+                      {/* Node 1B: BPD (Mitra Sejajar) */}
+                      {bpd && (
+                        <div className="w-full max-w-sm relative z-10">
+                          <div className="p-5 sm:p-6 rounded-3xl bg-white border border-indigo-200/90 shadow-md hover:shadow-lg transition-all relative overflow-hidden">
+                            <div className="absolute top-0 left-0 right-0 h-1 bg-indigo-500" />
+
+                            <div className="flex items-center justify-between gap-2 mb-3">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-800 border border-indigo-200">
+                                🏛️ Lembaga Permusyawaratan
+                              </span>
+                              <span className="text-[10px] font-bold text-slate-400">
+                                Mitra Pengawas
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-3.5">
+                              {bpd.photo ? (
+                                <div className="relative w-16 h-16 rounded-2xl overflow-hidden border border-indigo-200 shadow-xs shrink-0 bg-slate-100">
+                                  <Image
+                                    src={bpd.photo}
+                                    alt={bpd.name}
+                                    fill
+                                    className="object-cover object-top"
+                                    sizes="64px"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-700 text-white flex items-center justify-center font-bold text-xl shadow-xs shrink-0">
+                                  {bpd.name.charAt(0)}
+                                </div>
+                              )}
+
+                              <div className="space-y-0.5 min-w-0 flex-1">
+                                <p className="text-[11px] font-bold uppercase tracking-wider text-indigo-700">
+                                  {bpd.role}
+                                </p>
+                                <h4 className="text-base font-bold text-slate-900 leading-snug">
+                                  {bpd.name}
+                                </h4>
+                                <p className="text-[11px] text-slate-500 leading-relaxed">
+                                  Penyalur Aspirasi Warga & Pengawas Kinerja Pemdes
+                                </p>
+                                {bpd.phone && (
+                                  <p className="text-[11px] font-mono text-slate-500 pt-0.5">
+                                    Kontak: {bpd.phone}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* STEM CONNECTOR 1 -> 2 (Garis Komando Solid ke Sekdes) */}
+                    <div className="flex flex-col items-center justify-center py-2 sm:py-3">
+                      <div className="w-0.5 h-8 sm:h-10 bg-sky-500" />
+                      <div className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-sky-100 text-sky-800 border border-sky-300 shadow-2xs -my-1.5 z-10">
+                        Garis Komando ↓
+                      </div>
+                      <div className="w-0.5 h-8 sm:h-10 bg-sky-500" />
+                    </div>
+
+                    {/* LEVEL 2: SEKRETARIAT DESA (SEKDES) */}
+                    {sekdes && (
+                      <div className="flex justify-center relative z-10">
+                        <div className="w-full max-w-md p-5 sm:p-6 rounded-3xl bg-white border-2 border-sky-500/80 shadow-lg hover:shadow-xl transition-all relative overflow-hidden">
+                          <div className="absolute top-0 left-0 right-0 h-1 bg-sky-600" />
+
+                          <div className="flex items-center justify-between gap-2 mb-3">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-sky-50 text-sky-800 border border-sky-200">
+                              📋 Pimpinan Sekretariat
+                            </span>
+                            <span className="text-[10px] font-bold text-slate-400">
+                              Koordinator Pelaksana
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-4">
+                            {sekdes.photo ? (
+                              <div className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-2xl overflow-hidden border border-sky-300 shadow-xs shrink-0 bg-slate-100">
+                                <Image
+                                  src={sekdes.photo}
+                                  alt={sekdes.name}
+                                  fill
+                                  className="object-cover object-top"
+                                  sizes="72px"
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-sky-600 to-blue-700 text-white flex items-center justify-center font-bold text-2xl shadow-xs shrink-0">
+                                {sekdes.name.charAt(0)}
+                              </div>
+                            )}
+
+                            <div className="space-y-0.5 min-w-0 flex-1">
+                              <p className="text-xs font-bold uppercase tracking-wider text-sky-800">
+                                {sekdes.role}
+                              </p>
+                              <h4 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+                                {sekdes.name}
+                              </h4>
+                              {sekdes.nip && (
+                                <p className="text-[11px] font-mono text-slate-400">
+                                  NIP: {sekdes.nip}
+                                </p>
+                              )}
+                              <p className="text-[11px] text-slate-500 leading-relaxed">
+                                Koordinator Administrasi Umum, Keuangan, dan Pengelolaan Berkas
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* STEM CONNECTOR 2 -> 3 (Forking Tree ke Kaur & Kasi) */}
+                    <div className="hidden md:block">
+                      <div className="w-0.5 h-8 bg-sky-500 mx-auto" />
+                      {/* Horizontal Branching Fork */}
+                      <div className="relative max-w-4xl mx-auto px-12">
+                        <div className="h-0.5 bg-sky-400 w-full" />
+                        <div className="grid grid-cols-3 w-full">
+                          <div className="flex justify-center">
+                            <div className="w-0.5 h-6 bg-sky-400" />
+                          </div>
+                          <div className="flex justify-center">
+                            <div className="w-0.5 h-6 bg-sky-400" />
+                          </div>
+                          <div className="flex justify-center">
+                            <div className="w-0.5 h-6 bg-sky-400" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Mobile connector */}
+                    <div className="block md:hidden flex justify-center py-2">
+                      <div className="w-0.5 h-8 bg-sky-400" />
+                    </div>
+
+                    {/* LEVEL 3: UNSUR PELAKSANA TEKNIS (KAUR & KASI) */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 relative z-10 pt-1">
+                      {staff.map((off) => (
+                        <div
+                          key={off.id}
+                          className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:border-sky-300 hover:shadow-md transition-all flex flex-col justify-between gap-3 relative overflow-hidden"
+                        >
+                          <div className="absolute top-0 left-0 right-0 h-1 bg-slate-300" />
+
+                          <div>
+                            <span className="text-[10px] font-black uppercase tracking-wider text-sky-800 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200 inline-block mb-3">
+                              {off.role}
+                            </span>
+
+                            <div className="flex items-start gap-3">
+                              {off.photo ? (
+                                <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-slate-200 shadow-xs shrink-0 bg-slate-100">
+                                  <Image
+                                    src={off.photo}
+                                    alt={off.name}
+                                    fill
+                                    className="object-cover object-top"
+                                    sizes="56px"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-600 to-blue-800 text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-xs">
+                                  {off.name.charAt(0)}
+                                </div>
+                              )}
+
+                              <div className="min-w-0 flex-1 space-y-0.5">
+                                <h4 className="text-sm font-bold text-slate-900 leading-snug">
+                                  {off.name}
+                                </h4>
+                                {off.nip && (
+                                  <p className="text-[10px] text-slate-400 font-mono">
+                                    NIP: {off.nip}
+                                  </p>
+                                )}
+                                {off.phone && (
+                                  <p className="text-[10px] text-slate-500 font-mono">
+                                    Kontak: {off.phone}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500">
+                            {off.role.toLowerCase().includes("keuangan") &&
+                              "Pengelolaan Buku Kas Umum, SPJ, dan Penatausahaan APBDes"}
+                            {off.role.toLowerCase().includes("perencanaan") &&
+                              "Penyusunan RKPDes, Desain RAB, dan Monitoring Fisik Desa"}
+                            {off.role.toLowerCase().includes("pelayanan") &&
+                              "Pelayanan Administrasi Warga, Bansos, dan Kemasyarakatan"}
+                            {!off.role.toLowerCase().includes("keuangan") &&
+                              !off.role.toLowerCase().includes("perencanaan") &&
+                              !off.role.toLowerCase().includes("pelayanan") &&
+                              "Pelaksana Teknis Tugas Pemerintahan & Kewilayahan Desa"}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        ) : (
+          /* GRID VIEW (TAMPILAN KARTU) */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {officials.map((off) => {
+              const isKades = off.id === "off-1";
+              return (
+                <div
+                  key={off.id}
+                  className={`p-6 rounded-3xl bg-white border transition-all flex items-center gap-4 ${
+                    isKades
+                      ? "border-sky-300 shadow-md ring-2 ring-sky-500/20 bg-gradient-to-br from-white via-sky-50/20 to-white hover:shadow-lg"
+                      : "border-slate-200/90 shadow-sm hover:shadow-md hover:border-sky-300"
+                  }`}
+                >
+                  {off.photo ? (
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-sky-600 shadow-md shrink-0 bg-slate-100">
+                      <Image
+                        src={off.photo}
+                        alt={off.name}
+                        fill
+                        className="object-cover object-top"
+                        sizes="80px"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-600 to-blue-800 text-white flex items-center justify-center font-bold text-xl shrink-0 shadow-md">
+                      {off.name.charAt(0)}
+                    </div>
+                  )}
+                  <div className="space-y-0.5 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-xs font-bold uppercase tracking-wider text-sky-800">{off.role}</p>
+                      {off.period && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                          {off.period}
+                        </span>
+                      )}
+                    </div>
+                    <h4 className="text-base font-bold text-slate-900 leading-snug truncate">{off.name}</h4>
+                    {off.nip && <p className="text-[11px] text-slate-400 font-mono">NIP: {off.nip}</p>}
+                    {off.phone && <p className="text-[11px] text-slate-500 font-mono">Kontak: {off.phone}</p>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* 9. AGENDA KEGIATAN DESA & ASPIRASI WARGA */}
