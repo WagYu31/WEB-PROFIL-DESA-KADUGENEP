@@ -435,7 +435,7 @@ export default function LayananPage() {
 
                 <div className="pt-2 flex flex-col sm:flex-row gap-2 justify-center">
                   <a
-                    href={`https://wa.me/6281289217721?text=Halo%20Pelayanan%20Desa%20Kadugenep,%20saya%20telah%20mengajukan%20${encodeURIComponent(submittedData.serviceTitle)}%20dengan%20nomor%20resi%20${submittedData.receiptId}.`}
+                    href={`https://wa.me/6283857178552?text=Halo%20Pelayanan%20Desa%20Kadugenep,%20saya%20telah%20mengajukan%20${encodeURIComponent(submittedData.serviceTitle)}%20dengan%20nomor%20resi%20${submittedData.receiptId}.`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-bold text-xs shadow"

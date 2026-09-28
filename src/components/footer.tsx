@@ -44,7 +44,7 @@ const SOCIAL_LINKS = [
   },
   {
     name: "WhatsApp",
-    href: "https://wa.me/6281289217721?text=Halo%20Admin%20Desa%20Kadugenep",
+    href: "https://wa.me/6283857178552?text=Halo%20Admin%20Desa%20Kadugenep",
     icon: <WhatsappLogo size={18} weight="bold" />,
     hoverClass: "hover:bg-emerald-600 hover:text-white hover:border-emerald-500",
   },
@@ -94,12 +94,12 @@ export function Footer() {
               <div className="flex items-center gap-2">
                 <WhatsappLogo size={15} className="text-emerald-400 shrink-0" />
                 <a
-                  href="https://wa.me/6281289217721"
+                  href="https://wa.me/6283857178552"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[11px] hover:text-sky-400 transition-colors"
                 >
-                  0812-8921-7721 (Layanan Warga)
+                  0838-5717-8552 (Layanan Warga)
                 </a>
               </div>
               <div className="flex items-center gap-2">
@@ -247,7 +247,7 @@ export function Footer() {
                 <span>Petunjuk Arah (Maps)</span>
               </a>
               <a
-                href="https://wa.me/6281289217721?text=Halo%20Pemerintah%20Desa%20Kadugenep,%20saya%20ingin%20menanyakan%20rute%20lokasi%20kantor%20desa"
+                href="https://wa.me/6283857178552?text=Halo%20Pemerintah%20Desa%20Kadugenep,%20saya%20ingin%20menanyakan%20rute%20lokasi%20kantor%20desa"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-slate-700 transition-all"

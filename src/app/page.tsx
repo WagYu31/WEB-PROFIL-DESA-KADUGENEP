@@ -639,7 +639,7 @@ export default function HomePage() {
                 </Link>
 
                 <a
-                  href="https://wa.me/6281289217721?text=Halo%20Pemerintah%20Desa%20Kadugenep,%20saya%20ingin%20menanyakan%20informasi%20pelayanan%20kantor%20desa."
+                  href="https://wa.me/6283857178552?text=Halo%20Pemerintah%20Desa%20Kadugenep,%20saya%20ingin%20menanyakan%20informasi%20pelayanan%20kantor%20desa."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all"

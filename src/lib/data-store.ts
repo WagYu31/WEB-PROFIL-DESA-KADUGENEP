@@ -105,7 +105,7 @@ export const INITIAL_PROFILE: VillageProfile = {
   address: "Jl. Raya Petir - Serang Km. 3, Kadugenep, Kec. Petir, Kab. Serang, Banten 42172",
   phone: "(0254) 849-2101",
   email: "kantor@kadugenep.desa.id",
-  whatsapp: "0812-8921-7721",
+  whatsapp: "0838-5717-8552",
   vision: "Terwujudnya Desa Kadugenep yang Religius, Mandiri, Berdaya Saing Industri Kreatif Berbasis Seribu Mesin, serta Sejahtera Lahir Batin.",
   missions: [
     "Meningkatkan tata kelola pemerintahan desa yang transparan, akuntabel, dan berbasis teknologi digital.",
@@ -135,7 +135,7 @@ export const INITIAL_OFFICIALS: VillageOfficial[] = [
     role: "Kepala Desa Kadugenep",
     period: "2019 - 2025",
     photo: "/images/kepala-desa-aopidi.jpg",
-    phone: "0812-8921-7721",
+    phone: "0838-5717-8552",
   },
   {
     id: "off-2",
@@ -512,7 +512,15 @@ export function useVillageStore() {
   useEffect(() => {
     // Schedule initial load from localStorage outside immediate render
     const timer = setTimeout(() => {
-      setProfileState(getStoredData(STORAGE_KEYS.PROFILE, INITIAL_PROFILE));
+      const storedProfile = getStoredData(STORAGE_KEYS.PROFILE, INITIAL_PROFILE);
+      const migratedProfile = {
+        ...storedProfile,
+        whatsapp:
+          !storedProfile.whatsapp || storedProfile.whatsapp === "0812-8921-7721"
+            ? "0838-5717-8552"
+            : storedProfile.whatsapp,
+      };
+      setProfileState(migratedProfile);
       const storedOfficials = getStoredData(STORAGE_KEYS.OFFICIALS, INITIAL_OFFICIALS);
       const mergedOfficials = storedOfficials.map((o: VillageOfficial) => {
         if (o.id === "off-1") {
@@ -546,7 +554,15 @@ export function useVillageStore() {
     }, 0);
 
     const handleUpdate = () => {
-      setProfileState(getStoredData(STORAGE_KEYS.PROFILE, INITIAL_PROFILE));
+      const sProf = getStoredData(STORAGE_KEYS.PROFILE, INITIAL_PROFILE);
+      const mProf = {
+        ...sProf,
+        whatsapp:
+          !sProf.whatsapp || sProf.whatsapp === "0812-8921-7721"
+            ? "0838-5717-8552"
+            : sProf.whatsapp,
+      };
+      setProfileState(mProf);
       const sOfficials = getStoredData(STORAGE_KEYS.OFFICIALS, INITIAL_OFFICIALS);
       const mOfficials = sOfficials.map((o: VillageOfficial) => {
         if (o.id === "off-1") {
