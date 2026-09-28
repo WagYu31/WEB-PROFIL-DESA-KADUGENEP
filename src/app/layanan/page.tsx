@@ -18,10 +18,12 @@ import {
   Briefcase,
   MapPin,
   Buildings,
+  ShieldPlus,
+  Hospital,
 } from "@phosphor-icons/react";
 import { useVillageStore } from "@/lib/data-store";
 
-type ServiceId = "sku" | "skck" | "domisili" | "sktm";
+type ServiceId = "sku" | "skck" | "domisili" | "sktm" | "sktm_pbi" | "sktm_rsud";
 
 interface ServiceTypeConfig {
   id: ServiceId;
@@ -78,16 +80,46 @@ const SERVICE_TYPES: ServiceTypeConfig[] = [
   },
   {
     id: "sktm",
-    title: "Surat Keterangan Tidak Mampu (SKTM)",
-    shortName: "SKTM",
-    badge: "Pendidikan & Sosial",
+    title: "Surat Keterangan Tidak Mampu (SKTM) - Pendidikan",
+    shortName: "SKTM Sekolah",
+    badge: "Pendidikan & Sekolah",
     icon: <GraduationCap size={20} className="text-emerald-600" />,
-    description: "Untuk pengajuan beasiswa pendidikan (KIP Kuliah/PIP), keringanan biaya sekolah, atau pengajuan BPJS PBI/KIS.",
+    description: "Untuk pengajuan beasiswa pendidikan (KIP Kuliah/PIP), keringanan SPP sekolah/kuliah, atau bantuan perlengkapan belajar.",
     reqs: [
       "KTP Asli Kepala Keluarga & Pemohon",
-      "Kartu Keluarga (KK)",
+      "Kartu Keluarga (KK) Kadugenep",
       "Surat Pengantar RT/RW menyatakan kondisi ekonomi",
-      "Kartu Pelajar/Mahasiswa (khusus beasiswa pendidikan)",
+      "Kartu Pelajar / Mahasiswa atau Surat Keterangan Sekolah",
+    ],
+  },
+  {
+    id: "sktm_pbi",
+    title: "Surat Keterangan Tidak Mampu (SKTM PBI)",
+    shortName: "SKTM PBI",
+    badge: "BPJS PBI / KIS",
+    icon: <ShieldPlus size={20} className="text-teal-600" />,
+    description: "Untuk pengajuan kepesertaan atau pengaktifan kembali BPJS Kesehatan PBI-JKN (gratis ditanggung pemerintah) bagi keluarga prasejahtera.",
+    reqs: [
+      "Fotokopi KTP Pemohon & Kepala Keluarga",
+      "Fotokopi Kartu Keluarga (KK) Kadugenep",
+      "Surat Pengantar RT/RW setempat",
+      "Kartu KIS/BPJS lama (jika ada / pengaktifan kembali)",
+      "Surat Pernyataan Penghasilan / Tidak Mampu bermaterai",
+    ],
+  },
+  {
+    id: "sktm_rsud",
+    title: "Surat Keterangan Tidak Mampu (SKTM Pengobatan RSUD)",
+    shortName: "SKTM RSUD",
+    badge: "Kesehatan & Rujukan RS",
+    icon: <Hospital size={20} className="text-rose-600" />,
+    description: "Untuk rekomendasi keringanan biaya perawatan medis, tindakan operasi darurat, atau rawat inap di RSUD Banten / RSDP Serang.",
+    reqs: [
+      "Fotokopi KTP Pasien & KTP Penanggung Jawab",
+      "Fotokopi Kartu Keluarga (KK) Kadugenep",
+      "Surat Pengantar RT/RW menyatakan kondisi keluarga tidak mampu",
+      "Surat Keterangan Rawat Inap / Rujukan / Tagihan dari RSUD",
+      "Surat Pernyataan Tidak Memiliki Asuransi Kesehatan Aktif",
     ],
   },
 ];
@@ -151,6 +183,33 @@ export default function LayananPage() {
     instansiTujuan: "Universitas / Sekolah Terkait",
   });
 
+  // Dynamic Specific Fields for SKTM PBI (BPJS PBI / KIS)
+  const [sktmPbiForm, setSktmPbiForm] = useState({
+    noKK: "",
+    namaCalonPeserta: "",
+    nikCalonPeserta: "",
+    hubunganKeluarga: "Anak Kandung",
+    pekerjaanKK: "Buruh Konveksi / Petani",
+    penghasilanBulanan: "< Rp 1.000.000",
+    jumlahAnggota: "4 Jiwa",
+    statusDtks: "Belum Terdaftar / Perlu Cek Petugas Desa",
+    alasanPengajuan: "Pendaftaran Baru BPJS PBI-JKN (Gratis Pemerintah)",
+  });
+
+  // Dynamic Specific Fields for SKTM Pengobatan RSUD
+  const [sktmRsudForm, setSktmRsudForm] = useState({
+    noKK: "",
+    namaPasien: "",
+    nikPasien: "",
+    hubunganDenganPasien: "Orang Tua Kandung",
+    namaRumahSakit: "RSUD Banten",
+    statusPerawatan: "Rawat Inap (Sedang Dirawat di RS)",
+    diagnosaPenyakit: "",
+    pekerjaanPenanggungJawab: "Buruh Harian Lepas / Petani",
+    penghasilanBulanan: "< Rp 1.000.000",
+    keperluan: "Keringanan Biaya Perawatan & Rawat Inap RSUD",
+  });
+
   // Submission receipt state
   const [submittedData, setSubmittedData] = useState<{
     receiptId: string;
@@ -211,7 +270,34 @@ export default function LayananPage() {
         "Keperluan SKTM": sktmForm.keperluan,
         "Tujuan Instansi": sktmForm.instansiTujuan,
       };
-      summaryNotes = `SKTM untuk ${sktmForm.namaAnggota} (${sktmForm.keperluan})`;
+      summaryNotes = `SKTM Sekolah untuk ${sktmForm.namaAnggota} (${sktmForm.keperluan})`;
+    } else if (activeTypeId === "sktm_pbi") {
+      details = {
+        "Nomor Kartu Keluarga": sktmPbiForm.noKK,
+        "Nama Calon Peserta PBI": sktmPbiForm.namaCalonPeserta || coreForm.name,
+        "NIK Calon Peserta": sktmPbiForm.nikCalonPeserta || coreForm.nik,
+        "Hubungan Keluarga": sktmPbiForm.hubunganKeluarga,
+        "Pekerjaan Kepala Keluarga": sktmPbiForm.pekerjaanKK,
+        "Penghasilan Bulanan": sktmPbiForm.penghasilanBulanan,
+        "Jumlah Jiwa dalam KK": sktmPbiForm.jumlahAnggota,
+        "Status DTKS": sktmPbiForm.statusDtks,
+        "Alasan Pengajuan": sktmPbiForm.alasanPengajuan,
+      };
+      summaryNotes = `SKTM PBI: ${sktmPbiForm.namaCalonPeserta || coreForm.name} (${sktmPbiForm.alasanPengajuan})`;
+    } else if (activeTypeId === "sktm_rsud") {
+      details = {
+        "Nomor Kartu Keluarga": sktmRsudForm.noKK,
+        "Nama Pasien": sktmRsudForm.namaPasien || coreForm.name,
+        "NIK Pasien": sktmRsudForm.nikPasien || coreForm.nik,
+        "Hubungan dengan Pasien": sktmRsudForm.hubunganDenganPasien,
+        "Rumah Sakit Tujuan": sktmRsudForm.namaRumahSakit,
+        "Status Perawatan": sktmRsudForm.statusPerawatan,
+        "Diagnosa / Keluhan": sktmRsudForm.diagnosaPenyakit || "-",
+        "Pekerjaan Penanggung Jawab": sktmRsudForm.pekerjaanPenanggungJawab,
+        "Penghasilan Bulanan": sktmRsudForm.penghasilanBulanan,
+        "Keperluan Pengobatan": sktmRsudForm.keperluan,
+      };
+      summaryNotes = `SKTM RSUD: ${sktmRsudForm.namaPasien || coreForm.name} di ${sktmRsudForm.namaRumahSakit} (${sktmRsudForm.statusPerawatan})`;
     }
 
     const newReq = {
@@ -259,17 +345,17 @@ export default function LayananPage() {
           Layanan Persuratan Mandiri Warga
         </h1>
         <p className="text-sm sm:text-base text-slate-600 mt-2 leading-relaxed">
-          Pilih salah satu dari 4 jenis persuratan resmi di bawah ini. Formulir akan secara otomatis menyesuaikan kolom isian khusus sesuai standar administrasi Pemerintah Desa Kadugenep.
+          Pilih salah satu dari 6 jenis persuratan resmi di bawah ini. Formulir akan secara otomatis menyesuaikan kolom isian khusus sesuai standar administrasi Pemerintah Desa Kadugenep.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: 4 Service Type Selector Cards */}
+        {/* Left Column: 6 Service Type Selector Cards */}
         <div className="lg:col-span-5 space-y-4">
           <div className="flex items-center justify-between pb-1">
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
               <IdentificationCard size={18} className="text-sky-700" />
-              <span>Pilih Jenis Surat (4 Pilihan):</span>
+              <span>Pilih Jenis Surat (6 Pilihan):</span>
             </h2>
           </div>
 
@@ -920,6 +1006,307 @@ export default function LayananPage() {
                             onChange={(e) => setSktmForm({ ...sktmForm, instansiTujuan: e.target.value })}
                             className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
                           />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 5. DYNAMIC FIELDS FOR SKTM PBI (BPJS PBI / KIS) */}
+                  {activeTypeId === "sktm_pbi" && (
+                    <div className="space-y-3.5 bg-teal-50/40 p-4 rounded-2xl border border-teal-100">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Nomor Kartu Keluarga (No KK 16 Digit) *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            maxLength={16}
+                            placeholder="Contoh: 360412xxxxxxxxxx"
+                            value={sktmPbiForm.noKK}
+                            onChange={(e) => setSktmPbiForm({ ...sktmPbiForm, noKK: e.target.value.replace(/\D/g, "") })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Nama Calon Peserta BPJS PBI *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="Nama yang diajukan untuk BPJS PBI"
+                            value={sktmPbiForm.namaCalonPeserta}
+                            onChange={(e) => setSktmPbiForm({ ...sktmPbiForm, namaCalonPeserta: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            NIK Calon Peserta (16 Digit) *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            maxLength={16}
+                            placeholder="Contoh: 360412xxxxxxxxxx"
+                            value={sktmPbiForm.nikCalonPeserta}
+                            onChange={(e) => setSktmPbiForm({ ...sktmPbiForm, nikCalonPeserta: e.target.value.replace(/\D/g, "") })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Hubungan dengan Kepala Keluarga *
+                          </label>
+                          <select
+                            value={sktmPbiForm.hubunganKeluarga}
+                            onChange={(e) => setSktmPbiForm({ ...sktmPbiForm, hubunganKeluarga: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          >
+                            <option value="Diri Sendiri (Kepala Keluarga)">Diri Sendiri (Kepala Keluarga)</option>
+                            <option value="Istri">Istri</option>
+                            <option value="Anak Kandung">Anak Kandung</option>
+                            <option value="Orang Tua / Lansia">Orang Tua / Lansia</option>
+                            <option value="Famili Lain">Famili Lain</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Pekerjaan Kepala Keluarga *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="Contoh: Buruh Konveksi / Petani / Pedagang"
+                            value={sktmPbiForm.pekerjaanKK}
+                            onChange={(e) => setSktmPbiForm({ ...sktmPbiForm, pekerjaanKK: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Rata-rata Penghasilan Bulanan *
+                          </label>
+                          <select
+                            value={sktmPbiForm.penghasilanBulanan}
+                            onChange={(e) => setSktmPbiForm({ ...sktmPbiForm, penghasilanBulanan: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          >
+                            <option value="< Rp 1.000.000">&lt; Rp 1.000.000 / bulan</option>
+                            <option value="Rp 1.000.000 - Rp 1.500.000">Rp 1.000.000 - Rp 1.500.000 / bulan</option>
+                            <option value="Tidak Menentu (Penghasilan Harian)">Tidak Menentu (Penghasilan Harian)</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Jumlah Jiwa dalam KK *
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Contoh: 4 Jiwa"
+                            value={sktmPbiForm.jumlahAnggota}
+                            onChange={(e) => setSktmPbiForm({ ...sktmPbiForm, jumlahAnggota: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Status Terdaftar DTKS Kemensos *
+                          </label>
+                          <select
+                            value={sktmPbiForm.statusDtks}
+                            onChange={(e) => setSktmPbiForm({ ...sktmPbiForm, statusDtks: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          >
+                            <option value="Belum Terdaftar / Perlu Cek Petugas Desa">Belum Terdaftar / Perlu Cek Petugas Desa</option>
+                            <option value="Sudah Terdaftar di DTKS Kemensos">Sudah Terdaftar di DTKS Kemensos</option>
+                            <option value="Pernah Terdaftar tapi KIS Non-Aktif">Pernah Terdaftar tapi KIS Non-Aktif</option>
+                          </select>
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Alasan / Keperluan Pengajuan PBI *
+                          </label>
+                          <select
+                            value={sktmPbiForm.alasanPengajuan}
+                            onChange={(e) => setSktmPbiForm({ ...sktmPbiForm, alasanPengajuan: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          >
+                            <option value="Pendaftaran Baru BPJS PBI-JKN (Gratis Pemerintah)">Pendaftaran Baru BPJS PBI-JKN (Gratis Pemerintah)</option>
+                            <option value="Pengaktifan Kembali Kartu KIS PBI Non-Aktif">Pengaktifan Kembali Kartu KIS PBI Non-Aktif</option>
+                            <option value="Pengalihan dari BPJS Mandiri Menunggak ke PBI">Pengalihan dari BPJS Mandiri Menunggak ke PBI</option>
+                            <option value="Penambahan Anggota Keluarga Baru ke PBI">Penambahan Anggota Keluarga Baru ke PBI</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 6. DYNAMIC FIELDS FOR SKTM PENGOBATAN RSUD */}
+                  {activeTypeId === "sktm_rsud" && (
+                    <div className="space-y-3.5 bg-rose-50/40 p-4 rounded-2xl border border-rose-100">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Nomor Kartu Keluarga (No KK 16 Digit) *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            maxLength={16}
+                            placeholder="Contoh: 360412xxxxxxxxxx"
+                            value={sktmRsudForm.noKK}
+                            onChange={(e) => setSktmRsudForm({ ...sktmRsudForm, noKK: e.target.value.replace(/\D/g, "") })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Nama Pasien yang Sakit / Dirawat *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="Nama lengkap pasien sesuai KTP/KK"
+                            value={sktmRsudForm.namaPasien}
+                            onChange={(e) => setSktmRsudForm({ ...sktmRsudForm, namaPasien: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            NIK Pasien (16 Digit) *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            maxLength={16}
+                            placeholder="Contoh: 360412xxxxxxxxxx"
+                            value={sktmRsudForm.nikPasien}
+                            onChange={(e) => setSktmRsudForm({ ...sktmRsudForm, nikPasien: e.target.value.replace(/\D/g, "") })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Hubungan Pemohon dengan Pasien *
+                          </label>
+                          <select
+                            value={sktmRsudForm.hubunganDenganPasien}
+                            onChange={(e) => setSktmRsudForm({ ...sktmRsudForm, hubunganDenganPasien: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          >
+                            <option value="Diri Sendiri (Pasien Langsung)">Diri Sendiri (Pasien Langsung)</option>
+                            <option value="Orang Tua Kandung">Orang Tua Kandung</option>
+                            <option value="Anak Kandung">Anak Kandung</option>
+                            <option value="Suami / Istri">Suami / Istri</option>
+                            <option value="Saudara Kandung / Famili">Saudara Kandung / Famili</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Nama Rumah Sakit / RSUD Tujuan *
+                          </label>
+                          <select
+                            value={sktmRsudForm.namaRumahSakit}
+                            onChange={(e) => setSktmRsudForm({ ...sktmRsudForm, namaRumahSakit: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          >
+                            <option value="RSUD Banten">RSUD Banten (Kota Serang)</option>
+                            <option value="RSUD Dr. Drajat Prawiranegara Serang">RSUD Dr. Drajat Prawiranegara (RSDP Serang)</option>
+                            <option value="Puskesmas DTP Petir">Puskesmas DTP Petir</option>
+                            <option value="RSUD Berkah Pandeglang">RSUD Berkah Pandeglang</option>
+                            <option value="RS Hermina Ciruas / Swasta Lainnya">RS Hermina Ciruas / Swasta Mitra Jamkesda</option>
+                            <option value="Lainnya">Rumah Sakit Lainnya</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Status Perawatan Pasien *
+                          </label>
+                          <select
+                            value={sktmRsudForm.statusPerawatan}
+                            onChange={(e) => setSktmRsudForm({ ...sktmRsudForm, statusPerawatan: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          >
+                            <option value="Rawat Inap (Sedang Dirawat di RS)">Rawat Inap (Sedang Dirawat di RS)</option>
+                            <option value="IGD / Gawat Darurat">IGD / Pasien Gawat Darurat</option>
+                            <option value="Rencana Tindakan Medis / Operasi">Rencana Tindakan Medis / Operasi</option>
+                            <option value="Rawat Jalan / Kontrol Rutin Spesialis">Rawat Jalan / Kontrol Rutin Spesialis</option>
+                          </select>
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Diagnosa Penyakit / Keluhan Medis Singkat *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="Contoh: DBD, Penyakit Paru, Melahirkan dengan Tindakan Operasi, dll."
+                            value={sktmRsudForm.diagnosaPenyakit}
+                            onChange={(e) => setSktmRsudForm({ ...sktmRsudForm, diagnosaPenyakit: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Pekerjaan Penanggung Jawab *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="Contoh: Buruh Harian / Petani / Pedagang"
+                            value={sktmRsudForm.pekerjaanPenanggungJawab}
+                            onChange={(e) => setSktmRsudForm({ ...sktmRsudForm, pekerjaanPenanggungJawab: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Penghasilan Rata-rata Keluarga *
+                          </label>
+                          <select
+                            value={sktmRsudForm.penghasilanBulanan}
+                            onChange={(e) => setSktmRsudForm({ ...sktmRsudForm, penghasilanBulanan: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          >
+                            <option value="< Rp 1.000.000">&lt; Rp 1.000.000 / bulan</option>
+                            <option value="Rp 1.000.000 - Rp 1.500.000">Rp 1.000.000 - Rp 1.500.000 / bulan</option>
+                            <option value="Tidak Menentu (Penghasilan Harian)">Tidak Menentu (Penghasilan Harian)</option>
+                          </select>
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Keperluan Surat *
+                          </label>
+                          <select
+                            value={sktmRsudForm.keperluan}
+                            onChange={(e) => setSktmRsudForm({ ...sktmRsudForm, keperluan: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-sky-600"
+                          >
+                            <option value="Keringanan Biaya Perawatan & Rawat Inap RSUD">Keringanan Biaya Perawatan & Rawat Inap RSUD</option>
+                            <option value="Permohonan Bantuan Biaya Berobat Jamkesda Serang">Permohonan Bantuan Biaya Berobat Jamkesda Kab. Serang</option>
+                            <option value="Rekomendasi Pembebasan Biaya Tindakan Medis Darurat">Rekomendasi Pembebasan Biaya Tindakan Medis Darurat</option>
+                          </select>
                         </div>
                       </div>
                     </div>

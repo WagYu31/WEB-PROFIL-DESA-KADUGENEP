@@ -174,7 +174,7 @@ export default function InvoicePage() {
                       </p>
                       <p className="text-slate-500 text-[10.5px] leading-snug print:text-[8px] print:leading-tight">
                         • Desain UI/UX responsif modern, portal warta desa, video profil & dokumentasi warga.<br />
-                        • Layanan Surat Mandiri Digital (SKU, SKCK, Domisili, SKTM) resi otomatis & integrasi WhatsApp.<br />
+                        • Layanan Surat Mandiri Digital (SKU, SKCK, Domisili, SKTM Pendidikan, SKTM PBI, SKTM RSUD) resi otomatis & integrasi WhatsApp.<br />
                         • Transparansi APBDes 2026 interaktif, Dokumen Baliho Resmi, panel admin desa & SEO optimized.
                       </p>
                     </td>
