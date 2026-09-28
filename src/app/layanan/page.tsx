@@ -20,6 +20,9 @@ import {
   Buildings,
   ShieldPlus,
   Hospital,
+  CheckSquare,
+  Square,
+  Lightning,
 } from "@phosphor-icons/react";
 import { useVillageStore } from "@/lib/data-store";
 
@@ -218,6 +221,15 @@ export default function LayananPage() {
     details: Record<string, string>;
   } | null>(null);
 
+  // Requirements checklist state
+  const [checkedDocs, setCheckedDocs] = useState<Record<string, boolean>>({});
+  const toggleDoc = (docName: string) => {
+    setCheckedDocs((prev) => ({
+      ...prev,
+      [docName]: !prev[docName],
+    }));
+  };
+
   const currentConfig = SERVICE_TYPES.find((s) => s.id === activeTypeId)!;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -336,105 +348,280 @@ export default function LayananPage() {
       </Link>
 
       {/* Header */}
-      <div className="max-w-3xl mb-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-100 text-sky-800 border border-sky-200 mb-3">
-          <FileText size={16} />
-          <span>Pelayanan Publik Terpadu</span>
+      <div className="mb-10 space-y-4">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide bg-sky-100 text-sky-900 border border-sky-200/80 shadow-xs">
+          <FileText size={16} className="text-sky-700" />
+          <span>Pelayanan Publik Terpadu Desa Kadugenep</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-          Layanan Persuratan Mandiri Warga
-        </h1>
-        <p className="text-sm sm:text-base text-slate-600 mt-2 leading-relaxed">
-          Pilih salah satu dari 6 jenis persuratan resmi di bawah ini. Formulir akan secara otomatis menyesuaikan kolom isian khusus sesuai standar administrasi Pemerintah Desa Kadugenep.
-        </p>
-      </div>
+        
+        <div className="max-w-3xl">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+            Layanan Persuratan Mandiri Warga
+          </h1>
+          <p className="text-sm sm:text-base text-slate-600 mt-2.5 leading-relaxed">
+            Pengurusan administrasi surat resmi desa kini lebih cepat, transparan, dan dapat diajukan secara mandiri dari rumah. Pilih jenis surat di bawah, lengkapi formulir resmi, dan ambil berkas fisik di Kantor Balai Desa Kadugenep.
+          </p>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: 6 Service Type Selector Cards */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="flex items-center justify-between pb-1">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
-              <IdentificationCard size={18} className="text-sky-700" />
-              <span>Pilih Jenis Surat (6 Pilihan):</span>
-            </h2>
+        {/* Guarantee / Service Attribute Pills */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+          <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+              <Lightning size={18} weight="fill" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900">1–2 Jam Kerja</p>
+              <p className="text-[10px] text-slate-500">Proses Cepat di Loket</p>
+            </div>
           </div>
 
-          <div className="space-y-3">
-            {SERVICE_TYPES.map((service) => {
-              const isSelected = activeTypeId === service.id;
-              return (
-                <button
-                  key={service.id}
-                  type="button"
-                  onClick={() => {
-                    setActiveTypeId(service.id);
-                    setSubmittedData(null);
-                  }}
-                  className={`w-full text-left p-4 sm:p-5 rounded-2xl border transition-all duration-200 ${
-                    isSelected
-                      ? "bg-white border-sky-600 shadow-lg ring-2 ring-sky-600/20"
-                      : "bg-white border-slate-200/90 hover:border-slate-300 hover:bg-slate-50/70"
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`p-2 rounded-xl ${isSelected ? "bg-sky-100 text-sky-700" : "bg-slate-100 text-slate-600"}`}>
-                        {service.icon}
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                          {service.badge}
-                        </span>
-                        <h3 className="text-sm font-bold text-slate-900 leading-snug">{service.title}</h3>
-                      </div>
-                    </div>
+          <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+              <ShieldCheck size={18} weight="fill" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900">100% Gratis</p>
+              <p className="text-[10px] text-slate-500">Resmi Bebas Pungli</p>
+            </div>
+          </div>
 
-                    {isSelected && (
-                      <CheckCircle size={20} weight="fill" className="text-sky-600 shrink-0" />
+          <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-sky-100 text-sky-800 flex items-center justify-center shrink-0">
+              <WhatsappLogo size={18} weight="fill" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900">Update WhatsApp</p>
+              <p className="text-[10px] text-slate-500">Notifikasi Real-time</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
+              <Buildings size={18} weight="fill" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900">Balai Desa</p>
+              <p className="text-[10px] text-slate-500">Cap Basah & TTD Kades</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* STEP 1: SERVICE TYPE SELECTOR (Horizontal 3x2 Grid) */}
+      <div className="mb-10 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/80 pb-3">
+          <div>
+            <span className="text-[11px] font-black uppercase tracking-wider text-sky-800 bg-sky-50 px-2.5 py-0.5 rounded-md border border-sky-200 mr-2">
+              Langkah 1
+            </span>
+            <span className="text-sm font-extrabold text-slate-900">
+              Pilih Jenis Surat yang Diajukan (6 Pilihan Layanan)
+            </span>
+          </div>
+          <span className="text-xs text-slate-500">
+            Klik salah satu kartu di bawah untuk memilih
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {SERVICE_TYPES.map((service) => {
+            const isSelected = activeTypeId === service.id;
+            return (
+              <button
+                key={service.id}
+                type="button"
+                onClick={() => {
+                  setActiveTypeId(service.id);
+                  setSubmittedData(null);
+                }}
+                className={`group text-left p-4 sm:p-5 rounded-2xl transition-all duration-200 relative flex flex-col justify-between ${
+                  isSelected
+                    ? "bg-white border-2 border-sky-600 shadow-md ring-4 ring-sky-500/10 -translate-y-0.5"
+                    : "bg-white border border-slate-200/90 hover:border-sky-300 hover:shadow-xs hover:bg-slate-50/50"
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span
+                      className={`text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                        isSelected
+                          ? "bg-sky-100 text-sky-900 border-sky-300"
+                          : "bg-slate-100 text-slate-600 border-slate-200"
+                      }`}
+                    >
+                      {service.badge}
+                    </span>
+
+                    {isSelected ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
+                        <CheckCircle size={14} weight="fill" className="text-sky-600" />
+                        <span>Dipilih</span>
+                      </span>
+                    ) : (
+                      <div className="w-2.5 h-2.5 rounded-full border border-slate-300 group-hover:border-sky-400" />
                     )}
                   </div>
 
-                  <p className="text-xs text-slate-600 mt-2.5 leading-relaxed">{service.description}</p>
-
-                  {/* Requirements checklist preview */}
-                  {isSelected && (
-                    <div className="mt-4 pt-3 border-t border-slate-100 bg-sky-50/50 -mx-4 -mb-4 p-4 rounded-b-2xl">
-                      <p className="text-[11px] font-bold text-sky-900 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                        <Info size={14} className="text-sky-700" />
-                        <span>Syarat Berkas yang Diperlukan:</span>
-                      </p>
-                      <ul className="text-xs text-slate-700 space-y-1 list-disc list-inside">
-                        {service.reqs.map((req, rIdx) => (
-                          <li key={rIdx}>{req}</li>
-                        ))}
-                      </ul>
+                  <div className="flex items-start gap-3">
+                    <div
+                      className={`p-2.5 rounded-xl shrink-0 transition-colors ${
+                        isSelected
+                          ? "bg-sky-600 text-white shadow-xs"
+                          : "bg-slate-100 text-slate-700 group-hover:bg-sky-50 group-hover:text-sky-700"
+                      }`}
+                    >
+                      {service.icon}
                     </div>
-                  )}
-                </button>
-              );
-            })}
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900 leading-snug group-hover:text-sky-950">
+                        {service.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">
+                        {service.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                  <span className="text-slate-500 flex items-center gap-1.5 font-medium">
+                    <FileText size={13} className="text-slate-400" />
+                    <span>{service.reqs.length} Syarat Dokumen</span>
+                  </span>
+                  <span
+                    className={`font-bold transition-colors ${
+                      isSelected
+                        ? "text-sky-700 font-extrabold"
+                        : "text-slate-400 group-hover:text-sky-600"
+                    }`}
+                  >
+                    {isSelected ? "Sedang Aktif" : "Pilih Surat →"}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* STEP 2: WORKSPACE (Persyaratan & Loket Balai Desa on Left, Form on Right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left Column: Requirements, Flow & Physical Service Office */}
+        <div className="lg:col-span-5 space-y-5">
+          {/* Card 1: Requirements Checklist for Selected Service */}
+          <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-md space-y-4">
+            <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-sky-800">
+                  Persyaratan Dokumen
+                </span>
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug mt-0.5">
+                  Syarat Berkas: {currentConfig.shortName}
+                </h3>
+              </div>
+              <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-sky-50 text-sky-800 border border-sky-200 shrink-0">
+                {currentConfig.badge}
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Siapkan berkas-berkas di bawah ini sebelum mengambil surat fisik di Balai Desa:
+            </p>
+
+            <div className="space-y-2">
+              {currentConfig.reqs.map((req, rIdx) => {
+                const isChecked = !!checkedDocs[req];
+                return (
+                  <button
+                    key={rIdx}
+                    type="button"
+                    onClick={() => toggleDoc(req)}
+                    className={`w-full text-left p-3 rounded-xl border text-xs transition-all flex items-start gap-2.5 ${
+                      isChecked
+                        ? "bg-emerald-50/80 border-emerald-300 text-emerald-950 font-medium"
+                        : "bg-slate-50/70 border-slate-200/90 text-slate-700 hover:bg-slate-100/70 hover:border-slate-300"
+                    }`}
+                  >
+                    <span className="shrink-0 mt-0.5">
+                      {isChecked ? (
+                        <CheckSquare size={16} weight="fill" className="text-emerald-600" />
+                      ) : (
+                        <Square size={16} className="text-slate-400" />
+                      )}
+                    </span>
+                    <span className={`leading-relaxed ${isChecked ? "line-through text-emerald-800" : ""}`}>
+                      {req}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="p-3 rounded-xl bg-sky-50 border border-sky-200 text-[11px] text-sky-900 leading-relaxed flex items-start gap-2">
+              <Info size={16} className="text-sky-700 shrink-0 mt-0.5" />
+              <span>
+                <strong>Catatan:</strong> Berkas fisik asli/fotokopi di atas cukup dibawa saat Anda datang mengambil surat fisik yang sudah selesai ditandatangani.
+              </span>
+            </div>
           </div>
 
-          {/* Service Time Info Card */}
-          <div className="p-5 rounded-2xl bg-amber-50/80 border border-amber-200 text-xs text-amber-950 space-y-2">
-            <p className="font-bold flex items-center gap-2 text-amber-900">
-              <Clock size={16} />
-              <span>Waktu Penyelesaian Surat:</span>
-            </p>
-            <p className="leading-relaxed">
-              Surat yang diajukan pada jam kerja (Senin - Jumat 08:00 - 15:30 WIB) rata-rata selesai dalam waktu <strong>1–2 jam kerja</strong>. Anda dapat mengambil surat fisik di Kantor Balai Desa Kadugenep setelah diverifikasi.
-            </p>
+          {/* Card 2: 3-Step Alur Pengurusan Surat */}
+          <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-md space-y-4">
+            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+              Tata Cara Pelayanan
+            </span>
+            <h3 className="text-sm sm:text-base font-bold text-slate-900 -mt-2">
+              Alur Pengurusan Surat Mandiri
+            </h3>
+
+            <div className="space-y-3 pt-1">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-sky-100 text-sky-800 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  1
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">Isi Formulir Online</h4>
+                  <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
+                    Lengkapi identitas diri dan rincian dokumen pada formulir di samping secara teliti.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-sky-100 text-sky-800 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  2
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">Verifikasi & Pencetakan</h4>
+                  <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
+                    Staf pelayanan desa memeriksa berkas dan mencetak draf resmi (estimasi 1–2 jam kerja).
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  3
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">Pengambilan Fisik di Balai Desa</h4>
+                  <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
+                    Ambil surat berstempel basah & tanda tangan asli Kepala Desa di loket pelayanan.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Real Office Building & Physical Service Window Card */}
-          <div className="p-5 rounded-3xl bg-white border border-slate-200/90 shadow-md space-y-3.5 overflow-hidden">
+          {/* Card 3: Real Office Building & Physical Service Window Card + WhatsApp Hotline */}
+          <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-md space-y-4 overflow-hidden">
             <div className="flex items-center justify-between">
               <span className="text-xs font-extrabold uppercase tracking-wider text-sky-800 flex items-center gap-1.5">
-                <Buildings size={15} />
-                <span>Kantor & Loket Pelayanan</span>
+                <Buildings size={16} />
+                <span>Loket Pelayanan & Balai Desa</span>
               </span>
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                Tatap Muka
+                Tatap Muka Buka
               </span>
             </div>
 
@@ -446,40 +633,58 @@ export default function LayananPage() {
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 400px"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-              <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
-                <p className="text-xs font-bold leading-tight drop-shadow">Balai Desa Kadugenep</p>
-                <p className="text-[10px] text-slate-200 drop-shadow">Pengambilan Berkas Fisik & Stempel</p>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
+              <div className="absolute bottom-2.5 left-3 right-3 text-white">
+                <p className="text-xs font-bold leading-tight drop-shadow">Kantor Balai Desa Kadugenep</p>
+                <p className="text-[10px] text-slate-200 drop-shadow">Lokasi Pengambilan Berkas & Validasi Stempel</p>
               </div>
             </div>
 
-            <div className="space-y-1.5 text-xs text-slate-600">
+            <div className="space-y-2 text-xs text-slate-600">
               <div className="flex items-start gap-2">
-                <MapPin size={14} className="text-sky-700 shrink-0 mt-0.5" />
-                <span>Jl. Raya Petir - Serang Km. 3, Desa Kadugenep, Kec. Petir</span>
+                <MapPin size={15} className="text-sky-700 shrink-0 mt-0.5" />
+                <span>Jl. Raya Petir - Serang Km. 3, Desa Kadugenep, Kec. Petir, Serang</span>
               </div>
-              <p className="text-[11px] text-slate-500 pt-1 leading-relaxed">
-                Setelah mengisi permohonan online dan verifikasi selesai, warga dapat mengambil surat asli bertanda tangan Kepala Desa di loket pelayanan ini.
-              </p>
+              <div className="flex items-start gap-2">
+                <Clock size={15} className="text-amber-600 shrink-0 mt-0.5" />
+                <span>Senin – Jumat: 08:00 – 15:30 WIB (Sabtu – Minggu Libur)</span>
+              </div>
+            </div>
+
+            <div className="pt-1">
+              <a
+                href="https://wa.me/6283857178552?text=Halo%20Admin%20Desa%20Kadugenep,%20saya%20ingin%20bertanya%20seputar%20persyaratan%20surat."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 hover:bg-emerald-100 font-bold text-xs transition-colors"
+              >
+                <WhatsappLogo size={16} weight="fill" className="text-emerald-600" />
+                <span>Hotline WhatsApp: 0838-5717-8552</span>
+              </a>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Dynamic Form tailored for each of the 4 types */}
+        {/* Right Column: Dynamic Form */}
         <div className="lg:col-span-7">
           <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xl space-y-6">
             
             {/* Header Form with Current Letter Type Badge */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Formulir Khusus
-                </span>
-                <h3 className="text-xl font-black text-slate-900">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-sky-800 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
+                    Langkah 2
+                  </span>
+                  <span className="text-[11px] font-bold text-slate-400">
+                    Isi Formulir Permohonan
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900">
                   {currentConfig.title}
                 </h3>
               </div>
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-800 border border-sky-200 w-fit">
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-800 border border-sky-200 w-fit shrink-0">
                 {currentConfig.badge}
               </span>
             </div>
