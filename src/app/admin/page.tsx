@@ -7,6 +7,7 @@ import {
   useVillageStore,
   type Article as ArticleType,
   type APBDesItem,
+  type VillageOfficial,
 } from "@/lib/data-store";
 import { formatRupiah, slugify, formatDateID, isYouTubeUrl, isVideoFile, cn } from "@/lib/utils";
 import {
@@ -47,6 +48,7 @@ export default function AdminPage() {
   const {
     isLoaded,
     profile,
+    officials,
     articles,
     apbdes,
     serviceRequests,
@@ -55,6 +57,7 @@ export default function AdminPage() {
     loginAdmin,
     logoutAdmin,
     saveProfile,
+    saveOfficials,
     saveArticles,
     saveApbdes,
     saveServiceRequests,
@@ -62,7 +65,7 @@ export default function AdminPage() {
     resetToDefault,
   } = useVillageStore();
 
-  const [activeTab, setActiveTab] = useState<"berita" | "profil" | "apbdes" | "layanan" | "aspirasi" | "backup">("berita");
+  const [activeTab, setActiveTab] = useState<"berita" | "aparatur" | "profil" | "apbdes" | "layanan" | "aspirasi" | "backup">("berita");
 
   // Notification toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -173,7 +176,45 @@ export default function AdminPage() {
       realization: item.realization,
       percentage: item.percentage,
     });
-    setApbModalOpen(true);
+  };
+
+  // Official modal state
+  const [officialModalOpen, setOfficialModalOpen] = useState(false);
+  const [editingOfficialId, setEditingOfficialId] = useState<string | null>(null);
+  const [officialForm, setOfficialForm] = useState({
+    name: "",
+    role: "",
+    period: "",
+    nip: "",
+    phone: "",
+    photo: "",
+  });
+  const [isUploadingOfficialPhoto, setIsUploadingOfficialPhoto] = useState(false);
+
+  const handleOpenCreateOfficial = () => {
+    setEditingOfficialId(null);
+    setOfficialForm({
+      name: "",
+      role: "",
+      period: "",
+      nip: "",
+      phone: "",
+      photo: "",
+    });
+    setOfficialModalOpen(true);
+  };
+
+  const handleOpenEditOfficial = (off: VillageOfficial) => {
+    setEditingOfficialId(off.id);
+    setOfficialForm({
+      name: off.name,
+      role: off.role,
+      period: off.period || "",
+      nip: off.nip || "",
+      phone: off.phone || "",
+      photo: off.photo || "",
+    });
+    setOfficialModalOpen(true);
   };
 
   // Media source state for article form
@@ -452,6 +493,68 @@ export default function AdminPage() {
     if (confirm("Hapus pos anggaran ini?")) {
       saveApbdes(apbdes.filter((item) => item.id !== id));
       showToast("Pos APBDes berhasil dihapus.");
+    }
+  };
+
+  // Handle Official Save, Delete & Photo Upload
+  const handleSaveOfficial = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!officialForm.name.trim() || !officialForm.role.trim()) {
+      showToast("Nama dan Jabatan aparatur wajib diisi.");
+      return;
+    }
+
+    if (editingOfficialId) {
+      const updated = officials.map((off) =>
+        off.id === editingOfficialId
+          ? {
+              ...off,
+              name: officialForm.name.trim(),
+              role: officialForm.role.trim(),
+              period: officialForm.period.trim() || undefined,
+              nip: officialForm.nip.trim() || undefined,
+              phone: officialForm.phone.trim() || undefined,
+              photo: officialForm.photo.trim() || undefined,
+            }
+          : off
+      );
+      saveOfficials(updated);
+      showToast(`Data aparatur "${officialForm.name}" berhasil diperbarui!`);
+    } else {
+      const newOfficial: VillageOfficial = {
+        id: `off-${Date.now()}`,
+        name: officialForm.name.trim(),
+        role: officialForm.role.trim(),
+        period: officialForm.period.trim() || undefined,
+        nip: officialForm.nip.trim() || undefined,
+        phone: officialForm.phone.trim() || undefined,
+        photo: officialForm.photo.trim() || undefined,
+      };
+      saveOfficials([...officials, newOfficial]);
+      showToast(`Aparatur "${officialForm.name}" berhasil ditambahkan!`);
+    }
+
+    setOfficialModalOpen(false);
+  };
+
+  const handleDeleteOfficial = (id: string, name: string) => {
+    if (confirm(`Apakah Anda yakin ingin menghapus data aparatur "${name}"?`)) {
+      saveOfficials(officials.filter((off) => off.id !== id));
+      showToast(`Data aparatur "${name}" berhasil dihapus.`);
+    }
+  };
+
+  const handleOfficialPhotoUpload = async (file: File) => {
+    setIsUploadingOfficialPhoto(true);
+    try {
+      const compressedDataUrl = await compressImageToDataUrl(file, 600, 600, 0.85);
+      setOfficialForm((prev) => ({ ...prev, photo: compressedDataUrl }));
+      showToast("Foto aparatur berhasil dipilih!");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Gagal memproses gambar foto.";
+      showToast(msg);
+    } finally {
+      setIsUploadingOfficialPhoto(false);
     }
   };
 
@@ -887,12 +990,21 @@ export default function AdminPage() {
             <span>Permohonan Surat ({serviceRequests.filter((r) => r.status === "Menunggu").length} baru)</span>
           </button>
           <button
+            onClick={() => setActiveTab("aparatur")}
+            className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === "aparatur" ? "bg-[#064e3b] text-white shadow-sm" : "hover:bg-slate-100 text-slate-700"
+            }`}
+          >
+            <Users size={16} />
+            <span>Aparatur Desa ({officials.length})</span>
+          </button>
+          <button
             onClick={() => setActiveTab("profil")}
             className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap ${
               activeTab === "profil" ? "bg-[#064e3b] text-white shadow-sm" : "hover:bg-slate-100 text-slate-700"
             }`}
           >
-            <Users size={16} />
+            <House size={16} />
             <span>Profil & Data Desa</span>
           </button>
           <button
@@ -1074,6 +1186,108 @@ export default function AdminPage() {
                 ))
               )}
             </div>
+          </div>
+        )}
+
+        {/* TAB: STRUKTUR APARATUR PEMERINTAH DESA */}
+        {activeTab === "aparatur" && (
+          <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">Kelola Struktur Aparatur Pemerintah Desa</h2>
+                <p className="text-xs text-slate-500">
+                  Tambah, ubah, dan hapus data perangkat desa yang tampil di halaman depan website.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleOpenCreateOfficial}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#064e3b] hover:bg-[#047857] text-white text-xs font-bold shadow transition-all cursor-pointer"
+              >
+                <Plus size={16} weight="bold" />
+                <span>Tambah Perangkat Desa</span>
+              </button>
+            </div>
+
+            {officials.length === 0 ? (
+              <div className="text-center py-12 text-slate-400">
+                <Users size={48} className="mx-auto mb-2 opacity-50" />
+                <p className="text-sm font-semibold">Belum ada data aparatur desa</p>
+                <p className="text-xs mt-1">Klik tombol &quot;Tambah Perangkat Desa&quot; untuk menambahkan perangkat desa baru.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {officials.map((off) => (
+                  <div
+                    key={off.id}
+                    className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-slate-300 hover:shadow-md transition-all flex flex-col justify-between gap-4"
+                  >
+                    <div className="flex items-start gap-3.5">
+                      {off.photo ? (
+                        <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-slate-200 shadow-xs shrink-0 bg-slate-100">
+                          <Image
+                            src={off.photo}
+                            alt={off.name}
+                            fill
+                            className="object-cover object-top"
+                            sizes="60px"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-600 to-blue-800 text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-xs">
+                          {off.name.charAt(0)}
+                        </div>
+                      )}
+
+                      <div className="min-w-0 flex-1 space-y-0.5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-[10px] font-black uppercase tracking-wider text-sky-800 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
+                            {off.role}
+                          </span>
+                          {off.period && (
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                              {off.period}
+                            </span>
+                          )}
+                        </div>
+                        <h4 className="text-sm font-bold text-slate-900 leading-snug truncate pt-0.5">
+                          {off.name}
+                        </h4>
+                        {off.nip && (
+                          <p className="text-[11px] text-slate-400 font-mono">
+                            NIP: {off.nip}
+                          </p>
+                        )}
+                        {off.phone && (
+                          <p className="text-[11px] text-slate-500 font-mono">
+                            Kontak: {off.phone}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 text-xs font-semibold">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEditOfficial(off)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 transition-colors cursor-pointer"
+                      >
+                        <PencilSimple size={14} />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteOfficial(off.id, off.name)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors cursor-pointer"
+                      >
+                        <Trash size={14} />
+                        <span>Hapus</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -1879,6 +2093,180 @@ export default function AdminPage() {
                 >
                   <CheckCircle size={16} weight="bold" />
                   <span>{editingApbId ? "Simpan Perubahan" : "Tambahkan Pos"}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: TAMBAH / EDIT APARATUR DESA */}
+      {officialModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 sm:p-7 shadow-2xl space-y-4 border border-slate-100 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="text-base font-bold text-slate-900">
+                  {editingOfficialId ? "Edit Data Perangkat Desa" : "Tambah Perangkat Desa Baru"}
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Lengkapi identitas jabatan, masa jabatan, nomor telepon, dan foto profil resmi.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOfficialModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold transition-all cursor-pointer shrink-0"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveOfficial} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Nama Lengkap & Gelar *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Contoh: Ahmad Fauzi, S.E."
+                  value={officialForm.name}
+                  onChange={(e) => setOfficialForm({ ...officialForm, name: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-900 focus:ring-2 focus:ring-emerald-700 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Jabatan / Posisi *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Contoh: Sekretaris Desa / Kaur Keuangan / Kepala Dusun"
+                  value={officialForm.role}
+                  onChange={(e) => setOfficialForm({ ...officialForm, role: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs text-slate-900 focus:ring-2 focus:ring-emerald-700 outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Periode Menjabat (Opsional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: 2019 - 2025"
+                    value={officialForm.period}
+                    onChange={(e) => setOfficialForm({ ...officialForm, period: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs text-slate-900 focus:ring-2 focus:ring-emerald-700 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    NIP (Opsional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: 19850914 201001 1 008"
+                    value={officialForm.nip}
+                    onChange={(e) => setOfficialForm({ ...officialForm, nip: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono text-slate-900 focus:ring-2 focus:ring-emerald-700 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Nomor Kontak / WhatsApp (Opsional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Contoh: 0813-1122-3344"
+                  value={officialForm.phone}
+                  onChange={(e) => setOfficialForm({ ...officialForm, phone: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono text-slate-900 focus:ring-2 focus:ring-emerald-700 outline-none"
+                />
+              </div>
+
+              {/* Foto Aparatur */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Foto Profil Perangkat Desa (Opsional)
+                </label>
+                
+                <div className="flex items-center gap-3">
+                  {officialForm.photo ? (
+                    <div className="relative w-16 h-16 rounded-2xl overflow-hidden border border-slate-200 shrink-0 bg-slate-100 shadow-xs">
+                      <Image
+                        src={officialForm.photo}
+                        alt="Preview"
+                        fill
+                        className="object-cover object-top"
+                        sizes="64px"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-16 h-16 rounded-2xl bg-slate-100 border border-dashed border-slate-300 text-slate-400 flex items-center justify-center text-[11px] shrink-0 font-medium">
+                      Tanpa Foto
+                    </div>
+                  )}
+
+                  <div className="flex-1 space-y-1.5">
+                    <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer border border-slate-200">
+                      <UploadSimple size={16} />
+                      <span>{isUploadingOfficialPhoto ? "Memproses..." : "Pilih Foto dari Galeri"}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleOfficialPhotoUpload(file);
+                        }}
+                      />
+                    </label>
+
+                    {officialForm.photo && (
+                      <button
+                        type="button"
+                        onClick={() => setOfficialForm({ ...officialForm, photo: "" })}
+                        className="block text-[11px] text-rose-600 hover:underline font-semibold"
+                      >
+                        Hapus Foto (Gunakan Inisial Huruf)
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-2">
+                  <input
+                    type="text"
+                    placeholder="Atau masukkan path / URL foto (contoh: /images/kepala-desa-aopidi.jpg)"
+                    value={officialForm.photo}
+                    onChange={(e) => setOfficialForm({ ...officialForm, photo: e.target.value })}
+                    className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-[11px] font-mono text-slate-600 focus:ring-1 focus:ring-emerald-700 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setOfficialModalOpen(false)}
+                  className="px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-[#064e3b] hover:bg-[#047857] text-white text-xs font-bold shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-1.5"
+                >
+                  <CheckCircle size={16} weight="bold" />
+                  <span>{editingOfficialId ? "Simpan Perubahan" : "Tambahkan Aparatur"}</span>
                 </button>
               </div>
             </form>
