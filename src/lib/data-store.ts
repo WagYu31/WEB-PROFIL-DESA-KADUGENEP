@@ -53,6 +53,7 @@ export interface VillageProfile {
     hamlets: number;
     areaKm2: number;
   };
+  apbdesBalihoUrl?: string;
 }
 
 export interface APBDesItem {
@@ -139,6 +140,7 @@ export const INITIAL_PROFILE: VillageProfile = {
     hamlets: 4,
     areaKm2: 3.42,
   },
+  apbdesBalihoUrl: "/images/infografis-apbdes-2026.png",
 };
 
 export const INITIAL_OFFICIALS: VillageOfficial[] = [

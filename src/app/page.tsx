@@ -1062,7 +1062,7 @@ export default function HomePage() {
                   className="relative aspect-[3/4] sm:aspect-[4/5] rounded-2xl overflow-hidden border-2 border-emerald-500/40 shadow-xl cursor-pointer bg-slate-950 transition-all duration-300 group-hover:border-emerald-400 group-hover:scale-[1.02]"
                 >
                   <Image
-                    src="/images/infografis-apbdes-2026.png"
+                    src={profile.apbdesBalihoUrl || "/images/infografis-apbdes-2026.png"}
                     alt="Baliho Infografis APBDes Kadugenep Tahun 2026"
                     fill
                     className="object-contain p-2"
@@ -1148,7 +1148,7 @@ export default function HomePage() {
                   </button>
 
                   <a
-                    href="/images/infografis-apbdes-2026.png"
+                    href={profile.apbdesBalihoUrl || "/images/infografis-apbdes-2026.png"}
                     download="APBDes-Desa-Kadugenep-2026.png"
                     className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs transition-colors"
                   >
@@ -2096,7 +2096,7 @@ export default function HomePage() {
               </div>
               <div className="flex items-center gap-2">
                 <a
-                  href="/images/infografis-apbdes-2026.png"
+                  href={profile.apbdesBalihoUrl || "/images/infografis-apbdes-2026.png"}
                   download="APBDes-Desa-Kadugenep-2026.png"
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 text-slate-200 hover:text-white hover:bg-slate-700 text-xs font-semibold transition-colors"
                   title="Unduh Gambar HD"
@@ -2119,7 +2119,7 @@ export default function HomePage() {
             <div className="overflow-y-auto p-4 flex justify-center bg-slate-900/40 max-h-[75vh]">
               <div className="relative w-full max-w-2xl aspect-[1052/1360] rounded-xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-950">
                 <Image
-                  src="/images/infografis-apbdes-2026.png"
+                  src={profile.apbdesBalihoUrl || "/images/infografis-apbdes-2026.png"}
                   alt="Dokumen Lengkap APBDes Kadugenep Tahun 2026"
                   fill
                   className="object-contain"

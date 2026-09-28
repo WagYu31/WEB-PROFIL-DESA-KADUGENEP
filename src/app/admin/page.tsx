@@ -312,6 +312,35 @@ export default function AdminPage() {
     }
   };
 
+  const [isUploadingBaliho, setIsUploadingBaliho] = useState(false);
+
+  const handleBalihoUpload = async (file: File) => {
+    setIsUploadingBaliho(true);
+    try {
+      const compressedDataUrl = await compressImageToDataUrl(file, 1600, 2000, 0.88);
+      const updatedProfile = {
+        ...profile,
+        apbdesBalihoUrl: compressedDataUrl,
+      };
+      saveProfile(updatedProfile);
+      showToast("Foto baliho resmi APBDes berhasil diperbarui!");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Gagal memproses gambar baliho.";
+      showToast(msg);
+    } finally {
+      setIsUploadingBaliho(false);
+    }
+  };
+
+  const handleResetBaliho = () => {
+    const updatedProfile = {
+      ...profile,
+      apbdesBalihoUrl: "/images/infografis-apbdes-2026.png",
+    };
+    saveProfile(updatedProfile);
+    showToast("Foto baliho dikembalikan ke gambar default.");
+  };
+
   const handleFileUpload = async (file: File, type: "image" | "video") => {
     if (type === "image") {
       setIsUploadingImage(true);
@@ -1670,6 +1699,65 @@ export default function AdminPage() {
         {/* TAB 4: TRANSPARANSI APBDES */}
         {activeTab === "apbdes" && (
           <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-6">
+            {/* KARTU PENGATURAN FOTO BALIHO RESMI APBDES */}
+            <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-[#071d2b] border border-slate-800 text-white shadow-md relative overflow-hidden">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+                <div className="flex items-center gap-4">
+                  <div className="relative w-20 h-28 sm:w-24 sm:h-32 rounded-xl overflow-hidden border-2 border-emerald-500/50 bg-slate-950 shadow-md shrink-0">
+                    <Image
+                      src={profile.apbdesBalihoUrl || "/images/infografis-apbdes-2026.png"}
+                      alt="Preview Baliho APBDes"
+                      fill
+                      className="object-contain p-1"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">
+                      <ShieldCheck size={14} />
+                      <span>Dokumen Publik Transparansi</span>
+                    </div>
+                    <h3 className="text-base sm:text-lg font-bold text-white">
+                      Foto Dokumen Baliho Resmi APBDes
+                    </h3>
+                    <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
+                      Gambar ini ditampilkan pada bagian Transparansi APBDes di beranda web dan dapat dibuka dalam resolusi HD oleh warga.
+                    </p>
+                    <p className="text-[11px] text-slate-400 font-mono pt-0.5">
+                      Lokasi file bawaan: <code className="text-emerald-300">public/images/infografis-apbdes-2026.png</code>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+                  <label className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer ${isUploadingBaliho ? "opacity-60 pointer-events-none" : ""}`}>
+                    <UploadSimple size={16} weight="bold" />
+                    <span>{isUploadingBaliho ? "Memproses..." : "Ganti / Upload Foto Baliho"}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleBalihoUpload(file);
+                      }}
+                      disabled={isUploadingBaliho}
+                    />
+                  </label>
+
+                  {profile.apbdesBalihoUrl && profile.apbdesBalihoUrl !== "/images/infografis-apbdes-2026.png" && (
+                    <button
+                      type="button"
+                      onClick={handleResetBaliho}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold border border-slate-700 transition-colors cursor-pointer"
+                    >
+                      <ArrowCounterClockwise size={15} />
+                      <span>Reset ke Default</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
               <div>
                 <h2 className="text-lg font-bold text-slate-900">Kelola Pos Anggaran APBDes</h2>
