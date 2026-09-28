@@ -44,6 +44,7 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showBalihoModal, setShowBalihoModal] = useState<boolean>(false);
   const [sotkView, setSotkView] = useState<"bagan" | "grid">("bagan");
+  const [sotkBg, setSotkBg] = useState<"kantor" | "blueprint" | "clean">("kantor");
 
   // Aspirasi form state
   const [aspForm, setAspForm] = useState({ name: "", contact: "", subject: "", message: "" });
@@ -1362,7 +1363,7 @@ export default function HomePage() {
       {/* 8. BAGAN STRUKTUR APARATUR PEMERINTAH DESA (SOTK) */}
       <section id="profil" className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-100 text-sky-900 border border-sky-200/80 mb-3 shadow-xs">
               <TreeStructure size={16} className="text-sky-700" />
@@ -1372,63 +1373,148 @@ export default function HomePage() {
               Struktur Aparatur Pemerintah Desa
             </h2>
             <p className="text-sm sm:text-base text-slate-600 mt-2 leading-relaxed">
-              Bagan susunan resmi aparatur Pemerintah Desa Kadugenep sesuai Permendagri No. 84 Tahun 2015. Garis komando eksekutif dan kemitraan strategis BPD.
+              Bagan susunan hierarki resmi aparatur Pemerintah Desa Kadugenep sesuai Permendagri No. 84 Tahun 2015. Garis komando eksekutif dan kemitraan strategis BPD.
             </p>
           </div>
 
-          {/* View Switcher: Bagan Hierarki vs Grid Kartu */}
-          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-100/90 border border-slate-200 shadow-xs self-start md:self-end">
-            <button
-              type="button"
-              onClick={() => setSotkView("bagan")}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-                sotkView === "bagan"
-                  ? "bg-white text-sky-900 shadow-sm border border-slate-200"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-              }`}
-            >
-              <TreeStructure size={16} className={sotkView === "bagan" ? "text-sky-600" : ""} />
-              <span>Bagan Hierarki (SOTK)</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setSotkView("grid")}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-                sotkView === "grid"
-                  ? "bg-white text-sky-900 shadow-sm border border-slate-200"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-              }`}
-            >
-              <SquaresFour size={16} className={sotkView === "grid" ? "text-sky-600" : ""} />
-              <span>Tampilan Grid</span>
-            </button>
+          {/* Controls: Background Selector & View Switcher */}
+          <div className="flex flex-wrap items-center gap-2 self-start lg:self-end">
+            {/* Background Style Switcher (only in Bagan view) */}
+            {sotkView === "bagan" && (
+              <div className="flex items-center gap-1 p-1 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-600 shadow-xs">
+                <span className="text-[10px] uppercase text-slate-400 px-2 font-black tracking-wider hidden sm:inline">
+                  Latar:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSotkBg("kantor")}
+                  className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
+                    sotkBg === "kantor"
+                      ? "bg-white text-sky-900 shadow-xs border border-slate-200"
+                      : "hover:bg-slate-200/60"
+                  }`}
+                  title="Latar Belakang Foto Kantor Balai Desa"
+                >
+                  <Buildings size={14} className={sotkBg === "kantor" ? "text-sky-600" : ""} />
+                  <span>Foto Balai Desa</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSotkBg("blueprint")}
+                  className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
+                    sotkBg === "blueprint"
+                      ? "bg-white text-sky-900 shadow-xs border border-slate-200"
+                      : "hover:bg-slate-200/60"
+                  }`}
+                  title="Latar Belakang Blueprint Grid Teknis"
+                >
+                  <span>📐 Blueprint</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSotkBg("clean")}
+                  className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
+                    sotkBg === "clean"
+                      ? "bg-white text-sky-900 shadow-xs border border-slate-200"
+                      : "hover:bg-slate-200/60"
+                  }`}
+                  title="Latar Belakang Kanvas Polos Bersih"
+                >
+                  <span>⚪ Kanvas</span>
+                </button>
+              </div>
+            )}
+
+            {/* View Switcher: Bagan Hierarki vs Grid Kartu */}
+            <div className="flex items-center gap-1 p-1 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-600 shadow-xs">
+              <button
+                type="button"
+                onClick={() => setSotkView("bagan")}
+                className={`px-3.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
+                  sotkView === "bagan"
+                    ? "bg-white text-sky-900 shadow-xs border border-slate-200"
+                    : "hover:bg-slate-200/60"
+                }`}
+              >
+                <TreeStructure size={15} className={sotkView === "bagan" ? "text-sky-600" : ""} />
+                <span>Bagan (SOTK)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setSotkView("grid")}
+                className={`px-3.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
+                  sotkView === "grid"
+                    ? "bg-white text-sky-900 shadow-xs border border-slate-200"
+                    : "hover:bg-slate-200/60"
+                }`}
+              >
+                <SquaresFour size={15} className={sotkView === "grid" ? "text-sky-600" : ""} />
+                <span>Grid</span>
+              </button>
+            </div>
           </div>
         </div>
 
         {sotkView === "bagan" ? (
-          /* BAGAN ORGANISASI PREMIUM */
-          <div className="relative rounded-3xl bg-slate-50/70 border border-slate-200/90 p-5 sm:p-8 md:p-12 shadow-sm overflow-hidden bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px]">
-            
+          /* BAGAN ORGANISASI PREMIUM DENGAN LATAR GAMBAR & KONEKTOR PRESISI */
+          <div
+            className={`relative rounded-3xl p-5 sm:p-8 md:p-12 shadow-xl overflow-hidden transition-all duration-300 border ${
+              sotkBg === "kantor"
+                ? "border-slate-800"
+                : sotkBg === "blueprint"
+                ? "bg-[#0b1c33] border-[#1e3a5f]"
+                : "bg-slate-50/80 border-slate-200/90"
+            }`}
+          >
+            {/* Latar Belakang Foto Kantor Balai Desa Kadugenep */}
+            {sotkBg === "kantor" && (
+              <div className="absolute inset-0 z-0">
+                <Image
+                  src="/images/kantor-desa-kadugenep.jpg"
+                  alt="Kantor Balai Desa Kadugenep"
+                  fill
+                  className="object-cover object-center scale-105"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/88 via-slate-900/84 to-slate-950/92 backdrop-blur-[3px]" />
+                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-sky-500/20 rounded-full blur-3xl pointer-events-none" />
+              </div>
+            )}
+
+            {/* Latar Belakang Blueprint Teknis */}
+            {sotkBg === "blueprint" && (
+              <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#1e3a5f_1px,transparent_1px),linear-gradient(to_bottom,#1e3a5f_1px,transparent_1px)] bg-[size:28px_28px] opacity-40 pointer-events-none" />
+            )}
+
+            {/* Latar Belakang Kanvas Polos */}
+            {sotkBg === "clean" && (
+              <div className="absolute inset-0 z-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
+            )}
+
             {/* Top Legend Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-6 sm:pb-8 border-b border-slate-200/80 text-[11px] font-bold text-slate-500">
-              <span className="uppercase tracking-wider text-slate-400">
+            <div
+              className={`relative z-10 flex flex-wrap items-center justify-between gap-3 pb-6 border-b text-[11px] font-bold ${
+                sotkBg === "kantor" || sotkBg === "blueprint"
+                  ? "border-slate-800 text-slate-300"
+                  : "border-slate-200 text-slate-500"
+              }`}
+            >
+              <span className="uppercase tracking-wider opacity-80">
                 Pemerintah Desa Kadugenep • Kec. Petir, Kab. Serang
               </span>
               <div className="flex items-center gap-4">
-                <span className="flex items-center gap-1.5 text-slate-600">
-                  <span className="w-4 h-0.5 bg-sky-500 rounded-full inline-block" />
-                  <span>Garis Komando</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-4 h-0.5 bg-sky-400 rounded-full inline-block shadow-[0_0_6px_rgba(56,189,248,0.8)]" />
+                  <span>Garis Komando Eksekutif</span>
                 </span>
-                <span className="flex items-center gap-1.5 text-slate-600">
-                  <span className="w-4 h-0.5 border-t-2 border-dashed border-amber-500 inline-block" />
+                <span className="flex items-center gap-1.5">
+                  <span className="w-4 h-0.5 border-t-2 border-dashed border-amber-400 inline-block" />
                   <span>Garis Koordinasi (BPD)</span>
                 </span>
               </div>
             </div>
 
-            <div className="pt-6 sm:pt-10 max-w-5xl mx-auto">
-              
-              {/* LEVEL 1: PUCUK PIMPINAN (KADES & BPD) */}
+            <div className="relative z-10 pt-6 sm:pt-8 max-w-5xl mx-auto">
               {(() => {
                 const kades = officials.find(
                   (o) => o.role.toLowerCase().includes("kepala desa") || o.id === "off-1"
@@ -1448,18 +1534,19 @@ export default function HomePage() {
 
                 return (
                   <div className="space-y-0">
-                    {/* Top Row: KADES and BPD (Sejajar dengan Garis Koordinasi) */}
-                    <div className="relative flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
-                      {/* Node 1A: KEPALA DESA (Center Dominant) */}
+                    {/* LEVEL 1: TOP ROW (KADES IN CENTER, BPD ON RIGHT WITH DASHED BRIDGE) */}
+                    <div className="relative max-w-5xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8">
+                      
+                      {/* Node 1A: KEPALA DESA (Center Dominant Card) */}
                       {kades && (
-                        <div className="w-full max-w-md relative z-10">
-                          <div className="p-6 rounded-3xl bg-white border-2 border-sky-600 shadow-xl ring-4 ring-sky-500/10 transition-all hover:shadow-2xl hover:-translate-y-1 relative overflow-hidden">
+                        <div className="w-full max-w-md relative z-10 shrink-0">
+                          <div className="p-6 rounded-3xl bg-white text-slate-900 border-2 border-sky-500 shadow-2xl ring-4 ring-sky-500/20 transition-all hover:scale-[1.01] relative overflow-hidden">
                             {/* Gold header bar */}
                             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-400 via-sky-600 to-amber-500" />
-                            
-                            <div className="flex items-start justify-between gap-2 mb-4">
+
+                            <div className="flex items-start justify-between gap-2 mb-3.5">
                               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-xs">
-                                <Crown size={13} weight="fill" />
+                                <Crown size={14} weight="fill" />
                                 <span>Pucuk Pimpinan Eksekutif</span>
                               </span>
                               {kades.period && (
@@ -1515,9 +1602,9 @@ export default function HomePage() {
                         </div>
                       )}
 
-                      {/* Bridge: Garis Koordinasi (Dashed line on desktop between Kades & BPD) */}
+                      {/* Dashed Bridge on Desktop between Kades and BPD */}
                       {bpd && (
-                        <div className="hidden lg:flex flex-col items-center justify-center shrink-0 w-32 relative">
+                        <div className="hidden lg:flex flex-col items-center justify-center shrink-0 w-24 relative z-0">
                           <span className="text-[9px] font-black uppercase tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-300 shadow-2xs whitespace-nowrap mb-1">
                             Garis Koordinasi
                           </span>
@@ -1525,10 +1612,10 @@ export default function HomePage() {
                         </div>
                       )}
 
-                      {/* Node 1B: BPD (Mitra Sejajar) */}
+                      {/* Node 1B: BPD (Mitra Sejajar di Samping) */}
                       {bpd && (
-                        <div className="w-full max-w-sm relative z-10">
-                          <div className="p-5 sm:p-6 rounded-3xl bg-white border border-indigo-200/90 shadow-md hover:shadow-lg transition-all relative overflow-hidden">
+                        <div className="w-full max-w-sm relative z-10 shrink-0">
+                          <div className="p-5 sm:p-6 rounded-3xl bg-white text-slate-900 border border-indigo-200 shadow-md hover:shadow-lg transition-all relative overflow-hidden">
                             <div className="absolute top-0 left-0 right-0 h-1 bg-indigo-500" />
 
                             <div className="flex items-center justify-between gap-2 mb-3">
@@ -1579,19 +1666,19 @@ export default function HomePage() {
                       )}
                     </div>
 
-                    {/* STEM CONNECTOR 1 -> 2 (Garis Komando Solid ke Sekdes) */}
-                    <div className="flex flex-col items-center justify-center py-2 sm:py-3">
-                      <div className="w-0.5 h-8 sm:h-10 bg-sky-500" />
-                      <div className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-sky-100 text-sky-800 border border-sky-300 shadow-2xs -my-1.5 z-10">
-                        Garis Komando ↓
+                    {/* STEM CONNECTOR 1 -> 2 (Garis Komando Solid Langsung ke Sekdes) */}
+                    <div className="flex flex-col items-center justify-center py-2 sm:py-3 relative z-10">
+                      <div className="w-0.5 h-10 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
+                      <div className="px-3 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-sky-500 text-white border border-sky-300 shadow-md -my-1.5 z-10 flex items-center gap-1">
+                        <span>Garis Komando ↓</span>
                       </div>
-                      <div className="w-0.5 h-8 sm:h-10 bg-sky-500" />
+                      <div className="w-0.5 h-10 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
                     </div>
 
                     {/* LEVEL 2: SEKRETARIAT DESA (SEKDES) */}
                     {sekdes && (
                       <div className="flex justify-center relative z-10">
-                        <div className="w-full max-w-md p-5 sm:p-6 rounded-3xl bg-white border-2 border-sky-500/80 shadow-lg hover:shadow-xl transition-all relative overflow-hidden">
+                        <div className="w-full max-w-md p-5 sm:p-6 rounded-3xl bg-white text-slate-900 border-2 border-sky-500/80 shadow-xl hover:shadow-2xl transition-all relative overflow-hidden">
                           <div className="absolute top-0 left-0 right-0 h-1 bg-sky-600" />
 
                           <div className="flex items-center justify-between gap-2 mb-3">
@@ -1641,21 +1728,25 @@ export default function HomePage() {
                       </div>
                     )}
 
-                    {/* STEM CONNECTOR 2 -> 3 (Forking Tree ke Kaur & Kasi) */}
-                    <div className="hidden md:block">
-                      <div className="w-0.5 h-8 bg-sky-500 mx-auto" />
-                      {/* Horizontal Branching Fork */}
-                      <div className="relative max-w-4xl mx-auto px-12">
-                        <div className="h-0.5 bg-sky-400 w-full" />
-                        <div className="grid grid-cols-3 w-full">
+                    {/* STEM CONNECTOR 2 -> 3 (Forking Tree Presisi ke Kaur & Kasi) */}
+                    <div className="hidden md:block relative max-w-5xl mx-auto h-14">
+                      {/* Vertical stem from Sekdes */}
+                      <div className="w-0.5 h-6 bg-sky-400 mx-auto shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
+                      
+                      {/* Horizontal bar spanning between Col 1 center and Col 3 center */}
+                      <div className="relative w-full h-8">
+                        <div className="absolute top-0 left-[16.67%] right-[16.67%] h-0.5 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
+                        
+                        {/* 3 Downward Drop Stems precisely aligned with each card */}
+                        <div className="grid grid-cols-3 w-full h-full">
                           <div className="flex justify-center">
-                            <div className="w-0.5 h-6 bg-sky-400" />
+                            <div className="w-0.5 h-8 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
                           </div>
                           <div className="flex justify-center">
-                            <div className="w-0.5 h-6 bg-sky-400" />
+                            <div className="w-0.5 h-8 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
                           </div>
                           <div className="flex justify-center">
-                            <div className="w-0.5 h-6 bg-sky-400" />
+                            <div className="w-0.5 h-8 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
                           </div>
                         </div>
                       </div>
@@ -1663,7 +1754,7 @@ export default function HomePage() {
 
                     {/* Mobile connector */}
                     <div className="block md:hidden flex justify-center py-2">
-                      <div className="w-0.5 h-8 bg-sky-400" />
+                      <div className="w-0.5 h-8 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
                     </div>
 
                     {/* LEVEL 3: UNSUR PELAKSANA TEKNIS (KAUR & KASI) */}
@@ -1671,7 +1762,7 @@ export default function HomePage() {
                       {staff.map((off) => (
                         <div
                           key={off.id}
-                          className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:border-sky-300 hover:shadow-md transition-all flex flex-col justify-between gap-3 relative overflow-hidden"
+                          className="p-5 rounded-3xl bg-white text-slate-900 border border-slate-200/90 shadow-md hover:border-sky-300 hover:shadow-xl transition-all flex flex-col justify-between gap-3 relative overflow-hidden"
                         >
                           <div className="absolute top-0 left-0 right-0 h-1 bg-slate-300" />
 
@@ -1715,7 +1806,7 @@ export default function HomePage() {
                             </div>
                           </div>
 
-                          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500">
+                          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500 leading-relaxed">
                             {off.role.toLowerCase().includes("keuangan") &&
                               "Pengelolaan Buku Kas Umum, SPJ, dan Penatausahaan APBDes"}
                             {off.role.toLowerCase().includes("perencanaan") &&
