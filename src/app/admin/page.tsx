@@ -1518,9 +1518,9 @@ export default function AdminPage() {
                         <h4 className="text-sm font-bold text-slate-900 leading-snug truncate pt-0.5">
                           {off.name}
                         </h4>
-                        {off.nip && (
+                        {(off.nrpd || off.nip) && (
                           <p className="text-[11px] text-slate-400 font-mono">
-                            NIP: {off.nip}
+                            NRPD: {off.nrpd || off.nip}
                           </p>
                         )}
                         {off.phone && (
@@ -2432,11 +2432,11 @@ export default function AdminPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    NIP (Opsional)
+                    NRPD / NIP (Nomor Registrasi / Induk Pegawai)
                   </label>
                   <input
                     type="text"
-                    placeholder="Contoh: 19850914 201001 1 008"
+                    placeholder="Contoh: 1908 19860515 01"
                     value={officialForm.nip}
                     onChange={(e) => setOfficialForm({ ...officialForm, nip: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono text-slate-900 focus:ring-2 focus:ring-emerald-700 outline-none"

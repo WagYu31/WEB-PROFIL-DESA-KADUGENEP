@@ -24,6 +24,7 @@ export interface VillageOfficial {
   role: string;
   period?: string;
   nip?: string;
+  nrpd?: string;
   photo?: string;
   phone?: string;
 }
@@ -150,38 +151,59 @@ export const INITIAL_OFFICIALS: VillageOfficial[] = [
     phone: "0838-5717-8552",
   },
   {
-    id: "off-2",
-    name: "Ahmad Fauzi, S.E.",
-    role: "Sekretaris Desa",
-    nip: "19850914 201001 1 008",
-    phone: "0813-1122-3344",
-  },
-  {
-    id: "off-3",
-    name: "Siti Rahmawati, S.Ak.",
-    role: "Kaur Keuangan (Bendahara)",
-    nip: "19910322 201502 2 004",
-    phone: "0819-5566-7788",
-  },
-  {
-    id: "off-4",
-    name: "Dedi Suhendar, S.P.",
-    role: "Kaur Perencanaan & Pembangunan",
-    nip: "19881105 201403 1 002",
-    phone: "0857-4433-2211",
-  },
-  {
-    id: "off-5",
-    name: "Hj. Nina Kurniasih",
-    role: "Kasi Pelayanan Umum & Kesra",
-    nip: "19830718 200902 2 006",
-    phone: "0812-7788-9900",
-  },
-  {
-    id: "off-6",
+    id: "off-bpd",
     name: "Ust. M. Ridwan, S.Ag.",
     role: "Ketua BPD Desa Kadugenep",
     phone: "0813-9988-1122",
+  },
+  {
+    id: "off-sekdes",
+    name: "Nursahid",
+    role: "Sekretaris Desa",
+    nrpd: "1908 19860515 01",
+    nip: "1908 19860515 01",
+  },
+  {
+    id: "off-kaur-1",
+    name: "Rohaman",
+    role: "Kaur Umum",
+    nrpd: "1908 19900420 01",
+    nip: "1908 19900420 01",
+  },
+  {
+    id: "off-kaur-2",
+    name: "Deddy Ardiansyah",
+    role: "Kaur Keuangan",
+    nrpd: "1908 19890626 01",
+    nip: "1908 19890626 01",
+  },
+  {
+    id: "off-kaur-3",
+    name: "Idrus",
+    role: "Kaur Perencanaan",
+    nrpd: "1906 19860506 01",
+    nip: "1906 19860506 01",
+  },
+  {
+    id: "off-kasi-1",
+    name: "Abdul Hani",
+    role: "Kasi Pemerintahan",
+    nrpd: "1908 19870812 01",
+    nip: "1908 19870812 01",
+  },
+  {
+    id: "off-kasi-2",
+    name: "Kartawijaya",
+    role: "Kasi Kesejahteraan",
+    nrpd: "1908 19850107 01",
+    nip: "1908 19850107 01",
+  },
+  {
+    id: "off-kasi-3",
+    name: "Ihah Tunjihah",
+    role: "Kasi Pelayanan",
+    nrpd: "1908 20020326 01",
+    nip: "1908 20020326 01",
   },
 ];
 
@@ -536,18 +558,25 @@ export function useVillageStore() {
       };
       setProfileState(migratedProfile);
       const storedOfficials = getStoredData(STORAGE_KEYS.OFFICIALS, INITIAL_OFFICIALS);
-      const mergedOfficials = storedOfficials.map((o: VillageOfficial) => {
-        if (o.id === "off-1") {
-          return {
-            ...o,
-            name: "H. M. Aopidi",
-            role: "Kepala Desa Kadugenep",
-            period: "2019 - 2025",
-            photo: "/images/kepala-desa-aopidi.jpg",
-          };
-        }
-        return o;
-      });
+      const hasNursahid = storedOfficials.some((o: VillageOfficial) => o.name.toLowerCase().includes("nursahid"));
+      let mergedOfficials: VillageOfficial[];
+      if (!hasNursahid) {
+        mergedOfficials = INITIAL_OFFICIALS;
+        setStoredData(STORAGE_KEYS.OFFICIALS, INITIAL_OFFICIALS);
+      } else {
+        mergedOfficials = storedOfficials.map((o: VillageOfficial) => {
+          if (o.id === "off-1") {
+            return {
+              ...o,
+              name: "H. M. Aopidi",
+              role: "Kepala Desa Kadugenep",
+              period: "2019 - 2025",
+              photo: "/images/kepala-desa-aopidi.jpg",
+            };
+          }
+          return o;
+        });
+      }
       setOfficialsState(mergedOfficials);
 
       const storedArticles = getStoredData<Article[]>(STORAGE_KEYS.ARTICLES, INITIAL_ARTICLES);
@@ -579,18 +608,24 @@ export function useVillageStore() {
       };
       setProfileState(mProf);
       const sOfficials = getStoredData(STORAGE_KEYS.OFFICIALS, INITIAL_OFFICIALS);
-      const mOfficials = sOfficials.map((o: VillageOfficial) => {
-        if (o.id === "off-1") {
-          return {
-            ...o,
-            name: "H. M. Aopidi",
-            role: "Kepala Desa Kadugenep",
-            period: "2019 - 2025",
-            photo: "/images/kepala-desa-aopidi.jpg",
-          };
-        }
-        return o;
-      });
+      const hasNursahidInUpdate = sOfficials.some((o: VillageOfficial) => o.name.toLowerCase().includes("nursahid"));
+      let mOfficials: VillageOfficial[];
+      if (!hasNursahidInUpdate) {
+        mOfficials = INITIAL_OFFICIALS;
+      } else {
+        mOfficials = sOfficials.map((o: VillageOfficial) => {
+          if (o.id === "off-1") {
+            return {
+              ...o,
+              name: "H. M. Aopidi",
+              role: "Kepala Desa Kadugenep",
+              period: "2019 - 2025",
+              photo: "/images/kepala-desa-aopidi.jpg",
+            };
+          }
+          return o;
+        });
+      }
       setOfficialsState(mOfficials);
 
       const sArticles = getStoredData<Article[]>(STORAGE_KEYS.ARTICLES, INITIAL_ARTICLES);

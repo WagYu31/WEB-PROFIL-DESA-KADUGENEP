@@ -35,7 +35,7 @@ import { CivicNoticeBar } from "@/components/civic-notice-bar";
 import { Counter } from "@/components/ui/counter";
 import { motion } from "motion/react";
 import { OverlappingStack, SAMPLE_STACK_CARDS } from "@/components/ui/overlapping-stack";
-import { useVillageStore } from "@/lib/data-store";
+import { useVillageStore, type VillageOfficial } from "@/lib/data-store";
 import { formatDateID, formatRupiah } from "@/lib/utils";
 
 export default function HomePage() {
@@ -1482,6 +1482,158 @@ export default function HomePage() {
                   (o) => o !== kades && o !== bpd && o !== sekdes
                 );
 
+                const kaurList = staff.filter(
+                  (o) =>
+                    o.role.toLowerCase().includes("kaur") ||
+                    o.role.toLowerCase().includes("urusan")
+                );
+                const kasiList = staff.filter(
+                  (o) =>
+                    o.role.toLowerCase().includes("kasi") ||
+                    o.role.toLowerCase().includes("seksi") ||
+                    o.role.toLowerCase().includes("pelayanan") ||
+                    o.role.toLowerCase().includes("pelasayan")
+                );
+                const otherStaff = staff.filter(
+                  (o) => !kaurList.includes(o) && !kasiList.includes(o)
+                );
+
+                const getOfficialDuty = (role: string) => {
+                  const r = role.toLowerCase();
+                  if (r.includes("keuangan") || r.includes("bendahara")) {
+                    return "Penatausahaan APBDes, Pengelolaan Buku Kas Umum, Pembukuan, dan SPJ Keuangan Desa";
+                  }
+                  if (r.includes("perencanaan")) {
+                    return "Penyusunan RKPDes, Desain RAB Pembangunan, Pendataan Wilayah, dan Monitoring Program";
+                  }
+                  if (r.includes("umum") || r.includes("tu") || r.includes("tata usaha")) {
+                    return "Pengelolaan Ketatausahaan, Tata Naskah Dinas, Inventaris Aset, dan Rumah Tangga Kantor";
+                  }
+                  if (r.includes("pemerintahan") || r.includes("praja")) {
+                    return "Manajemen Tata Praja, Administrasi Kependudukan, Pertanahan, dan Ketentraman Wilayah";
+                  }
+                  if (r.includes("kesejahteraan") || r.includes("kesra")) {
+                    return "Pembangunan Sarpras Desa, Pemberdayaan Masyarakat, dan Program Kesejahteraan Sosial";
+                  }
+                  if (r.includes("pelayanan") || r.includes("pelasayan")) {
+                    return "Pelayanan Administrasi Warga, Surat Pengantar/SKTM, Pencatatan Sipil, dan Aduan Publik";
+                  }
+                  return "Pelaksana Teknis Tugas Pemerintahan & Kewilayahan Desa Kadugenep";
+                };
+
+                const renderCardTier = (
+                  list: VillageOfficial[],
+                  tierCategory: "kaur" | "kasi" | "other"
+                ) => (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 max-w-5xl mx-auto">
+                    {list.map((off, idx) => {
+                      const isFirst = idx === 0;
+                      const isLast = idx === list.length - 1;
+                      const isOnly = list.length === 1;
+                      const isKasi = tierCategory === "kasi";
+
+                      return (
+                        <div key={off.id} className="flex flex-col">
+                          {/* Desktop Connector Header: Garis horizontal dan vertikal 100% presisi mengarah ke tengah kartu */}
+                          <div className="hidden md:block relative h-7 w-full">
+                            {!isOnly && (
+                              <>
+                                {isFirst && (
+                                  <div className="absolute top-0 left-1/2 right-[-12px] h-0.5 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
+                                )}
+                                {!isFirst && !isLast && (
+                                  <div className="absolute top-0 left-[-12px] right-[-12px] h-0.5 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
+                                )}
+                                {isLast && (
+                                  <div className="absolute top-0 left-[-12px] right-1/2 h-0.5 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
+                                )}
+                              </>
+                            )}
+
+                            {/* Vertical Drop Stem tepat 100% di titik tengah kartu */}
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
+                          </div>
+
+                          {/* Mobile connector stem */}
+                          <div className="block md:hidden flex justify-center py-2">
+                            <div className="w-0.5 h-5 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
+                          </div>
+
+                          {/* The Card */}
+                          <div className="p-5 rounded-3xl bg-white text-slate-900 border border-slate-200/90 shadow-md hover:border-sky-300 hover:shadow-xl transition-all flex flex-col justify-between gap-3 relative overflow-hidden flex-1">
+                            <div
+                              className={`absolute top-0 left-0 right-0 h-1 ${
+                                isKasi ? "bg-emerald-500" : "bg-sky-500"
+                              }`}
+                            />
+
+                            <div>
+                              <div className="flex items-center justify-between gap-2 mb-3">
+                                <span
+                                  className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border inline-block ${
+                                    isKasi
+                                      ? "text-emerald-800 bg-emerald-50 border-emerald-200"
+                                      : "text-sky-800 bg-sky-50 border-sky-200"
+                                  }`}
+                                >
+                                  {off.role}
+                                </span>
+                                <span className="text-[9px] font-bold text-slate-400">
+                                  {isKasi ? "Pelaksana Teknis" : "Staf Sekretariat"}
+                                </span>
+                              </div>
+
+                              <div className="flex items-start gap-3">
+                                {off.photo ? (
+                                  <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-slate-200 shadow-xs shrink-0 bg-slate-100">
+                                    <Image
+                                      src={off.photo}
+                                      alt={off.name}
+                                      fill
+                                      className="object-cover object-top"
+                                      sizes="56px"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div
+                                    className={`w-12 h-12 rounded-2xl text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-xs ${
+                                      isKasi
+                                        ? "bg-gradient-to-br from-emerald-600 to-teal-800"
+                                        : "bg-gradient-to-br from-sky-600 to-blue-800"
+                                    }`}
+                                  >
+                                    {off.name.charAt(0)}
+                                  </div>
+                                )}
+
+                                <div className="min-w-0 flex-1 space-y-0.5">
+                                  <h4 className="text-sm font-bold text-slate-900 leading-snug">
+                                    {off.name}
+                                  </h4>
+                                  {(off.nrpd || off.nip) && (
+                                    <p className="text-[10px] text-slate-500 font-mono">
+                                      NRPD: {off.nrpd || off.nip}
+                                    </p>
+                                  )}
+                                  {off.phone && (
+                                    <p className="text-[10px] text-slate-500 font-mono">
+                                      Kontak: {off.phone}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500 leading-relaxed">
+                              {getOfficialDuty(off.role)}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+
                 return (
                   <div className="space-y-0">
                     {/* LEVEL 1: TOP ROW (KEPALA DESA DI CENTER, BPD DI KANAN, DENGAN GARIS KOORDINASI) */}
@@ -1673,9 +1825,9 @@ export default function HomePage() {
                               <h4 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
                                 {sekdes.name}
                               </h4>
-                              {sekdes.nip && (
+                              {(sekdes.nrpd || sekdes.nip) && (
                                 <p className="text-[11px] font-mono text-slate-400">
-                                  NIP: {sekdes.nip}
+                                  NRPD: {sekdes.nrpd || sekdes.nip}
                                 </p>
                               )}
                               <p className="text-[11px] text-slate-500 leading-relaxed">
@@ -1687,97 +1839,54 @@ export default function HomePage() {
                       </div>
                     )}
 
-                    {/* STEM CONNECTOR 2 -> 3 (Garis Vertikal Turun dari Sekdes) */}
-                    <div className="hidden md:flex justify-center max-w-5xl mx-auto">
-                      <div className="w-0.5 h-8 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
-                    </div>
-
-                    {/* LEVEL 3: UNSUR PELAKSANA TEKNIS (KAUR & KASI DENGAN CONNECTOR PRESISI 100%) */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 max-w-5xl mx-auto">
-                      {staff.map((off, idx) => (
-                        <div key={off.id} className="flex flex-col">
-                          {/* Desktop Connector Header: Garis horizontal dan vertikal 100% presisi mengarah ke tengah kartu */}
-                          <div className="hidden md:block relative h-8 w-full">
-                            {/* Horizontal Bar Segment */}
-                            {idx === 0 && (
-                              <div className="absolute top-0 left-1/2 right-[-12px] h-0.5 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
-                            )}
-                            {idx === 1 && (
-                              <div className="absolute top-0 left-[-12px] right-[-12px] h-0.5 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
-                            )}
-                            {idx === 2 && (
-                              <div className="absolute top-0 left-[-12px] right-1/2 h-0.5 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
-                            )}
-
-                            {/* Vertical Drop Stem tepat 100% di titik tengah kartu */}
-                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
-                          </div>
-
-                          {/* Mobile connector stem */}
-                          <div className="block md:hidden flex justify-center py-2">
-                            <div className="w-0.5 h-6 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
-                          </div>
-
-                          {/* The Card */}
-                          <div className="p-5 rounded-3xl bg-white text-slate-900 border border-slate-200/90 shadow-md hover:border-sky-300 hover:shadow-xl transition-all flex flex-col justify-between gap-3 relative overflow-hidden flex-1">
-                          <div className="absolute top-0 left-0 right-0 h-1 bg-slate-300" />
-
-                          <div>
-                            <span className="text-[10px] font-black uppercase tracking-wider text-sky-800 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200 inline-block mb-3">
-                              {off.role}
-                            </span>
-
-                            <div className="flex items-start gap-3">
-                              {off.photo ? (
-                                <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-slate-200 shadow-xs shrink-0 bg-slate-100">
-                                  <Image
-                                    src={off.photo}
-                                    alt={off.name}
-                                    fill
-                                    className="object-cover object-top"
-                                    sizes="56px"
-                                  />
-                                </div>
-                              ) : (
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-600 to-blue-800 text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-xs">
-                                  {off.name.charAt(0)}
-                                </div>
-                              )}
-
-                              <div className="min-w-0 flex-1 space-y-0.5">
-                                <h4 className="text-sm font-bold text-slate-900 leading-snug">
-                                  {off.name}
-                                </h4>
-                                {off.nip && (
-                                  <p className="text-[10px] text-slate-400 font-mono">
-                                    NIP: {off.nip}
-                                  </p>
-                                )}
-                                {off.phone && (
-                                  <p className="text-[10px] text-slate-500 font-mono">
-                                    Kontak: {off.phone}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500 leading-relaxed">
-                            {off.role.toLowerCase().includes("keuangan") &&
-                              "Pengelolaan Buku Kas Umum, SPJ, dan Penatausahaan APBDes"}
-                            {off.role.toLowerCase().includes("perencanaan") &&
-                              "Penyusunan RKPDes, Desain RAB, dan Monitoring Fisik Desa"}
-                            {off.role.toLowerCase().includes("pelayanan") &&
-                              "Pelayanan Administrasi Warga, Bansos, dan Kemasyarakatan"}
-                            {!off.role.toLowerCase().includes("keuangan") &&
-                              !off.role.toLowerCase().includes("perencanaan") &&
-                              !off.role.toLowerCase().includes("pelayanan") &&
-                              "Pelaksana Teknis Tugas Pemerintahan & Kewilayahan Desa"}
-                          </div>
-                        </div>
+                    {/* STEM CONNECTOR 2 -> 3A (Garis Vertikal Turun dari Sekdes ke Kaur) */}
+                    <div className="flex flex-col items-center justify-center py-2 sm:py-3 relative z-10">
+                      <div className="w-0.5 h-6 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
+                      <div className="px-3.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-sky-600 text-white border border-sky-300 shadow-md -my-1 z-10 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                        <span>Unsur Staf Sekretariat (Kepala Urusan / Kaur) ↓</span>
                       </div>
-                    ))}
+                      <div className="w-0.5 h-6 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
                     </div>
+
+                    {/* LEVEL 3A: UNSUR SEKRETARIAT (3 KAUR) */}
+                    {kaurList.length > 0 ? (
+                      renderCardTier(kaurList, "kaur")
+                    ) : (
+                      renderCardTier(staff.slice(0, 3), "kaur")
+                    )}
+
+                    {/* STEM CONNECTOR 3A -> 3B (Garis Vertikal Turun ke Kasi) */}
+                    <div className="flex flex-col items-center justify-center py-2 sm:py-3 relative z-10">
+                      <div className="w-0.5 h-6 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
+                      <div className="px-3.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-700 text-white border border-emerald-300 shadow-md -my-1 z-10 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                        <span>Unsur Pelaksana Teknis (Kepala Seksi / Kasi) ↓</span>
+                      </div>
+                      <div className="w-0.5 h-6 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
+                    </div>
+
+                    {/* LEVEL 3B: UNSUR PELAKSANA TEKNIS (3 KASI) */}
+                    {kasiList.length > 0 ? (
+                      renderCardTier(kasiList, "kasi")
+                    ) : (
+                      renderCardTier(staff.slice(3), "kasi")
+                    )}
+
+                    {/* LEVEL 3C: OTHER STAFF (JIKA ADA) */}
+                    {otherStaff.length > 0 && (
+                      <>
+                        <div className="flex flex-col items-center justify-center py-2 sm:py-3 relative z-10">
+                          <div className="w-0.5 h-6 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
+                          <div className="px-3.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-slate-700 text-white border border-slate-400 shadow-md -my-1 z-10 flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                            <span>Unsur Kewilayahan / Staf Pembantu Lainnya ↓</span>
+                          </div>
+                          <div className="w-0.5 h-6 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
+                        </div>
+                        {renderCardTier(otherStaff, "other")}
+                      </>
+                    )}
                   </div>
                 );
               })()}
@@ -1822,7 +1931,7 @@ export default function HomePage() {
                       )}
                     </div>
                     <h4 className="text-base font-bold text-slate-900 leading-snug truncate">{off.name}</h4>
-                    {off.nip && <p className="text-[11px] text-slate-400 font-mono">NIP: {off.nip}</p>}
+                    {(off.nrpd || off.nip) && <p className="text-[11px] text-slate-400 font-mono">NRPD: {off.nrpd || off.nip}</p>}
                     {off.phone && <p className="text-[11px] text-slate-500 font-mono">Kontak: {off.phone}</p>}
                   </div>
                 </div>
