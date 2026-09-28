@@ -395,6 +395,7 @@ export default function ArticleDetailPage({ params }: PageProps) {
                   fill
                   sizes="300px"
                   className="object-cover group-hover:scale-105 transition-transform"
+                  unoptimized={Boolean(rel.image?.startsWith("/uploads/") || rel.image?.startsWith("data:"))}
                 />
                 {rel.videoUrl && (
                   <span className="absolute bottom-2 right-2 p-1 rounded-md bg-black/70 backdrop-blur-sm text-rose-400">

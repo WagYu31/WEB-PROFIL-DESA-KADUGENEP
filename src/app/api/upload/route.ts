@@ -58,22 +58,45 @@ export async function POST(request: NextRequest) {
     const uniqueFileName = `${prefix}-${timestamp}-${random}-${cleanBase}${extension}`;
 
     const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadDir, { recursive: true });
 
-    const filePath = path.join(uploadDir, uniqueFileName);
-    await fs.writeFile(filePath, buffer);
+    try {
+      await fs.mkdir(uploadDir, { recursive: true });
+      const filePath = path.join(uploadDir, uniqueFileName);
+      await fs.writeFile(filePath, buffer);
 
-    const publicUrl = `/uploads/${uniqueFileName}`;
+      const publicUrl = `/uploads/${uniqueFileName}`;
 
-    return NextResponse.json({
-      success: true,
-      url: publicUrl,
-      fileName: uniqueFileName,
-      originalName,
-      size: file.size,
-      type: file.type,
-      mediaCategory: isVideo ? "video" : "image",
-    });
+      return NextResponse.json({
+        success: true,
+        url: publicUrl,
+        fileName: uniqueFileName,
+        originalName,
+        size: file.size,
+        type: file.type,
+        mediaCategory: isVideo ? "video" : "image",
+      });
+    } catch (fsError: any) {
+      // In serverless environments (Vercel / AWS Lambda), the filesystem is read-only (EROFS)
+      if (fsError?.code === "EROFS" || fsError?.message?.includes("read-only")) {
+        console.warn("Serverless read-only filesystem (EROFS) detected. Providing data URI fallback.");
+        const mimeType = file.type || (isImage ? "image/jpeg" : "video/mp4");
+        const base64 = buffer.toString("base64");
+        const dataUrl = `data:${mimeType};base64,${base64}`;
+
+        return NextResponse.json({
+          success: true,
+          url: dataUrl,
+          fileName: uniqueFileName,
+          originalName,
+          size: file.size,
+          type: file.type,
+          mediaCategory: isVideo ? "video" : "image",
+          storage: "data-uri",
+          isServerless: true,
+        });
+      }
+      throw fsError;
+    }
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json(

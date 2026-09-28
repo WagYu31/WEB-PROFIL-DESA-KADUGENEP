@@ -182,42 +182,128 @@ export default function AdminPage() {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
 
-  const handleFileUpload = async (file: File, type: "image" | "video") => {
-    const formData = new FormData();
-    formData.append("file", file);
+  // Compress image to lightweight WebP/JPEG data URL for instant zero-serverless-error storage
+  const compressImageToDataUrl = async (
+    file: File,
+    maxWidth = 1280,
+    maxHeight = 1280,
+    quality = 0.82
+  ): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      if (!file.type.startsWith("image/")) {
+        reject(new Error("File yang dipilih bukan gambar yang valid."));
+        return;
+      }
 
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error("Gagal membaca file dari perangkat."));
+      reader.onload = (e) => {
+        const img = new window.Image();
+        img.onerror = () => reject(new Error("Format gambar rusak atau tidak didukung browser."));
+        img.onload = () => {
+          let { width, height } = img;
+
+          if (width > maxWidth || height > maxHeight) {
+            const ratio = Math.min(maxWidth / width, maxHeight / height);
+            width = Math.round(width * ratio);
+            height = Math.round(height * ratio);
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(e.target?.result as string);
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+
+          let dataUrl = "";
+          try {
+            dataUrl = canvas.toDataURL("image/webp", quality);
+            if (!dataUrl.startsWith("data:image/webp")) {
+              dataUrl = canvas.toDataURL("image/jpeg", quality);
+            }
+          } catch {
+            dataUrl = canvas.toDataURL("image/jpeg", quality);
+          }
+
+          resolve(dataUrl);
+        };
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileUpload = async (file: File, type: "image" | "video") => {
     if (type === "image") {
       setIsUploadingImage(true);
-    } else {
-      setIsUploadingVideo(true);
+      try {
+        // Step 1: Compress image on client side (max 1280px, WebP quality 0.82)
+        // Keeps file light (~80-150KB) and avoids Vercel payload limits or localStorage quota overflow
+        const compressedDataUrl = await compressImageToDataUrl(file);
+
+        // Step 2: Attempt uploading to server (e.g. for local dev or VPS storage)
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+          const res = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await res.json();
+          if (res.ok && data.success && data.url) {
+            setArticleForm((prev) => ({ ...prev, image: data.url }));
+            showToast("Foto berita berhasil diunggah!");
+            return;
+          }
+        } catch {
+          // If server upload fails (e.g. read-only filesystem or network issue), gracefully fallback
+        }
+
+        // Graceful resilient fallback: use high quality compressed data URL directly
+        setArticleForm((prev) => ({ ...prev, image: compressedDataUrl }));
+        showToast("Foto berhasil dimuat & dioptimasi dari galeri!");
+      } catch (err: any) {
+        console.error("Image processing error:", err);
+        alert("Gagal memproses gambar: " + (err.message || "Format gambar tidak didukung"));
+      } finally {
+        setIsUploadingImage(false);
+      }
+      return;
     }
 
+    // Video Upload
+    setIsUploadingVideo(true);
     try {
+      const formData = new FormData();
+      formData.append("file", file);
+
       const res = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "Gagal mengunggah file.");
+        throw new Error(data.error || "Gagal mengunggah file video.");
       }
-      if (type === "image") {
-        setArticleForm((prev) => ({ ...prev, image: data.url }));
-        showToast("Foto berhasil diunggah dari galeri!");
-      } else {
-        setArticleForm((prev) => ({
-          ...prev,
-          videoUrl: data.url,
-          videoTitle: prev.videoTitle || file.name.replace(/\.[^/.]+$/, ""),
-        }));
-        showToast("Video berhasil diunggah dari galeri!");
-      }
+      setArticleForm((prev) => ({
+        ...prev,
+        videoUrl: data.url,
+        videoTitle: prev.videoTitle || file.name.replace(/\.[^/.]+$/, ""),
+      }));
+      showToast("Video berhasil diunggah dari galeri!");
     } catch (err: any) {
-      console.error("Upload error:", err);
-      alert("Gagal mengunggah: " + (err.message || "Terjadi kesalahan"));
+      console.error("Upload video error:", err);
+      alert(
+        "Pemberitahuan Upload Video: Pada hosting Vercel / serverless cloud, penyimpanan file video lokal dibatasi oleh sistem read-only.\n\nSaran: Gunakan tab 'Link YouTube' dengan memasukkan link video YouTube liputan/kegiatan desa agar dapat diputar langsung secara lancar dan cepat tanpa kendala ukuran file."
+      );
     } finally {
-      if (type === "image") setIsUploadingImage(false);
-      else setIsUploadingVideo(false);
+      setIsUploadingVideo(false);
     }
   };
 
@@ -251,7 +337,7 @@ export default function AdminPage() {
       videoUrl: art.videoUrl || "",
       videoTitle: art.videoTitle || "",
     });
-    setImageSourceTab(art.image.startsWith("/uploads/") ? "upload" : "preset");
+    setImageSourceTab(art.image.startsWith("/uploads/") || art.image.startsWith("data:") ? "upload" : "preset");
     if (!art.videoUrl) {
       setVideoSourceTab("none");
     } else if (isYouTubeUrl(art.videoUrl)) {
@@ -1452,9 +1538,15 @@ export default function AdminPage() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-xs font-bold text-slate-800 truncate">
-                            {articleForm.image.startsWith("/uploads/") ? "Foto Terunggah dari Galeri" : "Foto Aset Desa"}
+                            {articleForm.image.startsWith("/uploads/") || articleForm.image.startsWith("data:")
+                              ? "Foto Terunggah dari Galeri"
+                              : "Foto Aset Desa"}
                           </p>
-                          <p className="text-[11px] text-slate-500 truncate">{articleForm.image}</p>
+                          <p className="text-[11px] text-slate-500 truncate">
+                            {articleForm.image.startsWith("data:")
+                              ? "Foto Galeri (Teroptimasi Siap Tampil)"
+                              : articleForm.image}
+                          </p>
                         </div>
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 shrink-0">
                           Aktif
@@ -1560,7 +1652,7 @@ export default function AdminPage() {
                             Pilih Video dari Galeri HP / Laptop
                           </p>
                           <p className="text-[11px] text-slate-500">
-                            Format MP4, WebM, MOV. Otomatis diputar langsung di web tanpa perlu link YouTube!
+                            Format MP4, WebM, MOV. (Disarankan tab Link YouTube untuk video panjang di hosting web)
                           </p>
                         </div>
                       )}

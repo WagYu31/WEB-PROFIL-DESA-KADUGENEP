@@ -800,6 +800,7 @@ export default function HomePage() {
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    unoptimized={Boolean(art.image?.startsWith("/uploads/") || art.image?.startsWith("data:"))}
                   />
                   <div className="absolute top-3 left-3">
                     <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-900/90 text-sky-200 backdrop-blur-md shadow-md border border-white/10">
