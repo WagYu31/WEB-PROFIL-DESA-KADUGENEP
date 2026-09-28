@@ -95,6 +95,18 @@ export interface CitizenAspiration {
   status: "Baru" | "Ditanggapi";
 }
 
+export interface SotkSettings {
+  view: "bagan" | "grid";
+  bgTheme: "kantor" | "blueprint" | "clean";
+  bgImage: string;
+}
+
+export const INITIAL_SOTK_SETTINGS: SotkSettings = {
+  view: "bagan",
+  bgTheme: "kantor",
+  bgImage: "/images/kantor-desa-kadugenep.jpg",
+};
+
 export const INITIAL_PROFILE: VillageProfile = {
   name: "Desa Kadugenep",
   tagline: "Desa Kecil Seribu Mesin — Gemah Ripah Loh Jinawi",
@@ -475,6 +487,7 @@ const STORAGE_KEYS = {
   SERVICE_REQUESTS: "kadugenep_services",
   ASPIRATIONS: "kadugenep_aspirations",
   ADMIN_SESSION: "kadugenep_admin_session",
+  SOTK_SETTINGS: "kadugenep_sotk_settings",
 };
 
 export function getStoredData<T>(key: string, fallback: T): T {
@@ -506,6 +519,7 @@ export function useVillageStore() {
   const [agenda, setAgendaState] = useState<VillageAgenda[]>(INITIAL_AGENDA);
   const [serviceRequests, setServiceRequestsState] = useState<ServiceRequest[]>(INITIAL_SERVICE_REQUESTS);
   const [aspirations, setAspirationsState] = useState<CitizenAspiration[]>(INITIAL_ASPIRATIONS);
+  const [sotkSettings, setSotkSettingsState] = useState<SotkSettings>(INITIAL_SOTK_SETTINGS);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -549,6 +563,7 @@ export function useVillageStore() {
       setAgendaState(getStoredData(STORAGE_KEYS.AGENDA, INITIAL_AGENDA));
       setServiceRequestsState(getStoredData(STORAGE_KEYS.SERVICE_REQUESTS, INITIAL_SERVICE_REQUESTS));
       setAspirationsState(getStoredData(STORAGE_KEYS.ASPIRATIONS, INITIAL_ASPIRATIONS));
+      setSotkSettingsState(getStoredData(STORAGE_KEYS.SOTK_SETTINGS, INITIAL_SOTK_SETTINGS));
       setIsAdminLoggedIn(Boolean(getStoredData(STORAGE_KEYS.ADMIN_SESSION, false)));
       setIsLoaded(true);
     }, 0);
@@ -588,6 +603,7 @@ export function useVillageStore() {
       setAgendaState(getStoredData(STORAGE_KEYS.AGENDA, INITIAL_AGENDA));
       setServiceRequestsState(getStoredData(STORAGE_KEYS.SERVICE_REQUESTS, INITIAL_SERVICE_REQUESTS));
       setAspirationsState(getStoredData(STORAGE_KEYS.ASPIRATIONS, INITIAL_ASPIRATIONS));
+      setSotkSettingsState(getStoredData(STORAGE_KEYS.SOTK_SETTINGS, INITIAL_SOTK_SETTINGS));
       setIsAdminLoggedIn(Boolean(getStoredData(STORAGE_KEYS.ADMIN_SESSION, false)));
     };
 
@@ -636,6 +652,11 @@ export function useVillageStore() {
     setStoredData(STORAGE_KEYS.ASPIRATIONS, newAsps);
   };
 
+  const saveSotkSettings = (newSettings: SotkSettings) => {
+    setSotkSettingsState(newSettings);
+    setStoredData(STORAGE_KEYS.SOTK_SETTINGS, newSettings);
+  };
+
   const loginAdmin = () => {
     setIsAdminLoggedIn(true);
     setStoredData(STORAGE_KEYS.ADMIN_SESSION, true);
@@ -656,6 +677,7 @@ export function useVillageStore() {
       setAgendaState(INITIAL_AGENDA);
       setServiceRequestsState(INITIAL_SERVICE_REQUESTS);
       setAspirationsState(INITIAL_ASPIRATIONS);
+      setSotkSettingsState(INITIAL_SOTK_SETTINGS);
       setIsAdminLoggedIn(false);
       window.dispatchEvent(new CustomEvent("kadugenep_store_update", { detail: { reset: true } }));
     }
@@ -670,6 +692,7 @@ export function useVillageStore() {
     agenda,
     serviceRequests,
     aspirations,
+    sotkSettings,
     isAdminLoggedIn,
     loginAdmin,
     logoutAdmin,
@@ -680,6 +703,7 @@ export function useVillageStore() {
     saveAgenda,
     saveServiceRequests,
     saveAspirations,
+    saveSotkSettings,
     resetToDefault,
   };
 }

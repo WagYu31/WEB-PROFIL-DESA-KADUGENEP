@@ -29,6 +29,7 @@ import {
   TreeStructure,
   SquaresFour,
   Crown,
+  GearSix,
 } from "@phosphor-icons/react";
 import { CivicNoticeBar } from "@/components/civic-notice-bar";
 import { Counter } from "@/components/ui/counter";
@@ -38,13 +39,25 @@ import { useVillageStore } from "@/lib/data-store";
 import { formatDateID, formatRupiah } from "@/lib/utils";
 
 export default function HomePage() {
-  const { profile, officials, articles, apbdes, agenda, saveAspirations, aspirations } = useVillageStore();
+  const {
+    profile,
+    officials,
+    articles,
+    apbdes,
+    agenda,
+    saveAspirations,
+    aspirations,
+    sotkSettings,
+    isAdminLoggedIn,
+  } = useVillageStore();
+
+  const currentView = sotkSettings?.view || "bagan";
+  const currentBg = sotkSettings?.bgTheme || "kantor";
+  const currentBgImage = sotkSettings?.bgImage || "/images/kantor-desa-kadugenep.jpg";
 
   const [selectedCategory, setSelectedCategory] = useState<string>("Semua");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showBalihoModal, setShowBalihoModal] = useState<boolean>(false);
-  const [sotkView, setSotkView] = useState<"bagan" | "grid">("bagan");
-  const [sotkBg, setSotkBg] = useState<"kantor" | "blueprint" | "clean">("kantor");
 
   // Aspirasi form state
   const [aspForm, setAspForm] = useState({ name: "", contact: "", subject: "", message: "" });
@@ -1377,100 +1390,37 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Controls: Background Selector & View Switcher */}
-          <div className="flex flex-wrap items-center gap-2 self-start lg:self-end">
-            {/* Background Style Switcher (only in Bagan view) */}
-            {sotkView === "bagan" && (
-              <div className="flex items-center gap-1 p-1 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-600 shadow-xs">
-                <span className="text-[10px] uppercase text-slate-400 px-2 font-black tracking-wider hidden sm:inline">
-                  Latar:
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setSotkBg("kantor")}
-                  className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
-                    sotkBg === "kantor"
-                      ? "bg-white text-sky-900 shadow-xs border border-slate-200"
-                      : "hover:bg-slate-200/60"
-                  }`}
-                  title="Latar Belakang Foto Kantor Balai Desa"
-                >
-                  <Buildings size={14} className={sotkBg === "kantor" ? "text-sky-600" : ""} />
-                  <span>Foto Balai Desa</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSotkBg("blueprint")}
-                  className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                    sotkBg === "blueprint"
-                      ? "bg-white text-sky-900 shadow-xs border border-slate-200"
-                      : "hover:bg-slate-200/60"
-                  }`}
-                  title="Latar Belakang Blueprint Grid Teknis"
-                >
-                  <span>📐 Blueprint</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSotkBg("clean")}
-                  className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                    sotkBg === "clean"
-                      ? "bg-white text-sky-900 shadow-xs border border-slate-200"
-                      : "hover:bg-slate-200/60"
-                  }`}
-                  title="Latar Belakang Kanvas Polos Bersih"
-                >
-                  <span>⚪ Kanvas</span>
-                </button>
-              </div>
-            )}
-
-            {/* View Switcher: Bagan Hierarki vs Grid Kartu */}
-            <div className="flex items-center gap-1 p-1 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-600 shadow-xs">
-              <button
-                type="button"
-                onClick={() => setSotkView("bagan")}
-                className={`px-3.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
-                  sotkView === "bagan"
-                    ? "bg-white text-sky-900 shadow-xs border border-slate-200"
-                    : "hover:bg-slate-200/60"
-                }`}
+          {/* Admin Shortcut to Dashboard Settings (Hanya tampil untuk Admin yang sedang login) */}
+          {isAdminLoggedIn && (
+            <div className="self-start lg:self-end">
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300/80 text-xs font-bold transition-all shadow-xs"
+                title="Atur tema latar belakang dan tata letak bagan SOTK di Dashboard Administrator"
               >
-                <TreeStructure size={15} className={sotkView === "bagan" ? "text-sky-600" : ""} />
-                <span>Bagan (SOTK)</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setSotkView("grid")}
-                className={`px-3.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
-                  sotkView === "grid"
-                    ? "bg-white text-sky-900 shadow-xs border border-slate-200"
-                    : "hover:bg-slate-200/60"
-                }`}
-              >
-                <SquaresFour size={15} className={sotkView === "grid" ? "text-sky-600" : ""} />
-                <span>Grid</span>
-              </button>
+                <GearSix size={16} weight="bold" className="text-amber-600" />
+                <span>⚙️ Pengaturan Bagan di Dashboard</span>
+              </Link>
             </div>
-          </div>
+          )}
         </div>
 
-        {sotkView === "bagan" ? (
+        {currentView === "bagan" ? (
           /* BAGAN ORGANISASI PREMIUM DENGAN LATAR GAMBAR & KONEKTOR PRESISI */
           <div
             className={`relative rounded-3xl p-5 sm:p-8 md:p-12 shadow-xl overflow-hidden transition-all duration-300 border ${
-              sotkBg === "kantor"
+              currentBg === "kantor"
                 ? "border-slate-800"
-                : sotkBg === "blueprint"
+                : currentBg === "blueprint"
                 ? "bg-[#0b1c33] border-[#1e3a5f]"
                 : "bg-slate-50/80 border-slate-200/90"
             }`}
           >
             {/* Latar Belakang Foto Kantor Balai Desa Kadugenep */}
-            {sotkBg === "kantor" && (
+            {currentBg === "kantor" && (
               <div className="absolute inset-0 z-0">
                 <Image
-                  src="/images/kantor-desa-kadugenep.jpg"
+                  src={currentBgImage}
                   alt="Kantor Balai Desa Kadugenep"
                   fill
                   className="object-cover object-center scale-105"
@@ -1482,19 +1432,19 @@ export default function HomePage() {
             )}
 
             {/* Latar Belakang Blueprint Teknis */}
-            {sotkBg === "blueprint" && (
+            {currentBg === "blueprint" && (
               <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#1e3a5f_1px,transparent_1px),linear-gradient(to_bottom,#1e3a5f_1px,transparent_1px)] bg-[size:28px_28px] opacity-40 pointer-events-none" />
             )}
 
             {/* Latar Belakang Kanvas Polos */}
-            {sotkBg === "clean" && (
+            {currentBg === "clean" && (
               <div className="absolute inset-0 z-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
             )}
 
             {/* Top Legend Bar */}
             <div
               className={`relative z-10 flex flex-wrap items-center justify-between gap-3 pb-6 border-b text-[11px] font-bold ${
-                sotkBg === "kantor" || sotkBg === "blueprint"
+                currentBg === "kantor" || currentBg === "blueprint"
                   ? "border-slate-800 text-slate-300"
                   : "border-slate-200 text-slate-500"
               }`}

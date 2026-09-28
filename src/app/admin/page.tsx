@@ -42,6 +42,9 @@ import {
   ShieldStar,
   TreeEvergreen,
   User,
+  TreeStructure,
+  SquaresFour,
+  Buildings,
 } from "@phosphor-icons/react";
 
 export default function AdminPage() {
@@ -53,6 +56,8 @@ export default function AdminPage() {
     apbdes,
     serviceRequests,
     aspirations,
+    sotkSettings,
+    saveSotkSettings,
     isAdminLoggedIn,
     loginAdmin,
     logoutAdmin,
@@ -278,6 +283,33 @@ export default function AdminPage() {
       };
       reader.readAsDataURL(file);
     });
+  };
+
+  // SOTK Settings Form State (Pengaturan Latar Belakang & Tata Letak Bagan di Dashboard)
+  const [sotkForm, setSotkForm] = useState(sotkSettings);
+  const [isUploadingSotkBg, setIsUploadingSotkBg] = useState(false);
+
+  React.useEffect(() => {
+    setSotkForm(sotkSettings);
+  }, [sotkSettings]);
+
+  const handleSaveSotkSettings = () => {
+    saveSotkSettings(sotkForm);
+    showToast("Pengaturan tampilan dan latar belakang Bagan SOTK berhasil disimpan!");
+  };
+
+  const handleSotkBgUpload = async (file: File) => {
+    setIsUploadingSotkBg(true);
+    try {
+      const compressedDataUrl = await compressImageToDataUrl(file, 1600, 900, 0.85);
+      setSotkForm((prev) => ({ ...prev, bgImage: compressedDataUrl, bgTheme: "kantor" }));
+      showToast("Foto background berhasil dipilih! Klik 'Simpan Pengaturan' untuk menerapkan.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Gagal memproses gambar latar belakang.";
+      showToast(msg);
+    } finally {
+      setIsUploadingSotkBg(false);
+    }
   };
 
   const handleFileUpload = async (file: File, type: "image" | "video") => {
@@ -996,7 +1028,7 @@ export default function AdminPage() {
             }`}
           >
             <Users size={16} />
-            <span>Aparatur Desa ({officials.length})</span>
+            <span>Aparatur & Bagan SOTK ({officials.length})</span>
           </button>
           <button
             onClick={() => setActiveTab("profil")}
@@ -1207,6 +1239,239 @@ export default function AdminPage() {
                 <Plus size={16} weight="bold" />
                 <span>Tambah Perangkat Desa</span>
               </button>
+            </div>
+
+            {/* PENGATURAN TAMPILAN & LATAR BELAKANG BAGAN SOTK */}
+            <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-slate-900 to-sky-950 text-white shadow-lg border border-sky-800/60 space-y-6 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-80 h-80 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10 relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-sky-300 shrink-0">
+                    <TreeStructure size={22} weight="bold" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-white flex items-center gap-2">
+                      Pengaturan Tampilan & Background Bagan SOTK
+                    </h3>
+                    <p className="text-xs text-sky-200/80">
+                      Atur tata letak kotak dan latar belakang gambar bagan yang dilihat warga di halaman depan.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    href="/#profil"
+                    target="_blank"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/15 transition-all"
+                  >
+                    <ArrowSquareOut size={14} />
+                    <span>Lihat di Web</span>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleSaveSotkSettings}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-md transition-all cursor-pointer active:scale-98"
+                  >
+                    <CheckCircle size={16} weight="bold" />
+                    <span>Simpan Pengaturan</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Grid 2 Kolom: Pilihan Tata Letak & Pilihan Tema Background */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10">
+                {/* 1. Tata Letak (View Mode) */}
+                <div className="space-y-3 bg-white/5 p-4 rounded-2xl border border-white/10">
+                  <label className="text-xs font-bold text-sky-200 uppercase tracking-wider block">
+                    1. Tata Letak Kotak (Mode Tampilan)
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setSotkForm((prev) => ({ ...prev, view: "bagan" }))}
+                      className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2 ${
+                        sotkForm.view === "bagan"
+                          ? "bg-sky-500/25 border-sky-400 text-white shadow-[0_0_12px_rgba(56,189,248,0.3)] ring-1 ring-sky-400"
+                          : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <TreeStructure size={20} className={sotkForm.view === "bagan" ? "text-sky-300" : "text-slate-400"} />
+                        {sotkForm.view === "bagan" && (
+                          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-sky-400 text-slate-950">
+                            Aktif
+                          </span>
+                        )}
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white">Bagan Hierarki (SOTK)</div>
+                        <div className="text-[11px] text-slate-300 leading-tight mt-0.5">
+                          Bagan pohon bergaris komando resmi dari Kades ke Sekdes & Kaur/Kasi.
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setSotkForm((prev) => ({ ...prev, view: "grid" }))}
+                      className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2 ${
+                        sotkForm.view === "grid"
+                          ? "bg-sky-500/25 border-sky-400 text-white shadow-[0_0_12px_rgba(56,189,248,0.3)] ring-1 ring-sky-400"
+                          : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <SquaresFour size={20} className={sotkForm.view === "grid" ? "text-sky-300" : "text-slate-400"} />
+                        {sotkForm.view === "grid" && (
+                          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-sky-400 text-slate-950">
+                            Aktif
+                          </span>
+                        )}
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white">Grid Kartu Modern</div>
+                        <div className="text-[11px] text-slate-300 leading-tight mt-0.5">
+                          Kartu berjejer rapi dalam 3 kolom tanpa garis hierarki.
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Tema Background */}
+                <div className="space-y-3 bg-white/5 p-4 rounded-2xl border border-white/10">
+                  <label className="text-xs font-bold text-sky-200 uppercase tracking-wider block">
+                    2. Tema Background Bagan
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSotkForm((prev) => ({ ...prev, bgTheme: "kantor" }))}
+                      className={`p-3 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1.5 ${
+                        sotkForm.bgTheme === "kantor"
+                          ? "bg-sky-500/25 border-sky-400 text-white ring-1 ring-sky-400"
+                          : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+                      }`}
+                    >
+                      <Buildings size={18} className="text-sky-300" />
+                      <span className="text-xs font-bold leading-tight">Foto Balai Desa</span>
+                      <span className="text-[10px] text-sky-200/70">Glassmorphism</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setSotkForm((prev) => ({ ...prev, bgTheme: "blueprint" }))}
+                      className={`p-3 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1.5 ${
+                        sotkForm.bgTheme === "blueprint"
+                          ? "bg-sky-500/25 border-sky-400 text-white ring-1 ring-sky-400"
+                          : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+                      }`}
+                    >
+                      <span className="text-lg">📐</span>
+                      <span className="text-xs font-bold leading-tight">Blueprint</span>
+                      <span className="text-[10px] text-sky-200/70">Grid Arsitektur</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setSotkForm((prev) => ({ ...prev, bgTheme: "clean" }))}
+                      className={`p-3 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1.5 ${
+                        sotkForm.bgTheme === "clean"
+                          ? "bg-sky-500/25 border-sky-400 text-white ring-1 ring-sky-400"
+                          : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+                      }`}
+                    >
+                      <span className="text-lg">⚪</span>
+                      <span className="text-xs font-bold leading-tight">Kanvas Bersih</span>
+                      <span className="text-[10px] text-sky-200/70">Minimalis Putih</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Kustom Gambar Background Foto Balai Desa */}
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3 relative z-10">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <label className="text-xs font-bold text-sky-200 uppercase tracking-wider">
+                      3. Gambar Background Foto Kantor / Balai Desa
+                    </label>
+                    <p className="text-[11px] text-slate-300">
+                      Upload foto kantor desa Anda sendiri atau gunakan foto default balai desa.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSotkForm((prev) => ({
+                          ...prev,
+                          bgImage: "/images/kantor-desa-kadugenep.jpg",
+                          bgTheme: "kantor",
+                        }))
+                      }
+                      className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[11px] font-semibold text-sky-200 border border-white/10 transition-all cursor-pointer"
+                    >
+                      Reset Foto Standar
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-4 pt-1">
+                  {/* Thumbnail Preview */}
+                  <div className="relative w-full sm:w-44 h-24 rounded-xl overflow-hidden border border-white/20 bg-slate-900 shrink-0 shadow-inner group">
+                    <Image
+                      src={sotkForm.bgImage || "/images/kantor-desa-kadugenep.jpg"}
+                      alt="Preview Latar Bagan"
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2">
+                      <span className="text-[10px] text-white/90 font-medium truncate">
+                        Preview Background
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Upload & URL Input */}
+                  <div className="flex-1 w-full space-y-2.5">
+                    <div className="flex items-center gap-2">
+                      <label className="flex-1 inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold cursor-pointer transition-all shadow-sm active:scale-98">
+                        <UploadSimple size={16} weight="bold" />
+                        <span>
+                          {isUploadingSotkBg ? "Memproses..." : "Upload Foto Background Baru"}
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleSotkBgUpload(file);
+                          }}
+                          disabled={isUploadingSotkBg}
+                        />
+                      </label>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-slate-400 font-medium shrink-0">Path/URL:</span>
+                      <input
+                        type="text"
+                        value={sotkForm.bgImage}
+                        onChange={(e) =>
+                          setSotkForm((prev) => ({ ...prev, bgImage: e.target.value }))
+                        }
+                        placeholder="/images/kantor-desa-kadugenep.jpg atau https://..."
+                        className="flex-1 px-3 py-1.5 rounded-lg bg-slate-950/60 border border-white/15 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:border-sky-400"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {officials.length === 0 ? (
