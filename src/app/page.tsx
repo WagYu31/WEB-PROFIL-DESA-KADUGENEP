@@ -210,7 +210,7 @@ export default function HomePage() {
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   Kantor Buka
                 </span>
-                <span>08:00 - 15:30 WIB</span>
+                <span>08:00 - 16:00 WIB</span>
                 <span>•</span>
                 <span className="truncate">Jl. Raya Petir - Serang Km. 3</span>
               </div>
@@ -632,7 +632,7 @@ export default function HomePage() {
                     <Clock size={16} className="text-sky-700 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-bold text-slate-900">Jam Operasional Pelayanan:</p>
-                      <p className="text-[11px] text-slate-600">Senin – Jumat: 08:00 – 15:30 WIB (Sabtu/Minggu Libur)</p>
+                      <p className="text-[11px] text-slate-600">Senin – Jumat: 08:00 – 16:00 WIB (Sabtu/Minggu Libur)</p>
                     </div>
                   </div>
 

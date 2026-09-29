@@ -647,7 +647,7 @@ export default function LayananPage() {
               </div>
               <div className="flex items-start gap-2">
                 <Clock size={15} className="text-amber-600 shrink-0 mt-0.5" />
-                <span>Senin – Jumat: 08:00 – 15:30 WIB (Sabtu – Minggu Libur)</span>
+                <span>Senin – Jumat: 08:00 – 16:00 WIB (Sabtu – Minggu Libur)</span>
               </div>
             </div>
 

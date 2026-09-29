@@ -45,7 +45,7 @@ const OFFICIAL_NOTICES: NoticeItem[] = [
   {
     id: "notice-4",
     category: "Kantor Desa",
-    title: "Pelayanan tatap muka di Kantor Desa buka Senin–Jumat pukul 08:00 – 15:30 WIB.",
+    title: "Pelayanan tatap muka di Kantor Desa buka Senin–Jumat pukul 08:00 – 16:00 WIB.",
     actionLabel: "Info Balai",
     actionHref: "#kontak",
   },
@@ -165,7 +165,7 @@ export function CivicNoticeBar() {
             <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-300 font-medium whitespace-nowrap">
               <Clock size={14} className="text-emerald-400 shrink-0" />
               <span>
-                <span className="text-emerald-400 font-semibold">Kantor:</span> Buka 08:00 – 15:30 WIB
+                <span className="text-emerald-400 font-semibold">Kantor:</span> Buka 08:00 – 16:00 WIB
               </span>
             </div>
 

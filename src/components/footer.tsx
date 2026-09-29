@@ -141,11 +141,11 @@ export function Footer() {
               <div className="bg-slate-900/90 rounded-2xl p-3.5 border border-slate-800 text-xs space-y-1.5">
                 <div className="flex justify-between items-center text-slate-300 text-[11px]">
                   <span className="font-semibold text-white">Senin - Kamis</span>
-                  <span>08:00 - 15:30 WIB</span>
+                  <span>08:00 - 16:00 WIB</span>
                 </div>
                 <div className="flex justify-between items-center text-slate-300 text-[11px]">
                   <span className="font-semibold text-white">Jumat</span>
-                  <span>08:00 - 11:30 & 13:30 - 15:30</span>
+                  <span>08:00 - 11:30 & 13:30 - 16:00 WIB</span>
                 </div>
                 <div className="flex justify-between items-center text-slate-400 text-[11px]">
                   <span>Sabtu - Minggu</span>
