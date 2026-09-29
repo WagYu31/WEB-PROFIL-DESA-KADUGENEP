@@ -1503,6 +1503,25 @@ export default function AdminPage() {
               </div>
             </div>
 
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+              <div>
+                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <span>Daftar Anggota Aparatur ({officials.length} Orang)</span>
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Data aparatur di bawah ini otomatis tampil di bagan hierarki halaman depan.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleOpenCreateOfficial}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-98 self-start sm:self-auto"
+              >
+                <Plus size={15} weight="bold" />
+                <span>+ Tambah Perangkat Baru</span>
+              </button>
+            </div>
+
             {officials.length === 0 ? (
               <div className="text-center py-12 text-slate-400">
                 <Users size={48} className="mx-auto mb-2 opacity-50" />
@@ -1580,6 +1599,25 @@ export default function AdminPage() {
                     </div>
                   </div>
                 ))}
+
+                {/* Kartu Tombol Tambah Cepat di Grid */}
+                <button
+                  type="button"
+                  onClick={handleOpenCreateOfficial}
+                  className="p-6 rounded-2xl border-2 border-dashed border-sky-300 hover:border-sky-500 bg-sky-50/40 hover:bg-sky-50/90 text-sky-700 transition-all flex flex-col items-center justify-center gap-3 min-h-[160px] cursor-pointer group shadow-2xs hover:shadow-md"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-sky-100 group-hover:bg-sky-600 group-hover:text-white text-sky-600 flex items-center justify-center transition-all shadow-xs group-hover:scale-105">
+                    <Plus size={24} weight="bold" />
+                  </div>
+                  <div className="text-center">
+                    <span className="text-sm font-bold text-slate-800 group-hover:text-sky-900 block">
+                      + Tambah Perangkat Desa
+                    </span>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">
+                      Klik untuk mengisi data aparatur baru
+                    </span>
+                  </div>
+                </button>
               </div>
             )}
           </div>
