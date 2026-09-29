@@ -657,7 +657,7 @@ export default function HomePage() {
                 </Link>
 
                 <a
-                  href="https://wa.me/6283857178552?text=Halo%20Pemerintah%20Desa%20Kadugenep,%20saya%20ingin%20menanyakan%20informasi%20pelayanan%20kantor%20desa."
+                  href="https://wa.me/6281806669275?text=Halo%20Pemerintah%20Desa%20Kadugenep,%20saya%20ingin%20menanyakan%20informasi%20pelayanan%20kantor%20desa."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all"
@@ -1700,7 +1700,7 @@ export default function HomePage() {
                                   {kades.phone && (
                                     <div className="pt-1">
                                       <a
-                                        href={`https://wa.me/62${kades.phone.replace(/\D/g, "").replace(/^0/, "")}`}
+                                        href={`https://wa.me/62${kades.phone.replace(/\D/g, "").replace(/^62/, "").replace(/^0/, "")}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition-colors"

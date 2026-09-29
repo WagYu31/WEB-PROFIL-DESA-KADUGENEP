@@ -653,13 +653,13 @@ export default function LayananPage() {
 
             <div className="pt-1">
               <a
-                href="https://wa.me/6283857178552?text=Halo%20Admin%20Desa%20Kadugenep,%20saya%20ingin%20bertanya%20seputar%20persyaratan%20surat."
+                href="https://wa.me/6281806669275?text=Halo%20Admin%20Desa%20Kadugenep,%20saya%20ingin%20bertanya%20seputar%20persyaratan%20surat."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 hover:bg-emerald-100 font-bold text-xs transition-colors"
               >
                 <WhatsappLogo size={16} weight="fill" className="text-emerald-600" />
-                <span>Hotline WhatsApp: 0838-5717-8552</span>
+                <span>Hotline WhatsApp: 0818-0666-9275</span>
               </a>
             </div>
           </div>
@@ -726,7 +726,7 @@ export default function LayananPage() {
 
                 <div className="pt-2 flex flex-col sm:flex-row gap-2 justify-center">
                   <a
-                    href={`https://wa.me/6283857178552?text=Halo%20Pelayanan%20Desa%20Kadugenep,%20saya%20telah%20mengajukan%20${encodeURIComponent(submittedData.serviceTitle)}%20dengan%20nomor%20resi%20${submittedData.receiptId}.`}
+                    href={`https://wa.me/6281806669275?text=Halo%20Pelayanan%20Desa%20Kadugenep,%20saya%20telah%20mengajukan%20${encodeURIComponent(submittedData.serviceTitle)}%20dengan%20nomor%20resi%20${submittedData.receiptId}.`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-bold text-xs shadow"

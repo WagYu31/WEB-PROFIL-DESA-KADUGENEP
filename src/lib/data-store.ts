@@ -119,7 +119,7 @@ export const INITIAL_PROFILE: VillageProfile = {
   address: "Jl. Raya Petir - Serang Km. 3, Kadugenep, Kec. Petir, Kab. Serang, Banten 42172",
   phone: "(0254) 849-2101",
   email: "kantor@kadugenep.desa.id",
-  whatsapp: "0838-5717-8552",
+  whatsapp: "0818-0666-9275",
   vision: "Terwujudnya Desa Kadugenep yang Religius, Mandiri, Berdaya Saing Industri Kreatif Berbasis Seribu Mesin, serta Sejahtera Lahir Batin.",
   missions: [
     "Meningkatkan tata kelola pemerintahan desa yang transparan, akuntabel, dan berbasis teknologi digital.",
@@ -150,7 +150,7 @@ export const INITIAL_OFFICIALS: VillageOfficial[] = [
     role: "Kepala Desa Kadugenep",
     period: "2019 - 2025",
     photo: "/images/kepala-desa-aopidi.jpg",
-    phone: "0838-5717-8552",
+    phone: "0818-0666-9275",
   },
   {
     id: "off-bpd",
@@ -554,10 +554,13 @@ export function useVillageStore() {
       const migratedProfile = {
         ...storedProfile,
         whatsapp:
-          !storedProfile.whatsapp || storedProfile.whatsapp === "0812-8921-7721"
-            ? "0838-5717-8552"
+          !storedProfile.whatsapp ||
+          storedProfile.whatsapp === "0812-8921-7721" ||
+          storedProfile.whatsapp === "0838-5717-8552"
+            ? "0818-0666-9275"
             : storedProfile.whatsapp,
       };
+      setStoredData(STORAGE_KEYS.PROFILE, migratedProfile);
       setProfileState(migratedProfile);
       const storedOfficials = getStoredData(STORAGE_KEYS.OFFICIALS, INITIAL_OFFICIALS);
       const hasNursahid = storedOfficials.some((o: VillageOfficial) => o.name.toLowerCase().includes("nursahid"));
@@ -574,10 +577,15 @@ export function useVillageStore() {
               role: "Kepala Desa Kadugenep",
               period: "2019 - 2025",
               photo: "/images/kepala-desa-aopidi.jpg",
+              phone:
+                !o.phone || o.phone === "0838-5717-8552" || o.phone === "0812-8921-7721"
+                  ? "0818-0666-9275"
+                  : o.phone,
             };
           }
           return o;
         });
+        setStoredData(STORAGE_KEYS.OFFICIALS, mergedOfficials);
       }
       setOfficialsState(mergedOfficials);
 
@@ -604,8 +612,10 @@ export function useVillageStore() {
       const mProf = {
         ...sProf,
         whatsapp:
-          !sProf.whatsapp || sProf.whatsapp === "0812-8921-7721"
-            ? "0838-5717-8552"
+          !sProf.whatsapp ||
+          sProf.whatsapp === "0812-8921-7721" ||
+          sProf.whatsapp === "0838-5717-8552"
+            ? "0818-0666-9275"
             : sProf.whatsapp,
       };
       setProfileState(mProf);
@@ -623,6 +633,10 @@ export function useVillageStore() {
               role: "Kepala Desa Kadugenep",
               period: "2019 - 2025",
               photo: "/images/kepala-desa-aopidi.jpg",
+              phone:
+                !o.phone || o.phone === "0838-5717-8552" || o.phone === "0812-8921-7721"
+                  ? "0818-0666-9275"
+                  : o.phone,
             };
           }
           return o;
