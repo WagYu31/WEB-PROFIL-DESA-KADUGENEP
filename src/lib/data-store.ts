@@ -119,7 +119,7 @@ export const INITIAL_PROFILE: VillageProfile = {
   address: "Jl. Raya Petir - Serang Km. 3, Kadugenep, Kec. Petir, Kab. Serang, Banten 42172",
   phone: "(0254) 849-2101",
   email: "kantor@kadugenep.desa.id",
-  whatsapp: "0818-0666-9275",
+  whatsapp: "0838-5717-8552",
   vision: "Terwujudnya Desa Kadugenep yang Religius, Mandiri, Berdaya Saing Industri Kreatif Berbasis Seribu Mesin, serta Sejahtera Lahir Batin.",
   missions: [
     "Meningkatkan tata kelola pemerintahan desa yang transparan, akuntabel, dan berbasis teknologi digital.",
@@ -556,8 +556,8 @@ export function useVillageStore() {
         whatsapp:
           !storedProfile.whatsapp ||
           storedProfile.whatsapp === "0812-8921-7721" ||
-          storedProfile.whatsapp === "0838-5717-8552"
-            ? "0818-0666-9275"
+          storedProfile.whatsapp === "0818-0666-9275"
+            ? "0838-5717-8552"
             : storedProfile.whatsapp,
       };
       setStoredData(STORAGE_KEYS.PROFILE, migratedProfile);
@@ -622,8 +622,8 @@ export function useVillageStore() {
         whatsapp:
           !sProf.whatsapp ||
           sProf.whatsapp === "0812-8921-7721" ||
-          sProf.whatsapp === "0838-5717-8552"
-            ? "0818-0666-9275"
+          sProf.whatsapp === "0818-0666-9275"
+            ? "0838-5717-8552"
             : sProf.whatsapp,
       };
       setProfileState(mProf);

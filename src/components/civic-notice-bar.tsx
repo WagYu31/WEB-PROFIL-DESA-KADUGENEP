@@ -171,14 +171,14 @@ export function CivicNoticeBar() {
 
             {/* Direct WhatsApp Call Center / Layanan Warga */}
             <a
-              href="https://wa.me/6281806669275?text=Halo%20Pemerintah%20Desa%20Kadugenep,%20saya%20ingin%20menanyakan%20informasi%20layanan%20desa."
+              href="https://wa.me/6283857178552?text=Halo%20Pemerintah%20Desa%20Kadugenep,%20saya%20ingin%20menanyakan%20informasi%20layanan%20desa."
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 hover:text-emerald-200 border border-emerald-500/30 text-[11px] sm:text-xs font-semibold transition-all cursor-pointer shadow-xs active:scale-98 whitespace-nowrap"
             >
               <WhatsappLogo size={15} weight="fill" className="text-emerald-400 shrink-0" />
               <span className="font-bold">Hotline:</span>
-              <span className="text-slate-200">0818-0666-9275</span>
+              <span className="text-slate-200">0838-5717-8552</span>
             </a>
           </div>
 
