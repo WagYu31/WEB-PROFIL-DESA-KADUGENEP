@@ -154,9 +154,9 @@ export const INITIAL_OFFICIALS: VillageOfficial[] = [
   },
   {
     id: "off-bpd",
-    name: "Ust. M. Ridwan, S.Ag.",
+    name: "Sahruroji",
     role: "Ketua BPD Desa Kadugenep",
-    phone: "0813-9988-1122",
+    phone: "087771500069",
   },
   {
     id: "off-sekdes",
@@ -583,6 +583,14 @@ export function useVillageStore() {
                   : o.phone,
             };
           }
+          if (o.id === "off-bpd" && (o.name.includes("Ridwan") || o.phone === "0813-9988-1122")) {
+            return {
+              ...o,
+              name: "Sahruroji",
+              role: "Ketua BPD Desa Kadugenep",
+              phone: "087771500069",
+            };
+          }
           return o;
         });
         setStoredData(STORAGE_KEYS.OFFICIALS, mergedOfficials);
@@ -637,6 +645,14 @@ export function useVillageStore() {
                 !o.phone || o.phone === "0838-5717-8552" || o.phone === "0812-8921-7721"
                   ? "0818-0666-9275"
                   : o.phone,
+            };
+          }
+          if (o.id === "off-bpd" && (o.name.includes("Ridwan") || o.phone === "0813-9988-1122")) {
+            return {
+              ...o,
+              name: "Sahruroji",
+              role: "Ketua BPD Desa Kadugenep",
+              phone: "087771500069",
             };
           }
           return o;
