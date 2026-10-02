@@ -14,6 +14,9 @@ import {
   ArrowSquareOut,
   Sparkle,
   Info,
+  LinkSimple,
+  Cards,
+  ImageSquare,
 } from "@phosphor-icons/react";
 import type { Article } from "@/lib/articles";
 
@@ -30,24 +33,80 @@ export function ArticleShareModal({
   article,
   shareUrl,
 }: ArticleShareModalProps) {
-  const [copied, setCopied] = useState(false);
+  const [copiedLinkOnly, setCopiedLinkOnly] = useState(false);
+  const [copiedCaption, setCopiedCaption] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  const [statusSharedNotice, setStatusSharedNotice] = useState<string | null>(null);
+  const [statusNotice, setStatusNotice] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
   const imageUrl = article.image || "/images/hero-kadugenep.jpg";
-  const formattedCaption = `*${article.title}*\n\n${article.summary}\n\nBaca warta resmi selengkapnya di Desa Kadugenep:\n${shareUrl}`;
+  const cleanLink = shareUrl;
+  const formattedChatText = `*${article.title}*\n\n${article.summary}\n\nBaca warta resmi selengkapnya di Desa Kadugenep:\n${cleanLink}`;
 
-  // Copy full caption + link
-  const handleCopyCaption = async () => {
+  // 1. Share ONLY the clean link to WhatsApp to get the Floating Link Card (Gambar 3)
+  const handleShareLinkCardToWA = () => {
+    setStatusNotice(
+      "Membuka WhatsApp... Pilih 'Status saya', lalu tunggu 1-2 detik hingga kartu gambar warta otomatis muncul di tengah layar sebelum menekan tombol Kirim."
+    );
+    const textEncoded = encodeURIComponent(cleanLink);
+    const waUrl = `https://api.whatsapp.com/send?text=${textEncoded}`;
+    window.open(waUrl, "_blank");
+  };
+
+  // Copy Clean Link Only (for pasting into WhatsApp Status to trigger Gambar 3)
+  const handleCopyCleanLink = async () => {
     try {
-      await navigator.clipboard.writeText(formattedCaption);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
+      await navigator.clipboard.writeText(cleanLink);
+      setCopiedLinkOnly(true);
+      setStatusNotice(
+        "Tautan bersih berhasil disalin! Buka Status WhatsApp -> Tempel (Paste) -> Tunggu 1 detik sampai kartu gambar warta otomatis muncul di tengah layar -> Kirim!"
+      );
+      setTimeout(() => setCopiedLinkOnly(false), 3000);
     } catch (err) {
-      console.error("Gagal menyalin:", err);
+      console.error("Gagal menyalin link:", err);
     }
+  };
+
+  // 2. Share Fullscreen Photo + Caption (Gambar 2)
+  const handleShareFullscreenPhoto = async () => {
+    setStatusNotice(null);
+
+    // If mobile browser supports Web Share with File
+    if (typeof navigator !== "undefined" && navigator.canShare) {
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const file = new File([blob], `${article.slug || "berita"}.jpg`, {
+          type: blob.type || "image/jpeg",
+        });
+
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: article.title,
+            text: formattedChatText,
+            files: [file],
+          });
+          onClose();
+          return;
+        }
+      } catch (err: unknown) {
+        if ((err as Error)?.name === "AbortError") {
+          return;
+        }
+        console.warn("Share file gagal atau dibatalkan:", err);
+      }
+    }
+
+    // Fallback: download image + copy caption
+    await handleDownloadImage();
+    try {
+      await navigator.clipboard.writeText(formattedChatText);
+    } catch {}
+
+    setStatusNotice(
+      "Foto warta berhasil diunduh dan teks caption telah disalin! Tinggal buka WhatsApp -> Tambah Status Foto -> Pilih foto yang baru diunduh -> Tempel caption."
+    );
   };
 
   // Download high-res article photo
@@ -66,81 +125,37 @@ export function ArticleShareModal({
       window.URL.revokeObjectURL(blobUrl);
     } catch (err) {
       console.error("Gagal unduh gambar:", err);
-      // Fallback
       window.open(imageUrl, "_blank");
     } finally {
       setDownloading(false);
     }
   };
 
-  // Share to WhatsApp Status (with Photo & Caption)
-  const handleShareToWAStatus = async () => {
-    setStatusSharedNotice(null);
-
-    // If mobile browser supports Web Share with File
-    if (typeof navigator !== "undefined" && navigator.canShare) {
-      try {
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        const file = new File([blob], `${article.slug || "berita"}.jpg`, {
-          type: blob.type || "image/jpeg",
-        });
-
-        if (navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            title: article.title,
-            text: formattedCaption,
-            files: [file],
-          });
-          onClose();
-          return;
-        }
-      } catch (err: unknown) {
-        if ((err as Error)?.name === "AbortError") {
-          return;
-        }
-        console.warn("Share file gagal atau dibatalkan, beralih ke fallback desktop:", err);
-      }
-    }
-
-    // Desktop / unsupported browser fallback:
-    // 1. Download image automatically
-    await handleDownloadImage();
-    // 2. Copy caption to clipboard
-    try {
-      await navigator.clipboard.writeText(formattedCaption);
-    } catch {}
-
-    setStatusSharedNotice(
-      "Foto warta berhasil diunduh dan teks caption telah disalin! Tinggal buka WhatsApp -> Tambah Status Foto -> Tempel (Paste) caption."
-    );
-  };
-
   // Direct WhatsApp chat / message share
   const handleShareWAChat = () => {
-    const textEncoded = encodeURIComponent(formattedCaption);
+    const textEncoded = encodeURIComponent(formattedChatText);
     const waUrl = `https://api.whatsapp.com/send?text=${textEncoded}`;
     window.open(waUrl, "_blank");
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm animate-in fade-in duration-200">
       <div
         className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/70">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/80">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
               <WhatsappLogo size={18} weight="fill" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900 leading-tight">
-                Bagikan Warta ke WhatsApp
+                Pilih Tampilan Status WhatsApp
               </h3>
               <p className="text-[11px] text-slate-500">
-                Pilih format berbagi dengan foto penuh atau chat
+                Pilih model kartu tautan melayang atau foto satu layar penuh
               </p>
             </div>
           </div>
@@ -174,82 +189,126 @@ export function ArticleShareModal({
                 <h4 className="text-xs font-bold text-slate-900 line-clamp-2 leading-snug">
                   {article.title}
                 </h4>
-                <p className="text-[11px] text-slate-500 truncate font-mono">
-                  {shareUrl.replace(/^https?:\/\//, "")}
+                <p className="text-[11px] text-emerald-700 font-semibold truncate font-mono">
+                  {cleanLink.replace(/^https?:\/\//, "")}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Fallback Notice for Status WA if triggered */}
-          {statusSharedNotice && (
-            <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs space-y-2 animate-in fade-in slide-in-from-top-1">
+          {/* Dynamic Action Notice / Guide */}
+          {statusNotice && (
+            <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs space-y-2 animate-in fade-in slide-in-from-top-1">
               <div className="flex items-start gap-2">
-                <Sparkle size={16} weight="fill" className="text-emerald-600 shrink-0 mt-0.5" />
+                <Sparkle size={17} weight="fill" className="text-emerald-600 shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <p className="font-bold text-emerald-950">Foto Berita Siap Dipasang di Status!</p>
+                  <p className="font-bold text-emerald-950">Petunjuk Status WhatsApp:</p>
                   <p className="text-[11px] text-emerald-800 leading-relaxed">
-                    {statusSharedNotice}
+                    {statusNotice}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2 pt-1">
-                <a
-                  href="https://web.whatsapp.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition-colors shadow-xs"
-                >
-                  <ArrowSquareOut size={14} />
-                  <span>Buka WhatsApp</span>
-                </a>
                 <button
                   type="button"
-                  onClick={handleCopyCaption}
+                  onClick={handleShareLinkCardToWA}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition-colors shadow-xs"
+                >
+                  <WhatsappLogo size={14} weight="fill" />
+                  <span>Buka WhatsApp Sekarang</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyCleanLink}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-emerald-300 text-emerald-800 text-xs font-semibold hover:bg-emerald-100/50 transition-colors"
                 >
-                  {copied ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
-                  <span>{copied ? "Caption Tersalin!" : "Salin Ulang Caption"}</span>
+                  {copiedLinkOnly ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
+                  <span>{copiedLinkOnly ? "Link Disalin!" : "Salin Ulang Link"}</span>
                 </button>
               </div>
             </div>
           )}
 
-          {/* Action Cards */}
-          <div className="space-y-3">
-            {/* 1. Status WhatsApp (Foto + Teks) */}
-            <div className="p-4 rounded-2xl border-2 border-emerald-500/30 bg-emerald-50/40 hover:bg-emerald-50/70 transition-all space-y-2.5">
+          {/* Share Format Options */}
+          <div className="space-y-3.5">
+            {/* OPTION 1 (RECOMMENDED): Kartu Tautan Melayang (Gambar 3) */}
+            <div className="p-4 rounded-2xl border-2 border-emerald-600 bg-emerald-50/60 shadow-sm space-y-3">
               <div className="flex items-start justify-between gap-3">
-                <div className="space-y-0.5">
+                <div className="space-y-1">
                   <div className="flex items-center gap-1.5">
-                    <DeviceMobile size={16} weight="bold" className="text-emerald-700" />
-                    <h5 className="text-xs font-black text-slate-900 uppercase tracking-wide">
-                      1. Status WhatsApp (Foto + Teks)
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-emerald-700 text-white shadow-xs">
+                      Rekomendasi
+                    </span>
+                    <h5 className="text-xs font-extrabold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
+                      <Cards size={16} weight="fill" className="text-emerald-700" />
+                      <span>1. Kartu Tautan Status WA (Seperti Contoh Gambar 3)</span>
                     </h5>
                   </div>
-                  <p className="text-[11px] text-slate-600 leading-relaxed">
-                    Menampilkan <strong>foto liputan sebagai status</strong> lengkap dengan tulisan judul & tautan baca di bagian bawah foto.
+                  <p className="text-[11px] text-slate-700 leading-relaxed">
+                    Menampilkan <strong>kartu pratinjau gambar warta di tengah layar status</strong> lengkap dengan judul dan tombol tautan yang bisa langsung diklik oleh pembaca status.
                   </p>
                 </div>
               </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={handleShareLinkCardToWA}
+                  className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+                >
+                  <WhatsappLogo size={18} weight="fill" />
+                  <span>Kirim Kartu ke Status WA</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleCopyCleanLink}
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white border border-emerald-300 hover:bg-emerald-100/50 active:scale-[0.98] text-emerald-800 text-xs font-bold transition-all cursor-pointer"
+                >
+                  {copiedLinkOnly ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}
+                  <span>{copiedLinkOnly ? "Link Bersih Disalin!" : "Salin Link Status"}</span>
+                </button>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-white/80 border border-emerald-200/80 text-[11px] text-emerald-900 flex items-start gap-1.5">
+                <Info size={15} className="text-emerald-700 shrink-0 mt-0.5" />
+                <p>
+                  <strong>Cara kerja:</strong> Saat WhatsApp terbuka di Status, tunggu <strong>1–2 detik</strong> sampai kartu gambar berita otomatis muncul di tengah layar sebelum menekan tombol Kirim.
+                </p>
+              </div>
+            </div>
+
+            {/* OPTION 2: Foto Penuh Layar (Gambar 2) */}
+            <div className="p-4 rounded-2xl border border-slate-200 hover:border-slate-300 bg-white transition-all space-y-2.5">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5">
+                  <ImageSquare size={16} weight="bold" className="text-slate-700" />
+                  <h5 className="text-xs font-black text-slate-900 uppercase tracking-wide">
+                    2. Status Foto Penuh (Seperti Contoh Gambar 2)
+                  </h5>
+                </div>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  Menampilkan foto liputan satu layar penuh sebagai status foto WhatsApp, dengan tulisan caption di bawah foto.
+                </p>
+              </div>
+
               <button
                 type="button"
-                onClick={handleShareToWAStatus}
-                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+                onClick={handleShareFullscreenPhoto}
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 active:scale-[0.99] text-white text-xs font-semibold shadow-xs transition-all cursor-pointer"
               >
-                <WhatsappLogo size={18} weight="fill" />
-                <span>Bagikan ke Status WhatsApp (Foto + Teks)</span>
+                <DeviceMobile size={16} />
+                <span>Bagikan Foto Penuh ke Status WA</span>
               </button>
             </div>
 
-            {/* 2. Kirim ke Chat / Grup WhatsApp */}
+            {/* OPTION 3: Kirim ke Chat / Grup */}
             <div className="p-4 rounded-2xl border border-slate-200 hover:border-slate-300 bg-white transition-all space-y-2.5">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-1.5">
                   <Chats size={16} weight="bold" className="text-sky-700" />
                   <h5 className="text-xs font-black text-slate-900 uppercase tracking-wide">
-                    2. Kirim ke Chat / Grup WhatsApp
+                    3. Kirim ke Chat / Grup WhatsApp
                   </h5>
                 </div>
                 <p className="text-[11px] text-slate-600 leading-relaxed">
@@ -260,7 +319,7 @@ export function ArticleShareModal({
               <button
                 type="button"
                 onClick={handleShareWAChat}
-                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 active:scale-[0.99] text-white text-xs font-semibold shadow-xs transition-all cursor-pointer"
               >
                 <Chats size={16} weight="fill" />
                 <span>Buka Chat WhatsApp</span>
@@ -268,7 +327,7 @@ export function ArticleShareModal({
             </div>
           </div>
 
-          {/* Secondary Quick Utilities: Unduh Foto & Salin Link */}
+          {/* Secondary Quick Utilities: Unduh Foto & Salin Link Lengkap */}
           <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2.5">
             <button
               type="button"
@@ -277,25 +336,17 @@ export function ArticleShareModal({
               className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer border border-slate-200/80"
             >
               <DownloadSimple size={15} />
-              <span>{downloading ? "Mengunduh..." : "Unduh Foto"}</span>
+              <span>{downloading ? "Mengunduh..." : "Unduh Foto Berita"}</span>
             </button>
 
             <button
               type="button"
-              onClick={handleCopyCaption}
+              onClick={handleCopyCleanLink}
               className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer border border-slate-200/80"
             >
-              {copied ? <Check size={15} className="text-emerald-600" /> : <Copy size={15} />}
-              <span>{copied ? "Tersalin!" : "Salin Teks & Link"}</span>
+              <LinkSimple size={15} />
+              <span>Salin Link Saja</span>
             </button>
-          </div>
-
-          {/* Helpful Tips */}
-          <div className="flex items-start gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200/60 text-[11px] text-slate-500">
-            <Info size={16} className="text-slate-400 shrink-0 mt-0.5" />
-            <p>
-              <strong>Tips Status WA:</strong> Jika menggunakan WhatsApp Web di laptop/PC, pilih <em>&ldquo;Status WhatsApp (Foto + Teks)&rdquo;</em> untuk langsung mengunduh gambar dan menyalin teks judul agar bisa diposting ke status foto.
-            </p>
           </div>
         </div>
 
@@ -306,7 +357,7 @@ export function ArticleShareModal({
             onClick={onClose}
             className="px-4 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
           >
-            Selesai
+            Tutup
           </button>
         </div>
       </div>
