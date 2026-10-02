@@ -44,9 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url: canonicalUrl,
       siteName: "Warta Resmi Desa Kadugenep",
       locale: "id_ID",
-      type: "article",
-      publishedTime: article.date,
-      authors: [article.author || "Pemerintah Desa Kadugenep"],
+      type: "website",
       images: [
         {
           url: imageUrl,

@@ -75,16 +75,9 @@ export default function ArticleDetailClient({
   const hasVideo = isYouTube || isLocalVideo;
   const embedUrl = isYouTube ? getYouTubeEmbedUrl(article.videoUrl, isAutoPlaying) : null;
 
-  // Resolve public share URL (use live domain if on localhost for WhatsApp crawler compatibility)
+  // Resolve public share URL with canonical https://www.desakadugenep.my.id
   const getPublicShareUrl = () => {
-    if (typeof window !== "undefined") {
-      const origin = window.location.origin;
-      if (origin.includes("localhost") || origin.includes("127.0.0.1")) {
-        return `${CANONICAL_SITE_URL}/berita/${article.slug}`;
-      }
-      return window.location.href;
-    }
-    return `${CANONICAL_SITE_URL}/berita/${article.slug}`;
+    return `${CANONICAL_SITE_URL}/berita/${article.slug}?v=warta`;
   };
 
   const shareUrl = getPublicShareUrl();
