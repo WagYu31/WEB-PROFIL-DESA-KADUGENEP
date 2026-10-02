@@ -14,8 +14,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.desakadugenep.my.id";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://kadugenep-petir.desa.id"),
+  metadataBase: new URL(SITE_URL),
   title: "Website Resmi Desa Kadugenep | Desa Kecil Seribu Mesin",
   description:
     "Portal resmi Pemerintah Desa Kadugenep, Kecamatan Petir, Kabupaten Serang, Banten. Pusat informasi warta desa, sentra kerajinan seribu mesin jahit, transparansi APBDes, dan pelayanan administrasi mandiri warga.",
@@ -34,11 +36,11 @@ export const metadata: Metadata = {
     title: "Website Resmi Desa Kadugenep | Desa Kecil Seribu Mesin",
     description:
       "Portal informasi warta desa, sentra pengrajin tas seribu mesin, transparansi APBDes, dan pelayanan publik Desa Kadugenep, Kecamatan Petir, Serang Banten.",
-    url: "https://kadugenep-petir.desa.id",
+    url: SITE_URL,
     siteName: "Desa Kadugenep Official",
     images: [
       {
-        url: "/images/hero-kadugenep.jpg",
+        url: `${SITE_URL}/images/hero-kadugenep.jpg`,
         width: 1200,
         height: 630,
         alt: "Pemandangan Asri Desa Kadugenep Banten",
@@ -46,6 +48,13 @@ export const metadata: Metadata = {
     ],
     locale: "id_ID",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Website Resmi Desa Kadugenep | Desa Kecil Seribu Mesin",
+    description:
+      "Portal informasi warta desa, sentra pengrajin tas seribu mesin, transparansi APBDes, dan pelayanan publik Desa Kadugenep, Kecamatan Petir, Serang Banten.",
+    images: [`${SITE_URL}/images/hero-kadugenep.jpg`],
   },
 };
 
