@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import {
-  findArticleBySlug,
+  getArticleBySlugServer,
   INITIAL_ARTICLES,
   CANONICAL_SITE_URL,
   getAbsoluteImageUrl,
@@ -19,7 +19,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = findArticleBySlug(slug);
+  const article = await getArticleBySlugServer(slug);
 
   if (!article) {
     return {
@@ -67,7 +67,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ArticleDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const article = findArticleBySlug(slug);
+  const article = await getArticleBySlugServer(slug);
 
   return <ArticleDetailClient slug={slug} initialArticle={article} />;
 }
+

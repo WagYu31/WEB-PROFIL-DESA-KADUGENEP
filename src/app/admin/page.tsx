@@ -64,11 +64,15 @@ export default function AdminPage() {
     saveProfile,
     saveOfficials,
     saveArticles,
+    addArticle,
+    updateArticle,
+    deleteArticle,
     saveApbdes,
     saveServiceRequests,
     saveAspirations,
     resetToDefault,
   } = useVillageStore();
+
 
   const [activeTab, setActiveTab] = useState<"berita" | "aparatur" | "profil" | "apbdes" | "layanan" | "aspirasi" | "backup">("berita");
 
@@ -233,13 +237,13 @@ export default function AdminPage() {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
 
-  // Compress image to lightweight WebP/JPEG data URL for instant zero-serverless-error storage
-  const compressImageToDataUrl = async (
+  // Compress image to lightweight WebP Blob for lightning-fast serverless & storage upload
+  const compressImageToBlob = async (
     file: File,
-    maxWidth = 1280,
-    maxHeight = 1280,
+    maxWidth = 1400,
+    maxHeight = 1400,
     quality = 0.82
-  ): Promise<string> => {
+  ): Promise<Blob> => {
     return new Promise((resolve, reject) => {
       if (!file.type.startsWith("image/")) {
         reject(new Error("File yang dipilih bukan gambar yang valid."));
@@ -266,23 +270,23 @@ export default function AdminPage() {
 
           const ctx = canvas.getContext("2d");
           if (!ctx) {
-            resolve(e.target?.result as string);
+            resolve(file);
             return;
           }
 
           ctx.drawImage(img, 0, 0, width, height);
 
-          let dataUrl = "";
-          try {
-            dataUrl = canvas.toDataURL("image/webp", quality);
-            if (!dataUrl.startsWith("data:image/webp")) {
-              dataUrl = canvas.toDataURL("image/jpeg", quality);
-            }
-          } catch {
-            dataUrl = canvas.toDataURL("image/jpeg", quality);
-          }
-
-          resolve(dataUrl);
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                resolve(file);
+              }
+            },
+            "image/webp",
+            quality
+          );
         };
         img.src = e.target?.result as string;
       };
@@ -306,9 +310,17 @@ export default function AdminPage() {
   const handleSotkBgUpload = async (file: File) => {
     setIsUploadingSotkBg(true);
     try {
-      const compressedDataUrl = await compressImageToDataUrl(file, 1600, 900, 0.85);
-      setSotkForm((prev) => ({ ...prev, bgImage: compressedDataUrl, bgTheme: "kantor" }));
-      showToast("Foto background berhasil dipilih! Klik 'Simpan Pengaturan' untuk menerapkan.");
+      const compressedBlob = await compressImageToBlob(file, 1600, 1000, 0.85);
+      const formData = new FormData();
+      formData.append("file", compressedBlob, "sotk-bg.webp");
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok && data.success && data.url) {
+        setSotkForm((prev) => ({ ...prev, bgImage: data.url, bgTheme: "kantor" }));
+        showToast("Foto background berhasil diunggah ke cloud desa! Klik 'Simpan Pengaturan' untuk menerapkan.");
+      } else {
+        throw new Error(data.error || "Gagal mengunggah foto background");
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Gagal memproses gambar latar belakang.";
       showToast(msg);
@@ -322,13 +334,21 @@ export default function AdminPage() {
   const handleBalihoUpload = async (file: File) => {
     setIsUploadingBaliho(true);
     try {
-      const compressedDataUrl = await compressImageToDataUrl(file, 1600, 2000, 0.88);
-      const updatedProfile = {
-        ...profile,
-        apbdesBalihoUrl: compressedDataUrl,
-      };
-      saveProfile(updatedProfile);
-      showToast("Foto baliho resmi APBDes berhasil diperbarui!");
+      const compressedBlob = await compressImageToBlob(file, 1600, 2200, 0.88);
+      const formData = new FormData();
+      formData.append("file", compressedBlob, "baliho-apbdes.webp");
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok && data.success && data.url) {
+        const updatedProfile = {
+          ...profile,
+          apbdesBalihoUrl: data.url,
+        };
+        saveProfile(updatedProfile);
+        showToast("Foto baliho resmi APBDes berhasil diperbarui di cloud desa!");
+      } else {
+        throw new Error(data.error || "Gagal mengunggah baliho");
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Gagal memproses gambar baliho.";
       showToast(msg);
@@ -350,31 +370,31 @@ export default function AdminPage() {
     if (type === "image") {
       setIsUploadingImage(true);
       try {
-        // Step 1: Compress image on client side (max 1280px, WebP quality 0.82)
-        // Keeps file light (~80-150KB) and avoids Vercel payload limits or localStorage quota overflow
-        const compressedDataUrl = await compressImageToDataUrl(file);
-
-        // Step 2: Attempt uploading to server (e.g. for local dev or VPS storage)
+        // Step 1: Compress image on client side (max 1400px, WebP ~100-200KB)
+        // Eliminates 413 Vercel payload limits from smartphone camera photos
+        let fileToSend: Blob | File = file;
         try {
-          const formData = new FormData();
-          formData.append("file", file);
-          const res = await fetch("/api/upload", {
-            method: "POST",
-            body: formData,
-          });
-          const data = await res.json();
-          if (res.ok && data.success && data.url) {
-            setArticleForm((prev) => ({ ...prev, image: data.url }));
-            showToast("Foto berita berhasil diunggah!");
-            return;
-          }
-        } catch {
-          // If server upload fails (e.g. read-only filesystem or network issue), gracefully fallback
+          fileToSend = await compressImageToBlob(file, 1400, 1400, 0.82);
+        } catch (compErr) {
+          console.warn("Client compression failed, using original file:", compErr);
         }
 
-        // Graceful resilient fallback: use high quality compressed data URL directly
-        setArticleForm((prev) => ({ ...prev, image: compressedDataUrl }));
-        showToast("Foto berhasil dimuat & dioptimasi dari galeri!");
+        const formData = new FormData();
+        const safeBaseName = (file.name || "foto").replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9_-]/g, "_");
+        formData.append("file", fileToSend, `${safeBaseName}.webp`);
+
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+        if (res.ok && data.success && data.url) {
+          setArticleForm((prev) => ({ ...prev, image: data.url }));
+          showToast("Foto berita berhasil diunggah ke cloud desa!");
+          return;
+        } else {
+          throw new Error(data.error || "Gagal mengunggah foto ke server");
+        }
       } catch (err: any) {
         console.error("Image processing error:", err);
         alert("Gagal memproses gambar: " + (err.message || "Format gambar tidak didukung"));
@@ -403,11 +423,11 @@ export default function AdminPage() {
         videoUrl: data.url,
         videoTitle: prev.videoTitle || file.name.replace(/\.[^/.]+$/, ""),
       }));
-      showToast("Video berhasil diunggah dari galeri!");
+      showToast("Video berhasil diunggah ke cloud desa!");
     } catch (err: any) {
       console.error("Upload video error:", err);
       alert(
-        "Pemberitahuan Upload Video: Pada hosting Vercel / serverless cloud, penyimpanan file video lokal dibatasi oleh sistem read-only.\n\nSaran: Gunakan tab 'Link YouTube' dengan memasukkan link video YouTube liputan/kegiatan desa agar dapat diputar langsung secara lancar dan cepat tanpa kendala ukuran file."
+        "Pemberitahuan Upload Video: Pada hosting cloud, file video berukuran besar disarankan menggunakan tab 'Link YouTube'.\n\nTempel link video liputan YouTube agar langsung lancar diputar tanpa kendala kuota upload."
       );
     } finally {
       setIsUploadingVideo(false);
@@ -444,7 +464,11 @@ export default function AdminPage() {
       videoUrl: art.videoUrl || "",
       videoTitle: art.videoTitle || "",
     });
-    setImageSourceTab(art.image.startsWith("/uploads/") || art.image.startsWith("data:") ? "upload" : "preset");
+    const isUploaded =
+      art.image.startsWith("/uploads/") ||
+      art.image.startsWith("data:") ||
+      art.image.startsWith("http");
+    setImageSourceTab(isUploaded ? "upload" : "preset");
     if (!art.videoUrl) {
       setVideoSourceTab("none");
     } else if (isYouTubeUrl(art.videoUrl)) {
@@ -455,31 +479,30 @@ export default function AdminPage() {
     setArticleModalOpen(true);
   };
 
-  const handleSaveArticle = (e: React.FormEvent) => {
+  const handleSaveArticle = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!articleForm.title || !articleForm.summary) return;
 
     if (editingArticleId) {
       const artSlug = slugify(articleForm.title);
-      // Edit existing
-      const updated = articles.map((a) =>
-        a.id === editingArticleId
-          ? {
-              ...a,
-              title: articleForm.title,
-              slug: artSlug,
-              category: articleForm.category,
-              author: articleForm.author,
-              summary: articleForm.summary,
-              content: articleForm.content,
-              image: articleForm.image,
-              videoUrl: articleForm.videoUrl?.trim() || undefined,
-              videoTitle: articleForm.videoTitle?.trim() || undefined,
-            }
-          : a
-      );
-      saveArticles(updated);
-      showToast("Berita berhasil diperbarui!", {
+      const existing = articles.find((a) => a.id === editingArticleId);
+      const updated: ArticleType = {
+        id: editingArticleId,
+        title: articleForm.title,
+        slug: artSlug,
+        category: articleForm.category,
+        author: articleForm.author,
+        summary: articleForm.summary,
+        content: articleForm.content,
+        image: articleForm.image,
+        date: existing?.date || new Date().toISOString().split("T")[0],
+        views: existing?.views || 1,
+        featured: Boolean(existing?.featured),
+        videoUrl: articleForm.videoUrl?.trim() || undefined,
+        videoTitle: articleForm.videoTitle?.trim() || undefined,
+      };
+      await updateArticle(updated);
+      showToast("Berita berhasil diperbarui di cloud desa!", {
         url: `/berita/${artSlug}`,
         label: "Cek Berita",
       });
@@ -501,8 +524,8 @@ export default function AdminPage() {
         views: 1,
         featured: false,
       };
-      saveArticles([newArticle, ...articles]);
-      showToast("Berita baru berhasil ditambahkan!", {
+      await addArticle(newArticle);
+      showToast("Berita baru berhasil diterbitkan & tersinkronisasi!", {
         url: `/berita/${artSlug}`,
         label: "Cek Berita Langsung",
       });
@@ -511,12 +534,13 @@ export default function AdminPage() {
     setArticleModalOpen(false);
   };
 
-  const handleDeleteArticle = (id: string) => {
+  const handleDeleteArticle = async (id: string) => {
     if (confirm("Apakah Anda yakin ingin menghapus artikel warta ini?")) {
-      saveArticles(articles.filter((a) => a.id !== id));
-      showToast("Artikel berhasil dihapus.");
+      await deleteArticle(id);
+      showToast("Artikel berhasil dihapus dari cloud desa.");
     }
   };
+
 
   // Handle Profile Save
   const handleSaveProfile = (e: React.FormEvent) => {
@@ -621,9 +645,17 @@ export default function AdminPage() {
   const handleOfficialPhotoUpload = async (file: File) => {
     setIsUploadingOfficialPhoto(true);
     try {
-      const compressedDataUrl = await compressImageToDataUrl(file, 600, 600, 0.85);
-      setOfficialForm((prev) => ({ ...prev, photo: compressedDataUrl }));
-      showToast("Foto aparatur berhasil dipilih!");
+      const compressedBlob = await compressImageToBlob(file, 600, 600, 0.85);
+      const formData = new FormData();
+      formData.append("file", compressedBlob, "aparatur.webp");
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok && data.success && data.url) {
+        setOfficialForm((prev) => ({ ...prev, photo: data.url }));
+        showToast("Foto aparatur berhasil diunggah ke cloud desa!");
+      } else {
+        throw new Error(data.error || "Gagal mengunggah foto aparatur");
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Gagal memproses gambar foto.";
       showToast(msg);
@@ -631,6 +663,7 @@ export default function AdminPage() {
       setIsUploadingOfficialPhoto(false);
     }
   };
+
 
   // Handle Service Request status update
   const handleUpdateServiceStatus = (id: string, newStatus: "Menunggu" | "Diproses" | "Selesai") => {
@@ -2199,7 +2232,7 @@ export default function AdminPage() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-xs font-bold text-slate-800 truncate">
-                            {articleForm.image.startsWith("/uploads/") || articleForm.image.startsWith("data:")
+                            {articleForm.image.startsWith("/uploads/") || articleForm.image.startsWith("data:") || articleForm.image.startsWith("http")
                               ? "Foto Terunggah dari Galeri"
                               : "Foto Aset Desa"}
                           </p>
@@ -2207,6 +2240,7 @@ export default function AdminPage() {
                             {articleForm.image.startsWith("data:")
                               ? "Foto Galeri (Teroptimasi Siap Tampil)"
                               : articleForm.image}
+
                           </p>
                         </div>
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 shrink-0">

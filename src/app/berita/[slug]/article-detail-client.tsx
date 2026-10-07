@@ -289,7 +289,8 @@ export default function ArticleDetailClient({
               alt={article.title}
               fill
               priority
-              unoptimized={Boolean(article.image?.startsWith("/uploads/") || article.image?.startsWith("data:"))}
+              unoptimized={Boolean(article.image?.startsWith("/uploads/") || article.image?.startsWith("data:") || article.image?.startsWith("http"))}
+
               sizes="(max-width: 1024px) 100vw, 800px"
               className="object-cover"
             />

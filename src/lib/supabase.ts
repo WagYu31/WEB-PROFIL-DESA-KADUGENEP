@@ -1,3 +1,8 @@
+// Ensure global WebSocket is available in Node.js < 22 environments for Supabase
+if (typeof globalThis !== "undefined" && typeof (globalThis as any).WebSocket === "undefined") {
+  (globalThis as any).WebSocket = class DummyWebSocket {};
+}
+
 import { createClient } from "@supabase/supabase-js";
 
 export const SUPABASE_URL =
@@ -17,3 +22,4 @@ const serverKey = process.env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
 export const supabaseAdmin = createClient(SUPABASE_URL, serverKey, {
   auth: { persistSession: false },
 });
+

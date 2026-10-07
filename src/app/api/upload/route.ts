@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import fs from "fs/promises";
+import { supabaseAdmin } from "@/lib/supabase";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,13 +25,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Limit video size (e.g. 100MB) or images (20MB)
-    const maxVideoSize = 150 * 1024 * 1024; // 150MB
-    const maxImageSize = 25 * 1024 * 1024; // 25MB
+    // Limit video size (e.g. 100MB) or images (25MB)
+    const maxVideoSize = 100 * 1024 * 1024;
+    const maxImageSize = 25 * 1024 * 1024;
 
     if (isVideo && file.size > maxVideoSize) {
       return NextResponse.json(
-        { error: "Ukuran video melebihi batas maksimal 150MB. Harap kompresi terlebih dahulu." },
+        { error: "Ukuran video melebihi batas maksimal 100MB. Harap gunakan link YouTube atau kompresi file." },
         { status: 400 }
       );
     }
@@ -56,7 +59,42 @@ export async function POST(request: NextRequest) {
     const random = Math.floor(Math.random() * 1000);
     const prefix = isVideo ? "video" : "foto";
     const uniqueFileName = `${prefix}-${timestamp}-${random}-${cleanBase}${extension}`;
+    const contentType = file.type || (isImage ? "image/jpeg" : "video/mp4");
 
+    // 1. Primary: Upload to Supabase Cloud Storage (Accessible from all devices globally)
+    try {
+      const { data: storageData, error: storageErr } = await supabaseAdmin.storage
+        .from("kadugenep_media")
+        .upload(uniqueFileName, buffer, {
+          contentType,
+          upsert: true,
+        });
+
+      if (!storageErr && storageData) {
+        const { data: pubData } = supabaseAdmin.storage
+          .from("kadugenep_media")
+          .getPublicUrl(uniqueFileName);
+
+        if (pubData?.publicUrl) {
+          return NextResponse.json({
+            success: true,
+            url: pubData.publicUrl,
+            fileName: uniqueFileName,
+            originalName,
+            size: file.size,
+            type: file.type,
+            mediaCategory: isVideo ? "video" : "image",
+            storage: "supabase",
+          });
+        }
+      } else if (storageErr) {
+        console.warn("Supabase storage upload error, attempting fallback:", storageErr.message);
+      }
+    } catch (supaErr: any) {
+      console.warn("Supabase storage exception, attempting fallback:", supaErr?.message);
+    }
+
+    // 2. Secondary fallback: Local storage (for offline dev environment)
     const uploadDir = path.join(process.cwd(), "public", "uploads");
 
     try {
@@ -74,34 +112,21 @@ export async function POST(request: NextRequest) {
         size: file.size,
         type: file.type,
         mediaCategory: isVideo ? "video" : "image",
+        storage: "local",
       });
     } catch (fsError: any) {
-      // In serverless environments (Vercel / AWS Lambda), the filesystem is read-only (EROFS)
-      if (fsError?.code === "EROFS" || fsError?.message?.includes("read-only")) {
-        console.warn("Serverless read-only filesystem (EROFS) detected. Providing data URI fallback.");
-        const mimeType = file.type || (isImage ? "image/jpeg" : "video/mp4");
-        const base64 = buffer.toString("base64");
-        const dataUrl = `data:${mimeType};base64,${base64}`;
-
-        return NextResponse.json({
-          success: true,
-          url: dataUrl,
-          fileName: uniqueFileName,
-          originalName,
-          size: file.size,
-          type: file.type,
-          mediaCategory: isVideo ? "video" : "image",
-          storage: "data-uri",
-          isServerless: true,
-        });
-      }
-      throw fsError;
+      console.error("Local disk storage failed:", fsError?.message);
+      return NextResponse.json(
+        { error: "Gagal menyimpan file ke penyimpanan server: " + (fsError?.message || "Kesalahan server") },
+        { status: 500 }
+      );
     }
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json(
-      { error: "Gagal menyimpan file: " + (error?.message || "Kesalahan server") },
+      { error: "Gagal memproses file: " + (error?.message || "Kesalahan server") },
       { status: 500 }
     );
   }
 }
+

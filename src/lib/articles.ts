@@ -159,3 +159,46 @@ export function getAbsoluteImageUrl(imagePath?: string, baseUrl: string = CANONI
   const cleanPath = imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
   return `${baseUrl}${cleanPath}`;
 }
+
+export async function getArticleBySlugServer(slug: string): Promise<Article | undefined> {
+  if (!slug) return undefined;
+  const decodedSlug = decodeURIComponent(slug).toLowerCase().trim();
+
+  // 1. Check in INITIAL_ARTICLES
+  const localMatch = findArticleBySlug(decodedSlug, INITIAL_ARTICLES);
+  if (localMatch) return localMatch;
+
+  // 2. Query Supabase directly
+  try {
+    const { supabaseAdmin } = await import("./supabase");
+    const { data: rows, error } = await supabaseAdmin
+      .from("articles")
+      .select("*")
+      .or(`slug.eq.${decodedSlug},id.eq.${decodedSlug}`)
+      .limit(1);
+
+    if (!error && rows && rows.length > 0) {
+      const r = rows[0];
+      return {
+        id: r.id,
+        slug: r.slug,
+        title: r.title,
+        category: r.category,
+        summary: r.summary,
+        content: r.content,
+        author: r.author,
+        date: r.date,
+        image: r.image,
+        views: Number(r.views) || 1,
+        featured: Boolean(r.featured),
+        videoUrl: r.video_url || undefined,
+        videoTitle: r.video_title || undefined,
+      };
+    }
+  } catch (err) {
+    console.warn("Could not fetch article by slug from Supabase:", err);
+  }
+
+  return undefined;
+}
+

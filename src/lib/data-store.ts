@@ -414,7 +414,9 @@ export function setStoredData<T>(key: string, data: T): void {
     localStorage.setItem(key, JSON.stringify(data));
     window.dispatchEvent(new CustomEvent("kadugenep_store_update", { detail: { key } }));
   } catch (err) {
-    console.error("Failed saving to localStorage:", err);
+    console.warn("Could not save to localStorage (storage limit or disabled):", err);
+    // Still dispatch update so other components in the same tab receive changes
+    window.dispatchEvent(new CustomEvent("kadugenep_store_update", { detail: { key } }));
   }
 }
 
@@ -427,11 +429,15 @@ export async function syncToCloud(action: string, payload: any) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action, payload }),
     });
+    if (!res.ok) {
+      console.warn(`Sync ${action} returned HTTP ${res.status}`);
+    }
     return await res.json();
   } catch (err) {
     console.warn("Could not sync change to Supabase cloud:", err);
   }
 }
+
 
 export function useVillageStore() {
   const [profile, setProfileState] = useState<VillageProfile>(INITIAL_PROFILE);
@@ -512,25 +518,17 @@ export function useVillageStore() {
       setIsAdminLoggedIn(Boolean(getStoredData(STORAGE_KEYS.ADMIN_SESSION, false)));
       setIsLoaded(true);
 
-      // Background sync with Supabase cloud database
+      // Background sync with Supabase cloud database (authoritative source of truth)
       fetch("/api/sync")
         .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
           if (data && data.success) {
-            // Check if local device has extra articles not yet in Supabase (e.g. TESTING & tesss added from laptop)
-            const localArticles = getStoredData<Article[]>(STORAGE_KEYS.ARTICLES, []);
-            const missingInCloud = localArticles.filter(
-              (la) => !data.articles.some((ca: Article) => ca.id === la.id || ca.slug === la.slug)
-            );
-
-            if (missingInCloud.length > 0) {
-              // Automatically sync missing local articles up to Supabase!
-              syncToCloud("sync_all_articles", localArticles);
-              setArticlesState(localArticles);
-            } else if (Array.isArray(data.articles) && data.articles.length > 0) {
+            // Apply articles directly from Supabase Cloud Database
+            if (Array.isArray(data.articles) && data.articles.length > 0) {
               setArticlesState(data.articles);
               setStoredData(STORAGE_KEYS.ARTICLES, data.articles);
             }
+
 
             if (data.profile) {
               setProfileState(data.profile);
@@ -644,6 +642,27 @@ export function useVillageStore() {
     syncToCloud("save_setting", { key: "officials", data: newOfficials });
   };
 
+  const addArticle = async (newArticle: Article) => {
+    const updated = [newArticle, ...articles.filter((a) => a.id !== newArticle.id)];
+    setArticlesState(updated);
+    setStoredData(STORAGE_KEYS.ARTICLES, updated);
+    return await syncToCloud("save_article", newArticle);
+  };
+
+  const updateArticle = async (updatedArticle: Article) => {
+    const updated = articles.map((a) => (a.id === updatedArticle.id ? updatedArticle : a));
+    setArticlesState(updated);
+    setStoredData(STORAGE_KEYS.ARTICLES, updated);
+    return await syncToCloud("save_article", updatedArticle);
+  };
+
+  const deleteArticle = async (id: string) => {
+    const updated = articles.filter((a) => a.id !== id);
+    setArticlesState(updated);
+    setStoredData(STORAGE_KEYS.ARTICLES, updated);
+    return await syncToCloud("delete_article", { id });
+  };
+
   const saveArticles = (newArticles: Article[]) => {
     setArticlesState(newArticles);
     setStoredData(STORAGE_KEYS.ARTICLES, newArticles);
@@ -725,6 +744,9 @@ export function useVillageStore() {
     saveProfile,
     saveOfficials,
     saveArticles,
+    addArticle,
+    updateArticle,
+    deleteArticle,
     saveApbdes,
     saveAgenda,
     saveServiceRequests,
@@ -733,3 +755,4 @@ export function useVillageStore() {
     resetToDefault,
   };
 }
+
