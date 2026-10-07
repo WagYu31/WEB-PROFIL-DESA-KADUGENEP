@@ -74,9 +74,14 @@ export default function AdminPage() {
 
   // Notification toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const showToast = (msg: string) => {
+  const [toastAction, setToastAction] = useState<{ url: string; label: string } | null>(null);
+  const showToast = (msg: string, action?: { url: string; label: string }) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+    setToastAction(action || null);
+    setTimeout(() => {
+      setToastMessage(null);
+      setToastAction(null);
+    }, action ? 6000 : 3500);
   };
 
   // Admin Authentication State
@@ -455,13 +460,14 @@ export default function AdminPage() {
     if (!articleForm.title || !articleForm.summary) return;
 
     if (editingArticleId) {
+      const artSlug = slugify(articleForm.title);
       // Edit existing
       const updated = articles.map((a) =>
         a.id === editingArticleId
           ? {
               ...a,
               title: articleForm.title,
-              slug: slugify(articleForm.title),
+              slug: artSlug,
               category: articleForm.category,
               author: articleForm.author,
               summary: articleForm.summary,
@@ -473,12 +479,16 @@ export default function AdminPage() {
           : a
       );
       saveArticles(updated);
-      showToast("Berita berhasil diperbarui!");
+      showToast("Berita berhasil diperbarui!", {
+        url: `/berita/${artSlug}`,
+        label: "Cek Berita",
+      });
     } else {
       // Add new
+      const artSlug = slugify(articleForm.title);
       const newArticle: ArticleType = {
         id: `art-${Date.now()}`,
-        slug: slugify(articleForm.title),
+        slug: artSlug,
         title: articleForm.title,
         category: articleForm.category,
         author: articleForm.author,
@@ -492,7 +502,10 @@ export default function AdminPage() {
         featured: false,
       };
       saveArticles([newArticle, ...articles]);
-      showToast("Berita baru berhasil ditambahkan!");
+      showToast("Berita baru berhasil ditambahkan!", {
+        url: `/berita/${artSlug}`,
+        label: "Cek Berita Langsung",
+      });
     }
 
     setArticleModalOpen(false);
@@ -958,9 +971,20 @@ export default function AdminPage() {
     <div className="min-h-screen bg-[#f4f6f2] py-8 px-4 sm:px-6 lg:px-8">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 p-4 rounded-2xl bg-[#064e3b] text-white shadow-2xl flex items-center gap-3 animate-bounce">
-          <CheckCircle size={22} weight="fill" className="text-emerald-300" />
+        <div className="fixed top-20 right-6 z-50 p-4 rounded-2xl bg-[#064e3b] text-white shadow-2xl flex items-center gap-3 border border-emerald-400/30 transition-all">
+          <CheckCircle size={22} weight="fill" className="text-emerald-300 shrink-0" />
           <span className="text-xs font-semibold">{toastMessage}</span>
+          {toastAction && (
+            <Link
+              href={toastAction.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-white text-xs font-bold transition-all border border-emerald-500/50 shadow-sm ml-2 whitespace-nowrap"
+            >
+              <Eye size={15} weight="bold" />
+              <span>{toastAction.label}</span>
+            </Link>
+          )}
         </div>
       )}
 
@@ -1133,7 +1157,15 @@ export default function AdminPage() {
                   {articles.map((art) => (
                     <tr key={art.id} className="hover:bg-slate-50/60 transition-colors">
                       <td className="py-3.5 px-4 font-semibold text-slate-900 max-w-sm">
-                        <div className="line-clamp-2">{art.title}</div>
+                        <Link
+                          href={`/berita/${art.slug || slugify(art.title)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-emerald-700 hover:underline transition-colors block text-left"
+                          title="Lihat Halaman Berita (Buka di Tab Baru)"
+                        >
+                          <div className="line-clamp-2">{art.title}</div>
+                        </Link>
                         {art.videoUrl && (
                           <div className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
                             {isYouTubeUrl(art.videoUrl) ? (
@@ -1158,7 +1190,16 @@ export default function AdminPage() {
                       <td className="py-3.5 px-4 whitespace-nowrap">{formatDateID(art.date)}</td>
                       <td className="py-3.5 px-4">{art.author}</td>
                       <td className="py-3.5 px-4 whitespace-nowrap">{art.views} kali</td>
-                      <td className="py-3.5 px-4 text-right space-x-2 whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
+                        <Link
+                          href={`/berita/${art.slug || slugify(art.title)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center p-1.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors"
+                          title="Lihat Berita Langsung (Buka di Tab Baru)"
+                        >
+                          <Eye size={17} weight="bold" />
+                        </Link>
                         <button
                           onClick={() => handleOpenEditArticle(art)}
                           className="p-1.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors"
@@ -2011,9 +2052,23 @@ export default function AdminPage() {
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
           <div className="relative w-full max-w-2xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 my-8">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-lg font-bold text-slate-900">
-                {editingArticleId ? "Edit Artikel Warta" : "Tambah Berita Baru"}
-              </h3>
+              <div className="flex items-center gap-3">
+                <h3 className="text-lg font-bold text-slate-900">
+                  {editingArticleId ? "Edit Artikel Warta" : "Tambah Berita Baru"}
+                </h3>
+                {editingArticleId && (
+                  <Link
+                    href={`/berita/${articles.find((a) => a.id === editingArticleId)?.slug || slugify(articleForm.title)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold border border-emerald-200 transition-colors"
+                    title="Buka halaman berita ini di tab baru"
+                  >
+                    <Eye size={14} weight="bold" />
+                    <span>Lihat Halaman</span>
+                  </Link>
+                )}
+              </div>
               <button
                 onClick={() => setArticleModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 text-sm font-bold"

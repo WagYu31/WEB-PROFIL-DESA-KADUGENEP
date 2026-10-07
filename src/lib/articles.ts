@@ -126,12 +126,12 @@ export function findArticleBySlug(
   slug: string,
   list: Article[] = INITIAL_ARTICLES
 ): Article | undefined {
-  if (!slug) return list[0];
-  const decodedSlug = decodeURIComponent(slug).toLowerCase();
+  if (!slug) return undefined;
+  const decodedSlug = decodeURIComponent(slug).toLowerCase().trim();
 
   return (
-    list.find((a) => a.slug === decodedSlug) ||
-    INITIAL_ARTICLES.find((a) => a.slug === decodedSlug) ||
+    list.find((a) => a.slug?.toLowerCase() === decodedSlug || a.id?.toLowerCase() === decodedSlug) ||
+    INITIAL_ARTICLES.find((a) => a.slug?.toLowerCase() === decodedSlug || a.id?.toLowerCase() === decodedSlug) ||
     (decodedSlug.includes("posyandu")
       ? list.find((a) => a.slug.includes("posyandu"))
       : null) ||
@@ -147,7 +147,7 @@ export function findArticleBySlug(
     (decodedSlug.includes("tas") || decodedSlug.includes("mesin")
       ? list.find((a) => a.slug.includes("tas"))
       : null) ||
-    list[0]
+    undefined
   );
 }
 

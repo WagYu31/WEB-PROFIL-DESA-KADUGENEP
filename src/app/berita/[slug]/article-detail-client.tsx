@@ -38,15 +38,15 @@ export default function ArticleDetailClient({
   slug,
   initialArticle,
 }: ArticleDetailClientProps) {
-  const { articles } = useVillageStore();
+  const { articles, isLoaded } = useVillageStore();
 
   const allArticles: Article[] =
     articles && articles.length > 0 ? articles : INITIAL_ARTICLES;
 
+  // Prioritize article from store (contains user additions & latest admin updates)
   const article =
-    initialArticle ||
     findArticleBySlug(slug, allArticles) ||
-    allArticles[0];
+    initialArticle;
 
   const relatedArticles = allArticles.filter((a) => a.slug !== article?.slug).slice(0, 3);
 
@@ -56,10 +56,20 @@ export default function ArticleDetailClient({
   const [copiedLink, setCopiedLink] = useState(false);
 
   if (!article) {
+    if (!isLoaded) {
+      return (
+        <div className="py-24 px-4 max-w-xl mx-auto text-center space-y-4">
+          <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto" />
+          <h2 className="text-xl font-bold text-slate-800">Memuat Warta...</h2>
+          <p className="text-xs text-slate-500">Memperbarui data warta resmi Desa Kadugenep.</p>
+        </div>
+      );
+    }
+
     return (
       <div className="py-20 px-4 max-w-xl mx-auto text-center space-y-4">
-        <h2 className="text-xl font-bold text-slate-800">Warta Sedang Dimuat...</h2>
-        <p className="text-xs text-slate-500">Memperbarui data warta resmi Desa Kadugenep.</p>
+        <h2 className="text-xl font-bold text-slate-800">Warta Tidak Ditemukan</h2>
+        <p className="text-xs text-slate-500">Halaman warta resmi Desa Kadugenep tidak ditemukan atau telah diperbarui.</p>
         <Link
           href="/"
           className="inline-block px-4 py-2 rounded-xl bg-emerald-700 text-white text-xs font-bold"
