@@ -1000,8 +1000,9 @@ export default function AdminPage() {
                 <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">
                   Dashboard Administrator Desa Kadugenep
                 </h1>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                  Live Sync
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Cloud Database Aktif
                 </span>
               </div>
               <p className="text-xs text-slate-500">

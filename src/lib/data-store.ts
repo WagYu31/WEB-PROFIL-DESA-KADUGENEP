@@ -418,6 +418,21 @@ export function setStoredData<T>(key: string, data: T): void {
   }
 }
 
+// Background sync to Supabase Cloud Database
+export async function syncToCloud(action: string, payload: any) {
+  if (typeof window === "undefined") return;
+  try {
+    const res = await fetch("/api/sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action, payload }),
+    });
+    return await res.json();
+  } catch (err) {
+    console.warn("Could not sync change to Supabase cloud:", err);
+  }
+}
+
 export function useVillageStore() {
   const [profile, setProfileState] = useState<VillageProfile>(INITIAL_PROFILE);
   const [officials, setOfficialsState] = useState<VillageOfficial[]>(INITIAL_OFFICIALS);
@@ -496,6 +511,56 @@ export function useVillageStore() {
       setSotkSettingsState(getStoredData(STORAGE_KEYS.SOTK_SETTINGS, INITIAL_SOTK_SETTINGS));
       setIsAdminLoggedIn(Boolean(getStoredData(STORAGE_KEYS.ADMIN_SESSION, false)));
       setIsLoaded(true);
+
+      // Background sync with Supabase cloud database
+      fetch("/api/sync")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data && data.success) {
+            // Check if local device has extra articles not yet in Supabase (e.g. TESTING & tesss added from laptop)
+            const localArticles = getStoredData<Article[]>(STORAGE_KEYS.ARTICLES, []);
+            const missingInCloud = localArticles.filter(
+              (la) => !data.articles.some((ca: Article) => ca.id === la.id || ca.slug === la.slug)
+            );
+
+            if (missingInCloud.length > 0) {
+              // Automatically sync missing local articles up to Supabase!
+              syncToCloud("sync_all_articles", localArticles);
+              setArticlesState(localArticles);
+            } else if (Array.isArray(data.articles) && data.articles.length > 0) {
+              setArticlesState(data.articles);
+              setStoredData(STORAGE_KEYS.ARTICLES, data.articles);
+            }
+
+            if (data.profile) {
+              setProfileState(data.profile);
+              setStoredData(STORAGE_KEYS.PROFILE, data.profile);
+            }
+            if (Array.isArray(data.officials) && data.officials.length > 0) {
+              setOfficialsState(data.officials);
+              setStoredData(STORAGE_KEYS.OFFICIALS, data.officials);
+            }
+            if (Array.isArray(data.apbdes) && data.apbdes.length > 0) {
+              setApbdesState(data.apbdes);
+              setStoredData(STORAGE_KEYS.APBDES, data.apbdes);
+            }
+            if (data.sotkSettings) {
+              setSotkSettingsState(data.sotkSettings);
+              setStoredData(STORAGE_KEYS.SOTK_SETTINGS, data.sotkSettings);
+            }
+            if (Array.isArray(data.serviceRequests) && data.serviceRequests.length > 0) {
+              setServiceRequestsState(data.serviceRequests);
+              setStoredData(STORAGE_KEYS.SERVICE_REQUESTS, data.serviceRequests);
+            }
+            if (Array.isArray(data.aspirations) && data.aspirations.length > 0) {
+              setAspirationsState(data.aspirations);
+              setStoredData(STORAGE_KEYS.ASPIRATIONS, data.aspirations);
+            }
+          }
+        })
+        .catch((err) => {
+          console.warn("Supabase sync notice (using local store):", err);
+        });
     }, 0);
 
     const handleUpdate = () => {
@@ -570,21 +635,25 @@ export function useVillageStore() {
   const saveProfile = (newProfile: VillageProfile) => {
     setProfileState(newProfile);
     setStoredData(STORAGE_KEYS.PROFILE, newProfile);
+    syncToCloud("save_setting", { key: "profile", data: newProfile });
   };
 
   const saveOfficials = (newOfficials: VillageOfficial[]) => {
     setOfficialsState(newOfficials);
     setStoredData(STORAGE_KEYS.OFFICIALS, newOfficials);
+    syncToCloud("save_setting", { key: "officials", data: newOfficials });
   };
 
   const saveArticles = (newArticles: Article[]) => {
     setArticlesState(newArticles);
     setStoredData(STORAGE_KEYS.ARTICLES, newArticles);
+    syncToCloud("sync_all_articles", newArticles);
   };
 
   const saveApbdes = (newApbdes: APBDesItem[]) => {
     setApbdesState(newApbdes);
     setStoredData(STORAGE_KEYS.APBDES, newApbdes);
+    syncToCloud("save_setting", { key: "apbdes", data: newApbdes });
   };
 
   const saveAgenda = (newAgenda: VillageAgenda[]) => {
@@ -595,16 +664,23 @@ export function useVillageStore() {
   const saveServiceRequests = (newReqs: ServiceRequest[]) => {
     setServiceRequestsState(newReqs);
     setStoredData(STORAGE_KEYS.SERVICE_REQUESTS, newReqs);
+    if (newReqs.length > 0) {
+      syncToCloud("save_service_request", newReqs[0]);
+    }
   };
 
   const saveAspirations = (newAsps: CitizenAspiration[]) => {
     setAspirationsState(newAsps);
     setStoredData(STORAGE_KEYS.ASPIRATIONS, newAsps);
+    if (newAsps.length > 0) {
+      syncToCloud("save_aspiration", newAsps[0]);
+    }
   };
 
   const saveSotkSettings = (newSettings: SotkSettings) => {
     setSotkSettingsState(newSettings);
     setStoredData(STORAGE_KEYS.SOTK_SETTINGS, newSettings);
+    syncToCloud("save_setting", { key: "sotk_settings", data: newSettings });
   };
 
   const loginAdmin = () => {
