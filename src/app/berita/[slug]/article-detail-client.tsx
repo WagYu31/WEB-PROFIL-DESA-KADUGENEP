@@ -87,7 +87,7 @@ export default function ArticleDetailClient({
 
   // Resolve public share URL with canonical https://www.desakadugenep.my.id
   const getPublicShareUrl = () => {
-    return `${CANONICAL_SITE_URL}/berita/${article.slug}?v=warta`;
+    return `${CANONICAL_SITE_URL}/berita/${article.slug}`;
   };
 
   const shareUrl = getPublicShareUrl();

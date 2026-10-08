@@ -40,10 +40,11 @@ export const metadata: Metadata = {
     siteName: "Desa Kadugenep Official",
     images: [
       {
-        url: `${SITE_URL}/images/hero-kadugenep.jpg`,
+        url: `${SITE_URL}/images/og-default.jpg`,
         width: 1200,
         height: 630,
         alt: "Pemandangan Asri Desa Kadugenep Banten",
+        type: "image/jpeg",
       },
     ],
     locale: "id_ID",
@@ -54,7 +55,7 @@ export const metadata: Metadata = {
     title: "Website Resmi Desa Kadugenep | Desa Kecil Seribu Mesin",
     description:
       "Portal informasi warta desa, sentra pengrajin tas seribu mesin, transparansi APBDes, dan pelayanan publik Desa Kadugenep, Kecamatan Petir, Serang Banten.",
-    images: [`${SITE_URL}/images/hero-kadugenep.jpg`],
+    images: [`${SITE_URL}/images/og-default.jpg`],
   },
 };
 

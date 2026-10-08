@@ -152,7 +152,7 @@ export function findArticleBySlug(
 }
 
 export function getAbsoluteImageUrl(imagePath?: string, baseUrl: string = CANONICAL_SITE_URL): string {
-  if (!imagePath) return `${baseUrl}/images/hero-kadugenep.jpg`;
+  if (!imagePath) return `${baseUrl}/images/og-default.jpg`;
   if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
     return imagePath;
   }

@@ -1,45 +1,58 @@
 import type { Metadata } from "next";
 import {
   getArticleBySlugServer,
-  INITIAL_ARTICLES,
   CANONICAL_SITE_URL,
   getAbsoluteImageUrl,
 } from "@/lib/articles";
 import ArticleDetailClient from "@/app/berita/[slug]/article-detail-client";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateStaticParams() {
-  return [
-    { slug: "radar" },
-    { slug: "1" },
-    { slug: "banten-tv" },
-    { slug: "2" },
-    { slug: "posyandu" },
-    { slug: "3" },
-    { slug: "musrenbang" },
-    { slug: "4" },
-    { slug: "tas" },
-    { slug: "5" },
-    ...INITIAL_ARTICLES.map((a) => ({ slug: a.slug })),
-  ];
+function getImageMimeType(url: string): string {
+  const clean = url.split("?")[0].toLowerCase();
+  if (clean.endsWith(".webp")) return "image/webp";
+  if (clean.endsWith(".png")) return "image/png";
+  if (clean.endsWith(".gif")) return "image/gif";
+  return "image/jpeg";
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const article = await getArticleBySlugServer(slug);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || CANONICAL_SITE_URL;
 
   if (!article) {
     return {
       title: "Warta Desa Kadugenep",
+      description: "Halaman warta resmi Desa Kadugenep.",
+      openGraph: {
+        title: "Warta Desa Kadugenep",
+        description: "Portal warta dan informasi resmi Pemerintah Desa Kadugenep.",
+        url: `${siteUrl}/w/${slug}`,
+        siteName: "Desa Kadugenep",
+        locale: "id_ID",
+        type: "website",
+        images: [
+          {
+            url: `${siteUrl}/images/og-default.jpg`,
+            width: 1200,
+            height: 630,
+            alt: "Warta Desa Kadugenep",
+            type: "image/jpeg",
+          },
+        ],
+      },
     };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || CANONICAL_SITE_URL;
   const canonicalUrl = `${siteUrl}/berita/${article.slug}`;
   const imageUrl = getAbsoluteImageUrl(article.image, siteUrl);
+  const mimeType = getImageMimeType(imageUrl);
 
   return {
     title: article.title,
@@ -53,7 +66,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url: canonicalUrl,
       siteName: "Desa Kadugenep",
       locale: "id_ID",
-      type: "website",
+      type: "article",
       images: [
         {
           url: imageUrl,
@@ -61,7 +74,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
           width: 1200,
           height: 630,
           alt: article.title,
-          type: "image/jpeg",
+          type: mimeType,
         },
       ],
     },
@@ -80,4 +93,3 @@ export default async function ShortArticlePage({ params }: PageProps) {
 
   return <ArticleDetailClient slug={slug} initialArticle={article} />;
 }
-
